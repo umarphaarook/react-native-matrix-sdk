@@ -22,8 +22,23 @@
 //      being referenced the way the linker expects, it disappears from the
 //      binary and every SDK call fails at runtime.
 //
-// If the binary has been stripped of its symbol table, this fails rather than
-// skipping (3). A check that quietly stops checking is worse than no check.
+// (3) looks at every Mach-O file in the bundle, not just the main executable,
+// because where the code ends up depends on how the app was linked and this check
+// has to hold for both examples:
+//
+//   * With static pod linkage (the Expo example) everything lands in the app
+//     binary.
+//   * With dynamic frameworks (the bare example) it lands in Frameworks/.
+//   * And in any Debug build on Xcode 16 or newer, the app binary is a launcher
+//     stub - the real code is in `<Name>.debug.dylib` beside it.
+//
+// The invariant worth asserting is that the FFI ships inside the bundle at all,
+// which is linkage-agnostic. Asserting it against the main executable alone made
+// the check pass on Release and fail on Debug for reasons that had nothing to do
+// with whether the app works.
+//
+// If nothing in the bundle has a symbol table, this fails rather than skipping
+// (3). A check that quietly stops checking is worse than no check.
 //
 // Usage:
 //   node scripts/check-ios-app.js <path-to-.app>
@@ -48,6 +63,43 @@ const SYMBOL_EXPECTATIONS = [
     hint: 'this package’s native module did not make it into the binary',
   },
 ];
+
+/**
+ * Every Mach-O file the bundle ships, in the order they are worth reporting.
+ *
+ * See the note at the top of this file: the app binary is only one of the places
+ * this package's code can legitimately end up.
+ *
+ * @param {string} appPath Path to the .app bundle
+ * @param {string} name The bundle's executable name
+ * @returns {string[]} Absolute paths, main executable first
+ */
+function machOFiles(appPath, name) {
+  const found = [path.join(appPath, name)];
+
+  // Xcode 16+ Debug builds: the executable above is a stub that dlopens this.
+  const debugDylib = path.join(appPath, `${name}.debug.dylib`);
+  if (fs.existsSync(debugDylib)) {
+    found.push(debugDylib);
+  }
+
+  const frameworks = path.join(appPath, 'Frameworks');
+  if (fs.existsSync(frameworks)) {
+    for (const entry of fs.readdirSync(frameworks).sort()) {
+      if (entry.endsWith('.framework')) {
+        // A framework's binary is named after the framework itself.
+        const binary = path.join(frameworks, entry, path.basename(entry, '.framework'));
+        if (fs.existsSync(binary)) {
+          found.push(binary);
+        }
+      } else if (entry.endsWith('.dylib')) {
+        found.push(path.join(frameworks, entry));
+      }
+    }
+  }
+
+  return found;
+}
 
 /**
  * Work out what kind of build produced this .app from its containing directory,
@@ -147,28 +199,58 @@ function main() {
     }
   }
 
-  // 3. Symbols.
-  const symbols = execFileSync('nm', [binary], {
-    encoding: 'utf8',
-    maxBuffer: 512 * 1024 * 1024,
-    stdio: ['ignore', 'pipe', 'ignore'],
-  });
+  // 3. Symbols, across every Mach-O the bundle ships.
+  const binaries = machOFiles(appPath, name);
+  const counts = new Map(SYMBOL_EXPECTATIONS.map(({ label }) => [label, 0]));
+  let total = 0;
 
-  const lines = symbols.split('\n');
-  console.log(`symbols       ${lines.length.toLocaleString('en-US')}`);
+  console.log('');
 
-  if (lines.length < 100) {
+  for (const file of binaries) {
+    let lines;
+    try {
+      lines = execFileSync('nm', [file], {
+        encoding: 'utf8',
+        maxBuffer: 512 * 1024 * 1024,
+        stdio: ['ignore', 'pipe', 'ignore'],
+      }).split('\n');
+    } catch (error) {
+      // Not a Mach-O, or no symbol table of its own. Either way it contributes
+      // nothing, and the totals below decide whether that matters.
+      continue;
+    }
+
+    total += lines.length;
+
+    const hits = SYMBOL_EXPECTATIONS.map(({ label, pattern }) => {
+      const count = lines.filter((line) => pattern.test(line)).length;
+      counts.set(label, counts.get(label) + count);
+      return count;
+    });
+
+    const where = path.relative(appPath, file) || path.basename(file);
+    console.log(
+      `  ${where.padEnd(46)} ${lines.length.toLocaleString('en-US').padStart(9)} symbols` +
+        (hits.some((count) => count > 0)
+          ? `   (${SYMBOL_EXPECTATIONS.map(({ label }, i) => `${label.split(' ')[0]}: ${hits[i]}`).join(', ')})`
+          : '')
+    );
+  }
+
+  console.log('');
+
+  if (total < 100) {
     failures.push(
-      'the binary has essentially no symbol table, so the checks below cannot ' +
-        'be made - refusing to report success on an unverifiable binary'
+      'nothing in the bundle has a symbol table, so the checks below cannot be ' +
+        'made - refusing to report success on an unverifiable app'
     );
   } else {
-    for (const { label, pattern, hint } of SYMBOL_EXPECTATIONS) {
-      const count = lines.filter((line) => pattern.test(line)).length;
-      console.log(`  ${label.padEnd(34)} ${count.toLocaleString('en-US')}`);
+    for (const { label, hint } of SYMBOL_EXPECTATIONS) {
+      const count = counts.get(label);
+      console.log(`${label.padEnd(36)} ${count.toLocaleString('en-US')}`);
 
       if (count === 0) {
-        failures.push(`no ${label} symbols: ${hint}`);
+        failures.push(`no ${label} symbols anywhere in the bundle: ${hint}`);
       }
     }
   }
