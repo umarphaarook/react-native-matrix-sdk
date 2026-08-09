@@ -1,7 +1,7 @@
 ---
 crate:
   repo: https://github.com/umarphaarook/matrix-rust-sdk
-  rev: 57a5eb52dbc568ea557e63fbb5da145882608a39 # main @ 2026-08-07 + send_file thumbnail + android sdallocx fix
+  rev: 070dea90e76f4f753bcdc5e1224b08d4b58779f2 # main @ 2026-08-07 + send_file thumbnail + android sdallocx fix
   manifestPath: bindings/matrix-sdk-ffi/Cargo.toml
 android:
   cargoExtras: []
