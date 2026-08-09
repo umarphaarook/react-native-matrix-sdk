@@ -64,7 +64,7 @@
     "clean": "del-cli -v android/build example/android/build example/android/app/build example/ios/build lib **/.cxx",
     "prepare": "bob build",
     "release": "release-it",
-    "postinstall": "patch-package && node scripts/download-binaries.js"
+    "postinstall": "patch-package && node scripts/fix-bin-permissions.js && node scripts/download-binaries.js"
   },
   "keywords": [
     "react-native",
@@ -88,11 +88,11 @@
   "devDependencies": {
     "@commitlint/config-conventional": "^17.0.2",
     "@evilmartians/lefthook": "^1.5.0",
-    "@react-native-community/cli": "15.0.1",
-    "@react-native/eslint-config": "0.76.9",
+    "@react-native-community/cli": "20.1.0",
+    "@react-native/eslint-config": "0.86.0",
     "@release-it/conventional-changelog": "^5.0.0",
     "@types/jest": "^29.5.5",
-    "@types/react": "^18.2.44",
+    "@types/react": "^19.2.0",
     "commitlint": "^17.0.2",
     "del-cli": "^5.1.0",
     "eslint": "^8.51.0",
@@ -100,15 +100,15 @@
     "eslint-plugin-prettier": "^5.0.1",
     "jest": "^29.7.0",
     "prettier": "^3.0.3",
-    "react": "18.3.1",
-    "react-native": "0.76.9",
+    "react": "19.2.3",
+    "react-native": "0.86.0",
     "react-native-builder-bob": "^0.31.0",
     "release-it": "^15.0.0",
     "turbo": "^1.10.7",
     "typescript": "^5.2.2"
   },
   "resolutions": {
-    "@types/react": "^18.2.44"
+    "@types/react": "^19.2.0"
   },
   "peerDependencies": {
     "react": "*",
