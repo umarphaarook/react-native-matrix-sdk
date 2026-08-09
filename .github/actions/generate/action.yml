@@ -37,6 +37,13 @@ runs:
         shell: bash
         run: brew install clang-format
 
+      # The example's android/ and ios/ are `expo prebuild` output and are not
+      # checked in, so they have to be generated before anything can write into
+      # them, cache a file from them, or build them.
+      - name: Prebuild the example's native project
+        shell: bash
+        run: yarn example prebuild --platform ${{ inputs.platform }} --no-install
+
       - name: Write .xcode.env.local
         if: ${{ inputs.platform == 'ios' }}
         shell: bash
@@ -62,7 +69,7 @@ runs:
         env:
           EXCLUDE: ${{ inputs.platform == 'android' && 'ios' || 'android' }}
         run: |
-          if [[ -n "$(git status --porcelain | grep -v ". $EXCLUDE" | grep -v swift | grep -v example/ios/Podfile.lock)" ]]; then
+          if [[ -n "$(git status --porcelain | grep -v ". $EXCLUDE" | grep -v swift)" ]]; then
             >&2 echo "Found unexpected changes in repository after generating"
             git status --short
             git diff

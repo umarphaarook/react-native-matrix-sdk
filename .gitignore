@@ -40,6 +40,14 @@ local.properties
 android.iml
 *.aar
 
+# Continuous Native Generation: the example's native projects are `expo prebuild`
+# output, regenerated from app.json + plugins/. Checking them in would let them
+# drift from what consuming apps actually get, which is the whole reason the
+# example exists. Anything that needs to survive a prebuild belongs in a config
+# plugin - see example/plugins/withMatrixCodegen.js.
+example/android/
+example/ios/
+
 # Cocoapods
 example/ios/Pods
 
