@@ -66,3 +66,20 @@ jobs:
       - name: Build example for iOS
         run: |
           yarn turbo run build:ios --cache-dir="${{ env.TURBO_CACHE_DIR }}"
+
+      # Both of these need a built .app on disk, which a turbo cache hit does
+      # not produce.
+      - name: Check the iOS app is shippable
+        if: env.turbo_cache_hit != 1
+        run: yarn example check:ios
+
+      # The simulator is the only thing the debug build above proves. This is
+      # the other half: a Release configuration, so the optimiser and the
+      # linker's dead stripping actually run, and the xcframework's device slice
+      # rather than its simulator slice. Unsigned, because linking is what is
+      # being tested here, not provisioning.
+      - name: Build example for iOS (release, device slice)
+        if: env.turbo_cache_hit != 1
+        run: |
+          yarn example build:ios:device
+          yarn example check:ios:device
