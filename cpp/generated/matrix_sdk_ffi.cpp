@@ -122,6 +122,9 @@ typedef void (*UniffiCallbackInterfaceIgnoredUsersListenerMethod0)(
 typedef void (*UniffiCallbackInterfaceMediaPreviewConfigListenerMethod0)(
     uint64_t uniffi_handle, RustBuffer media_preview_config,
     void *uniffi_out_return, RustCallStatus *rust_call_status);
+typedef void (*UniffiCallbackInterfaceProfileListenerMethod0)(
+    uint64_t uniffi_handle, RustBuffer profile, void *uniffi_out_return,
+    RustCallStatus *rust_call_status);
 typedef void (*UniffiCallbackInterfaceProgressWatcherMethod0)(
     uint64_t uniffi_handle, RustBuffer progress, void *uniffi_out_return,
     RustCallStatus *rust_call_status);
@@ -142,6 +145,9 @@ typedef void (*UniffiCallbackInterfaceBackupStateListenerMethod0)(
     RustCallStatus *rust_call_status);
 typedef void (*UniffiCallbackInterfaceBackupSteadyStateListenerMethod0)(
     uint64_t uniffi_handle, RustBuffer status, void *uniffi_out_return,
+    RustCallStatus *rust_call_status);
+typedef void (*UniffiCallbackInterfaceDehydratedDeviceEventListenerMethod0)(
+    uint64_t uniffi_handle, RustBuffer event, void *uniffi_out_return,
     RustCallStatus *rust_call_status);
 typedef void (*UniffiCallbackInterfaceEnableRecoveryProgressListenerMethod0)(
     uint64_t uniffi_handle, RustBuffer status, void *uniffi_out_return,
@@ -205,6 +211,13 @@ typedef void (*UniffiCallbackInterfaceRoomListServiceStateListenerMethod0)(
 typedef void (
     *UniffiCallbackInterfaceRoomListServiceSyncIndicatorListenerMethod0)(
     uint64_t uniffi_handle, RustBuffer sync_indicator, void *uniffi_out_return,
+    RustCallStatus *rust_call_status);
+typedef void (
+    *UniffiCallbackInterfaceSearchServicePaginationStateListenerMethod0)(
+    uint64_t uniffi_handle, RustBuffer pagination_state,
+    void *uniffi_out_return, RustCallStatus *rust_call_status);
+typedef void (*UniffiCallbackInterfaceSearchServiceResultsListenerMethod0)(
+    uint64_t uniffi_handle, RustBuffer updates, void *uniffi_out_return,
     RustCallStatus *rust_call_status);
 typedef void (
     *UniffiCallbackInterfaceSessionVerificationControllerDelegateMethod0)(
@@ -313,6 +326,11 @@ typedef struct UniffiVTableCallbackInterfaceMediaPreviewConfigListener {
   UniffiCallbackInterfaceClone uniffi_clone;
   UniffiCallbackInterfaceMediaPreviewConfigListenerMethod0 on_change;
 } UniffiVTableCallbackInterfaceMediaPreviewConfigListener;
+typedef struct UniffiVTableCallbackInterfaceProfileListener {
+  UniffiCallbackInterfaceFree uniffi_free;
+  UniffiCallbackInterfaceClone uniffi_clone;
+  UniffiCallbackInterfaceProfileListenerMethod0 on_update;
+} UniffiVTableCallbackInterfaceProfileListener;
 typedef struct UniffiVTableCallbackInterfaceProgressWatcher {
   UniffiCallbackInterfaceFree uniffi_free;
   UniffiCallbackInterfaceClone uniffi_clone;
@@ -348,6 +366,11 @@ typedef struct UniffiVTableCallbackInterfaceBackupSteadyStateListener {
   UniffiCallbackInterfaceClone uniffi_clone;
   UniffiCallbackInterfaceBackupSteadyStateListenerMethod0 on_update;
 } UniffiVTableCallbackInterfaceBackupSteadyStateListener;
+typedef struct UniffiVTableCallbackInterfaceDehydratedDeviceEventListener {
+  UniffiCallbackInterfaceFree uniffi_free;
+  UniffiCallbackInterfaceClone uniffi_clone;
+  UniffiCallbackInterfaceDehydratedDeviceEventListenerMethod0 on_event;
+} UniffiVTableCallbackInterfaceDehydratedDeviceEventListener;
 typedef struct UniffiVTableCallbackInterfaceEnableRecoveryProgressListener {
   UniffiCallbackInterfaceFree uniffi_free;
   UniffiCallbackInterfaceClone uniffi_clone;
@@ -451,6 +474,17 @@ typedef struct
   UniffiCallbackInterfaceClone uniffi_clone;
   UniffiCallbackInterfaceRoomListServiceSyncIndicatorListenerMethod0 on_update;
 } UniffiVTableCallbackInterfaceRoomListServiceSyncIndicatorListener;
+typedef struct
+    UniffiVTableCallbackInterfaceSearchServicePaginationStateListener {
+  UniffiCallbackInterfaceFree uniffi_free;
+  UniffiCallbackInterfaceClone uniffi_clone;
+  UniffiCallbackInterfaceSearchServicePaginationStateListenerMethod0 on_update;
+} UniffiVTableCallbackInterfaceSearchServicePaginationStateListener;
+typedef struct UniffiVTableCallbackInterfaceSearchServiceResultsListener {
+  UniffiCallbackInterfaceFree uniffi_free;
+  UniffiCallbackInterfaceClone uniffi_clone;
+  UniffiCallbackInterfaceSearchServiceResultsListenerMethod0 on_update;
+} UniffiVTableCallbackInterfaceSearchServiceResultsListener;
 typedef struct
     UniffiVTableCallbackInterfaceSessionVerificationControllerDelegate {
   UniffiCallbackInterfaceFree uniffi_free;
@@ -598,6 +632,10 @@ int8_t uniffi_matrix_sdk_ffi_fn_method_client_can_deactivate_account(
     /*handle*/ uint64_t ptr, RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_client_clear_caches(
     /*handle*/ uint64_t ptr, RustBuffer sync_service);
+/*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_client_clear_user_status(
+    /*handle*/ uint64_t ptr);
+/*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_client_content_scanner(
+    /*handle*/ uint64_t ptr);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_client_create_room(
     /*handle*/ uint64_t ptr, RustBuffer request);
 /*handle*/ uint64_t
@@ -617,6 +655,8 @@ uniffi_matrix_sdk_ffi_fn_method_client_enable_all_send_queues(
     /*handle*/ uint64_t ptr, int8_t enable);
 void uniffi_matrix_sdk_ffi_fn_method_client_enable_automatic_backpagination(
     /*handle*/ uint64_t ptr, RustCallStatus *uniffi_out_err);
+void uniffi_matrix_sdk_ffi_fn_method_client_enable_automatic_call_status(
+    /*handle*/ uint64_t ptr, int8_t enabled, RustCallStatus *uniffi_out_err);
 void uniffi_matrix_sdk_ffi_fn_method_client_enable_send_queue_upload_progress(
     /*handle*/ uint64_t ptr, int8_t enable, RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_client_encryption(
@@ -687,7 +727,7 @@ uniffi_matrix_sdk_ffi_fn_method_client_homeserver_login_details(
     /*handle*/ uint64_t ptr);
 /*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_method_client_is_livekit_rtc_supported(
-    /*handle*/ uint64_t ptr);
+    /*handle*/ uint64_t ptr, int8_t fallback_to_well_known);
 /*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_method_client_is_login_with_qr_code_supported(
     /*handle*/ uint64_t ptr);
@@ -697,6 +737,9 @@ uniffi_matrix_sdk_ffi_fn_method_client_is_report_room_api_supported(
 /*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_method_client_is_room_alias_available(
     /*handle*/ uint64_t ptr, RustBuffer alias);
+/*handle*/ uint64_t
+uniffi_matrix_sdk_ffi_fn_method_client_is_user_status_supported(
+    /*handle*/ uint64_t ptr);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_client_join_room_by_id(
     /*handle*/ uint64_t ptr, RustBuffer room_id);
 /*handle*/ uint64_t
@@ -718,6 +761,9 @@ uniffi_matrix_sdk_ffi_fn_method_client_login_with_oauth_callback(
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_client_logout(
     /*handle*/ uint64_t ptr);
 /*handle*/ uint64_t
+uniffi_matrix_sdk_ffi_fn_method_client_mark_all_rooms_as_read(
+    /*handle*/ uint64_t ptr);
+/*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_method_client_new_grant_login_with_qr_code_handler(
     /*handle*/ uint64_t ptr, RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t
@@ -735,6 +781,8 @@ uniffi_matrix_sdk_ffi_fn_method_client_observe_room_account_data_event(
     /*handle*/ uint64_t ptr, RustBuffer room_id, RustBuffer event_type,
     uint64_t listener, RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_client_optimize_stores(
+    /*handle*/ uint64_t ptr);
+/*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_client_pause(
     /*handle*/ uint64_t ptr);
 /*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_method_client_register_notification_handler(
@@ -754,6 +802,8 @@ uniffi_matrix_sdk_ffi_fn_method_client_reset_supported_versions(
     /*handle*/ uint64_t ptr, RustBuffer session);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_client_restore_session_with(
     /*handle*/ uint64_t ptr, RustBuffer session, RustBuffer room_load_settings);
+/*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_client_resume(
+    /*handle*/ uint64_t ptr);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_client_room_alias_exists(
     /*handle*/ uint64_t ptr, RustBuffer room_alias);
 /*handle*/ uint64_t
@@ -773,6 +823,8 @@ RustBuffer uniffi_matrix_sdk_ffi_fn_method_client_session(
     /*handle*/ uint64_t ptr, RustBuffer event_type, RustBuffer content);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_client_set_avatar_url(
     /*handle*/ uint64_t ptr, RustBuffer url);
+/*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_client_set_content_scanner(
+    /*handle*/ uint64_t ptr, RustBuffer content_scanner);
 RustBuffer uniffi_matrix_sdk_ffi_fn_method_client_set_delegate(
     /*handle*/ uint64_t ptr, RustBuffer delegate,
     RustCallStatus *uniffi_out_err);
@@ -787,10 +839,14 @@ uniffi_matrix_sdk_ffi_fn_method_client_set_media_preview_display_policy(
 /*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_method_client_set_media_retention_policy(
     /*handle*/ uint64_t ptr, RustBuffer policy);
+/*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_client_set_presence(
+    /*handle*/ uint64_t ptr, RustBuffer presence, int8_t immediate);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_client_set_pusher(
     /*handle*/ uint64_t ptr, RustBuffer identifiers, RustBuffer kind,
     RustBuffer app_display_name, RustBuffer device_display_name,
-    RustBuffer profile_tag, RustBuffer lang);
+    RustBuffer profile_tag, RustBuffer lang, int8_t append);
+/*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_client_set_user_status(
+    /*handle*/ uint64_t ptr, RustBuffer status);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_client_set_utd_delegate(
     /*handle*/ uint64_t ptr, uint64_t utd_delegate);
 RustBuffer uniffi_matrix_sdk_ffi_fn_method_client_sliding_sync_version(
@@ -812,6 +868,9 @@ uniffi_matrix_sdk_ffi_fn_method_client_subscribe_to_media_preview_config(
 uniffi_matrix_sdk_ffi_fn_method_client_subscribe_to_own_beacon_info_updates(
     /*handle*/ uint64_t ptr, uint64_t listener, RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t
+uniffi_matrix_sdk_ffi_fn_method_client_subscribe_to_own_profile(
+    /*handle*/ uint64_t ptr, uint64_t listener, RustCallStatus *uniffi_out_err);
+/*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_method_client_subscribe_to_room_info(
     /*handle*/ uint64_t ptr, RustBuffer room_id, uint64_t listener);
 /*handle*/ uint64_t
@@ -827,6 +886,8 @@ uniffi_matrix_sdk_ffi_fn_method_client_subscribe_to_send_queue_updates(
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_client_sync_v2(
     /*handle*/ uint64_t ptr, RustBuffer settings, uint64_t listener,
     RustCallStatus *uniffi_out_err);
+/*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_client_tile_server(
+    /*handle*/ uint64_t ptr);
 /*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_method_client_track_recently_visited_room(
     /*handle*/ uint64_t ptr, RustBuffer room);
@@ -848,9 +909,8 @@ RustBuffer uniffi_matrix_sdk_ffi_fn_method_client_user_id_server_name(
     /*handle*/ uint64_t ptr, RustBuffer emoji);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_client_get_recent_emojis(
     /*handle*/ uint64_t ptr);
-/*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_client_search_messages(
-    /*handle*/ uint64_t ptr, RustBuffer query, RustBuffer filter,
-    uint32_t num_results_per_batch);
+/*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_client_search_service(
+    /*handle*/ uint64_t ptr, RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_clone_homeservercapabilities(
     /*handle*/ uint64_t handle, RustCallStatus *uniffi_out_err);
 void uniffi_matrix_sdk_ffi_fn_free_homeservercapabilities(
@@ -989,6 +1049,16 @@ uniffi_matrix_sdk_ffi_fn_method_clientbuilder_threads_enabled(
 uniffi_matrix_sdk_ffi_fn_method_clientbuilder_with_search_index_store(
     /*handle*/ uint64_t ptr, RustBuffer path, RustBuffer password,
     RustCallStatus *uniffi_out_err);
+/*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_clone_contentscanner(
+    /*handle*/ uint64_t handle, RustCallStatus *uniffi_out_err);
+void uniffi_matrix_sdk_ffi_fn_free_contentscanner(
+    /*handle*/ uint64_t handle, RustCallStatus *uniffi_out_err);
+/*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_constructor_contentscanner_new(
+    RustBuffer scanner_url, RustCallStatus *uniffi_out_err);
+/*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_contentscanner_scan(
+    /*handle*/ uint64_t ptr,
+    /*handle*/ uint64_t client,
+    /*handle*/ uint64_t media_source);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_clone_encryption(
     /*handle*/ uint64_t handle, RustCallStatus *uniffi_out_err);
 void uniffi_matrix_sdk_ffi_fn_free_encryption(
@@ -1001,7 +1071,16 @@ RustBuffer uniffi_matrix_sdk_ffi_fn_method_encryption_backup_state(
 /*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_method_encryption_backup_state_listener(
     /*handle*/ uint64_t ptr, uint64_t listener, RustCallStatus *uniffi_out_err);
+/*handle*/ uint64_t
+uniffi_matrix_sdk_ffi_fn_method_encryption_create_dehydrated_device(
+    /*handle*/ uint64_t ptr, RustBuffer display_name, RustBuffer pickle_key);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_encryption_curve25519_key(
+    /*handle*/ uint64_t ptr);
+/*handle*/ uint64_t
+uniffi_matrix_sdk_ffi_fn_method_encryption_dehydrated_device_event_listener(
+    /*handle*/ uint64_t ptr, uint64_t listener, RustCallStatus *uniffi_out_err);
+/*handle*/ uint64_t
+uniffi_matrix_sdk_ffi_fn_method_encryption_delete_dehydrated_device(
     /*handle*/ uint64_t ptr);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_encryption_disable_recovery(
     /*handle*/ uint64_t ptr);
@@ -1019,6 +1098,9 @@ uniffi_matrix_sdk_ffi_fn_method_encryption_has_devices_to_verify_against(
 uniffi_matrix_sdk_ffi_fn_method_encryption_import_secrets_bundle(
     /*handle*/ uint64_t ptr,
     /*handle*/ uint64_t secrets_bundle);
+/*handle*/ uint64_t
+uniffi_matrix_sdk_ffi_fn_method_encryption_is_dehydrated_device_supported(
+    /*handle*/ uint64_t ptr);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_encryption_is_last_device(
     /*handle*/ uint64_t ptr);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_encryption_recover(
@@ -1034,11 +1116,19 @@ RustBuffer uniffi_matrix_sdk_ffi_fn_method_encryption_recovery_state(
 /*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_method_encryption_recovery_state_listener(
     /*handle*/ uint64_t ptr, uint64_t listener, RustCallStatus *uniffi_out_err);
+/*handle*/ uint64_t
+uniffi_matrix_sdk_ffi_fn_method_encryption_rehydrate_dehydrated_device(
+    /*handle*/ uint64_t ptr, RustBuffer pickle_key);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_encryption_reset_identity(
     /*handle*/ uint64_t ptr);
 /*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_method_encryption_reset_recovery_key(
     /*handle*/ uint64_t ptr);
+/*handle*/ uint64_t
+uniffi_matrix_sdk_ffi_fn_method_encryption_start_dehydrated_devices(
+    /*handle*/ uint64_t ptr, RustBuffer recovery_key, RustBuffer settings);
+void uniffi_matrix_sdk_ffi_fn_method_encryption_stop_dehydrated_devices(
+    /*handle*/ uint64_t ptr, RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_encryption_user_identity(
     /*handle*/ uint64_t ptr, RustBuffer user_id, int8_t fallback_to_server);
 RustBuffer uniffi_matrix_sdk_ffi_fn_method_encryption_verification_state(
@@ -1201,6 +1291,24 @@ uniffi_matrix_sdk_ffi_fn_method_notificationsettings_set_user_mention_enabled(
 uniffi_matrix_sdk_ffi_fn_method_notificationsettings_unmute_room(
     /*handle*/ uint64_t ptr, RustBuffer room_id, int8_t is_encrypted,
     int8_t is_one_to_one);
+/*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_clone_passwordstrengthestimator(
+    /*handle*/ uint64_t handle, RustCallStatus *uniffi_out_err);
+void uniffi_matrix_sdk_ffi_fn_free_passwordstrengthestimator(
+    /*handle*/ uint64_t handle, RustCallStatus *uniffi_out_err);
+/*handle*/ uint64_t
+uniffi_matrix_sdk_ffi_fn_constructor_passwordstrengthestimator_new(
+    RustBuffer thresholds, RustCallStatus *uniffi_out_err);
+/*handle*/ uint64_t
+uniffi_matrix_sdk_ffi_fn_constructor_passwordstrengthestimator_with_modern_defaults2025(
+    RustCallStatus *uniffi_out_err);
+/*handle*/ uint64_t
+uniffi_matrix_sdk_ffi_fn_constructor_passwordstrengthestimator_with_zxcvbn_defaults(
+    RustCallStatus *uniffi_out_err);
+RustBuffer uniffi_matrix_sdk_ffi_fn_method_passwordstrengthestimator_estimate(
+    /*handle*/ uint64_t ptr, RustBuffer password, RustBuffer user_inputs,
+    RustCallStatus *uniffi_out_err);
+RustBuffer uniffi_matrix_sdk_ffi_fn_method_passwordstrengthestimator_thresholds(
+    /*handle*/ uint64_t ptr, RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_clone_span(
     /*handle*/ uint64_t handle, RustCallStatus *uniffi_out_err);
 void uniffi_matrix_sdk_ffi_fn_free_span(
@@ -1226,6 +1334,16 @@ void uniffi_matrix_sdk_ffi_fn_free_checkcodesender(
     /*handle*/ uint64_t handle, RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_checkcodesender_send(
     /*handle*/ uint64_t ptr, uint8_t code);
+/*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_clone_continuationmessagesender(
+    /*handle*/ uint64_t handle, RustCallStatus *uniffi_out_err);
+void uniffi_matrix_sdk_ffi_fn_free_continuationmessagesender(
+    /*handle*/ uint64_t handle, RustCallStatus *uniffi_out_err);
+/*handle*/ uint64_t
+uniffi_matrix_sdk_ffi_fn_method_continuationmessagesender_cancel(
+    /*handle*/ uint64_t ptr);
+/*handle*/ uint64_t
+uniffi_matrix_sdk_ffi_fn_method_continuationmessagesender_confirm(
+    /*handle*/ uint64_t ptr);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_clone_grantloginwithqrcodehandler(
     /*handle*/ uint64_t handle, RustCallStatus *uniffi_out_err);
 void uniffi_matrix_sdk_ffi_fn_free_grantloginwithqrcodehandler(
@@ -1296,9 +1414,6 @@ RustBuffer uniffi_matrix_sdk_ffi_fn_method_room_canonical_alias(
     /*handle*/ uint64_t ptr, RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_room_clear_composer_draft(
     /*handle*/ uint64_t ptr, RustBuffer thread_root);
-/*handle*/ uint64_t
-uniffi_matrix_sdk_ffi_fn_method_room_clear_event_cache_storage(
-    /*handle*/ uint64_t ptr);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_room_decline_call(
     /*handle*/ uint64_t ptr, RustBuffer rtc_notification_event_id);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_room_discard_room_key(
@@ -1325,8 +1440,8 @@ uniffi_matrix_sdk_ffi_fn_method_room_fetch_thread_subscription(
     /*handle*/ uint64_t ptr);
 int8_t uniffi_matrix_sdk_ffi_fn_method_room_has_active_room_call(
     /*handle*/ uint64_t ptr, RustCallStatus *uniffi_out_err);
-RustBuffer uniffi_matrix_sdk_ffi_fn_method_room_heroes(
-    /*handle*/ uint64_t ptr, RustCallStatus *uniffi_out_err);
+/*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_room_heroes(
+    /*handle*/ uint64_t ptr);
 RustBuffer uniffi_matrix_sdk_ffi_fn_method_room_id(
     /*handle*/ uint64_t ptr, RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t
@@ -1371,6 +1486,9 @@ uniffi_matrix_sdk_ffi_fn_method_room_live_locations_observer(
     /*handle*/ uint64_t ptr, RustBuffer thread_root);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_room_load_or_fetch_event(
     /*handle*/ uint64_t ptr, RustBuffer event_id);
+/*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_room_load_user_receipt(
+    /*handle*/ uint64_t ptr, RustBuffer receipt_type, RustBuffer thread,
+    RustBuffer user_id);
 /*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_method_room_mark_as_fully_read_unchecked(
     /*handle*/ uint64_t ptr, RustBuffer event_id);
@@ -1431,6 +1549,9 @@ uniffi_matrix_sdk_ffi_fn_method_room_room_events_debug_string(
     /*handle*/ uint64_t ptr, RustBuffer geo_uri);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_room_send_raw(
     /*handle*/ uint64_t ptr, RustBuffer event_type, RustBuffer content);
+/*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_room_send_single_receipt(
+    /*handle*/ uint64_t ptr, RustBuffer receipt_type, RustBuffer thread,
+    RustBuffer event_id);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_room_send_state_event_raw(
     /*handle*/ uint64_t ptr, RustBuffer event_type, RustBuffer state_key,
     RustBuffer content);
@@ -1513,9 +1634,6 @@ uniffi_matrix_sdk_ffi_fn_method_room_update_power_levels_for_users(
 uniffi_matrix_sdk_ffi_fn_method_room_withdraw_verification_and_resend(
     /*handle*/ uint64_t ptr, RustBuffer user_ids,
     /*handle*/ uint64_t send_handle);
-/*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_room_search_messages(
-    /*handle*/ uint64_t ptr, RustBuffer query, uint32_t num_results_per_batch,
-    RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_clone_roommembersiterator(
     /*handle*/ uint64_t handle, RustCallStatus *uniffi_out_err);
 void uniffi_matrix_sdk_ffi_fn_free_roommembersiterator(
@@ -1699,20 +1817,22 @@ RustBuffer uniffi_matrix_sdk_ffi_fn_method_mediasource_to_json(
     /*handle*/ uint64_t ptr, RustCallStatus *uniffi_out_err);
 RustBuffer uniffi_matrix_sdk_ffi_fn_method_mediasource_url(
     /*handle*/ uint64_t ptr, RustCallStatus *uniffi_out_err);
-/*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_clone_globalsearchiterator(
+/*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_clone_searchservice(
     /*handle*/ uint64_t handle, RustCallStatus *uniffi_out_err);
-void uniffi_matrix_sdk_ffi_fn_free_globalsearchiterator(
+void uniffi_matrix_sdk_ffi_fn_free_searchservice(
     /*handle*/ uint64_t handle, RustCallStatus *uniffi_out_err);
-/*handle*/ uint64_t
-uniffi_matrix_sdk_ffi_fn_method_globalsearchiterator_next_events(
+/*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_searchservice_paginate(
     /*handle*/ uint64_t ptr);
-/*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_clone_roomsearchiterator(
-    /*handle*/ uint64_t handle, RustCallStatus *uniffi_out_err);
-void uniffi_matrix_sdk_ffi_fn_free_roomsearchiterator(
-    /*handle*/ uint64_t handle, RustCallStatus *uniffi_out_err);
+RustBuffer uniffi_matrix_sdk_ffi_fn_method_searchservice_pagination_state(
+    /*handle*/ uint64_t ptr, RustCallStatus *uniffi_out_err);
+/*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_searchservice_set_query(
+    /*handle*/ uint64_t ptr, RustBuffer query);
 /*handle*/ uint64_t
-uniffi_matrix_sdk_ffi_fn_method_roomsearchiterator_next_events(
-    /*handle*/ uint64_t ptr);
+uniffi_matrix_sdk_ffi_fn_method_searchservice_subscribe_to_pagination_state_updates(
+    /*handle*/ uint64_t ptr, uint64_t listener, RustCallStatus *uniffi_out_err);
+/*handle*/ uint64_t
+uniffi_matrix_sdk_ffi_fn_method_searchservice_subscribe_to_results(
+    /*handle*/ uint64_t ptr, uint64_t listener);
 /*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_clone_sessionverificationcontroller(
     /*handle*/ uint64_t handle, RustCallStatus *uniffi_out_err);
@@ -1771,8 +1891,8 @@ RustBuffer uniffi_matrix_sdk_ffi_fn_method_spaceroomlist_pagination_state(
     /*handle*/ uint64_t ptr, RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_spaceroomlist_reset(
     /*handle*/ uint64_t ptr);
-RustBuffer uniffi_matrix_sdk_ffi_fn_method_spaceroomlist_rooms(
-    /*handle*/ uint64_t ptr, RustCallStatus *uniffi_out_err);
+/*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_spaceroomlist_rooms(
+    /*handle*/ uint64_t ptr);
 RustBuffer uniffi_matrix_sdk_ffi_fn_method_spaceroomlist_space(
     /*handle*/ uint64_t ptr, RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t
@@ -1780,7 +1900,7 @@ uniffi_matrix_sdk_ffi_fn_method_spaceroomlist_subscribe_to_pagination_state_upda
     /*handle*/ uint64_t ptr, uint64_t listener, RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_method_spaceroomlist_subscribe_to_room_update(
-    /*handle*/ uint64_t ptr, uint64_t listener, RustCallStatus *uniffi_out_err);
+    /*handle*/ uint64_t ptr, uint64_t listener);
 /*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_method_spaceroomlist_subscribe_to_space_updates(
     /*handle*/ uint64_t ptr, uint64_t listener, RustCallStatus *uniffi_out_err);
@@ -1832,6 +1952,8 @@ uniffi_matrix_sdk_ffi_fn_method_sqlitestorebuilder_cache_size(
 /*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_method_sqlitestorebuilder_journal_size_limit(
     /*handle*/ uint64_t ptr, RustBuffer limit, RustCallStatus *uniffi_out_err);
+/*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_sqlitestorebuilder_key(
+    /*handle*/ uint64_t ptr, RustBuffer key, RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_method_sqlitestorebuilder_passphrase(
     /*handle*/ uint64_t ptr, RustBuffer passphrase,
@@ -1866,6 +1988,13 @@ void uniffi_matrix_sdk_ffi_fn_free_syncservicebuilder(
     /*handle*/ uint64_t ptr);
 /*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_method_syncservicebuilder_with_offline_mode(
+    /*handle*/ uint64_t ptr, RustCallStatus *uniffi_out_err);
+/*handle*/ uint64_t
+uniffi_matrix_sdk_ffi_fn_method_syncservicebuilder_with_parent_span(
+    /*handle*/ uint64_t ptr,
+    /*handle*/ uint64_t span, RustCallStatus *uniffi_out_err);
+/*handle*/ uint64_t
+uniffi_matrix_sdk_ffi_fn_method_syncservicebuilder_with_profiles_extension(
     /*handle*/ uint64_t ptr, RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_method_syncservicebuilder_with_room_list_connection_id(
@@ -1969,7 +2098,7 @@ void uniffi_matrix_sdk_ffi_fn_method_timeline_retry_decryption(
     RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_timeline_send_file(
     /*handle*/ uint64_t ptr, RustBuffer params, RustBuffer file_info,
-    RustCallStatus *uniffi_out_err);
+    RustBuffer thumbnail_source, RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_timeline_send_image(
     /*handle*/ uint64_t ptr, RustBuffer params, RustBuffer thumbnail_source,
     RustBuffer image_info, RustCallStatus *uniffi_out_err);
@@ -1991,6 +2120,10 @@ void uniffi_matrix_sdk_ffi_fn_method_timeline_retry_decryption(
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_timeline_send_voice_message(
     /*handle*/ uint64_t ptr, RustBuffer params, RustBuffer audio_info,
     RustBuffer waveform, RustCallStatus *uniffi_out_err);
+/*handle*/ uint64_t
+uniffi_matrix_sdk_ffi_fn_method_timeline_send_with_extra_content(
+    /*handle*/ uint64_t ptr,
+    /*handle*/ uint64_t msg, RustBuffer extra_content_json);
 /*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_method_timeline_subscribe_to_back_pagination_status(
     /*handle*/ uint64_t ptr, uint64_t listener);
@@ -2100,6 +2233,8 @@ void uniffi_matrix_sdk_ffi_fn_init_callback_vtable_ignoreduserslistener(
     UniffiVTableCallbackInterfaceIgnoredUsersListener *vtable);
 void uniffi_matrix_sdk_ffi_fn_init_callback_vtable_mediapreviewconfiglistener(
     UniffiVTableCallbackInterfaceMediaPreviewConfigListener *vtable);
+void uniffi_matrix_sdk_ffi_fn_init_callback_vtable_profilelistener(
+    UniffiVTableCallbackInterfaceProfileListener *vtable);
 void uniffi_matrix_sdk_ffi_fn_init_callback_vtable_progresswatcher(
     UniffiVTableCallbackInterfaceProgressWatcher *vtable);
 void uniffi_matrix_sdk_ffi_fn_init_callback_vtable_roomaccountdatalistener(
@@ -2114,6 +2249,8 @@ void uniffi_matrix_sdk_ffi_fn_init_callback_vtable_backupstatelistener(
     UniffiVTableCallbackInterfaceBackupStateListener *vtable);
 void uniffi_matrix_sdk_ffi_fn_init_callback_vtable_backupsteadystatelistener(
     UniffiVTableCallbackInterfaceBackupSteadyStateListener *vtable);
+void uniffi_matrix_sdk_ffi_fn_init_callback_vtable_dehydrateddeviceeventlistener(
+    UniffiVTableCallbackInterfaceDehydratedDeviceEventListener *vtable);
 void uniffi_matrix_sdk_ffi_fn_init_callback_vtable_enablerecoveryprogresslistener(
     UniffiVTableCallbackInterfaceEnableRecoveryProgressListener *vtable);
 void uniffi_matrix_sdk_ffi_fn_init_callback_vtable_recoverystatelistener(
@@ -2154,6 +2291,10 @@ void uniffi_matrix_sdk_ffi_fn_init_callback_vtable_roomlistservicestatelistener(
     UniffiVTableCallbackInterfaceRoomListServiceStateListener *vtable);
 void uniffi_matrix_sdk_ffi_fn_init_callback_vtable_roomlistservicesyncindicatorlistener(
     UniffiVTableCallbackInterfaceRoomListServiceSyncIndicatorListener *vtable);
+void uniffi_matrix_sdk_ffi_fn_init_callback_vtable_searchservicepaginationstatelistener(
+    UniffiVTableCallbackInterfaceSearchServicePaginationStateListener *vtable);
+void uniffi_matrix_sdk_ffi_fn_init_callback_vtable_searchserviceresultslistener(
+    UniffiVTableCallbackInterfaceSearchServiceResultsListener *vtable);
 void uniffi_matrix_sdk_ffi_fn_init_callback_vtable_sessionverificationcontrollerdelegate(
     UniffiVTableCallbackInterfaceSessionVerificationControllerDelegate *vtable);
 void uniffi_matrix_sdk_ffi_fn_init_callback_vtable_spaceroomlistentrieslistener(
@@ -2182,11 +2323,11 @@ void uniffi_matrix_sdk_ffi_fn_init_callback_vtable_unabletodecryptdelegate(
     UniffiVTableCallbackInterfaceUnableToDecryptDelegate *vtable);
 void uniffi_matrix_sdk_ffi_fn_init_callback_vtable_widgetcapabilitiesprovider(
     UniffiVTableCallbackInterfaceWidgetCapabilitiesProvider *vtable);
-int8_t uniffi_matrix_sdk_ffi_fn_method_timelineeventtype_uniffi_trait_eq_eq(
+int8_t uniffi_matrix_sdk_ffi_fn_method_ffitimelineeventtype_uniffi_trait_eq_eq(
     RustBuffer ptr, RustBuffer other, RustCallStatus *uniffi_out_err);
-int8_t uniffi_matrix_sdk_ffi_fn_method_timelineeventtype_uniffi_trait_eq_ne(
+int8_t uniffi_matrix_sdk_ffi_fn_method_ffitimelineeventtype_uniffi_trait_eq_ne(
     RustBuffer ptr, RustBuffer other, RustCallStatus *uniffi_out_err);
-uint64_t uniffi_matrix_sdk_ffi_fn_method_timelineeventtype_uniffi_trait_hash(
+uint64_t uniffi_matrix_sdk_ffi_fn_method_ffitimelineeventtype_uniffi_trait_hash(
     RustBuffer ptr, RustCallStatus *uniffi_out_err);
 int8_t uniffi_matrix_sdk_ffi_fn_method_tagname_uniffi_trait_eq_eq(
     RustBuffer ptr, RustBuffer other, RustCallStatus *uniffi_out_err);
@@ -2433,6 +2574,8 @@ uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_await_room_remote_echo();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_cached_avatar_url();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_can_deactivate_account();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_clear_caches();
+uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_clear_user_status();
+uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_content_scanner();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_create_room();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_custom_login_with_jwt();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_deactivate_account();
@@ -2442,6 +2585,8 @@ uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_display_name();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_enable_all_send_queues();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_client_enable_automatic_backpagination();
+uint16_t
+uniffi_matrix_sdk_ffi_checksum_method_client_enable_automatic_call_status();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_client_enable_send_queue_upload_progress();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_encryption();
@@ -2485,6 +2630,8 @@ uniffi_matrix_sdk_ffi_checksum_method_client_is_login_with_qr_code_supported();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_client_is_report_room_api_supported();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_is_room_alias_available();
+uint16_t
+uniffi_matrix_sdk_ffi_checksum_method_client_is_user_status_supported();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_join_room_by_id();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_client_join_room_by_id_or_alias();
@@ -2494,6 +2641,7 @@ uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_login_with_email();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_client_login_with_oauth_callback();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_logout();
+uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_mark_all_rooms_as_read();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_client_new_grant_login_with_qr_code_handler();
 uint16_t
@@ -2504,6 +2652,7 @@ uniffi_matrix_sdk_ffi_checksum_method_client_observe_account_data_event();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_client_observe_room_account_data_event();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_optimize_stores();
+uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_pause();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_client_register_notification_handler();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_remove_avatar();
@@ -2514,6 +2663,7 @@ uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_reset_well_known();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_resolve_room_alias();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_restore_session();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_restore_session_with();
+uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_resume();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_room_alias_exists();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_room_directory_search();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_rooms();
@@ -2523,6 +2673,7 @@ uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_server_vendor_info();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_session();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_set_account_data();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_set_avatar_url();
+uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_set_content_scanner();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_set_delegate();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_set_display_name();
 uint16_t
@@ -2531,7 +2682,9 @@ uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_client_set_media_preview_display_policy();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_client_set_media_retention_policy();
+uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_set_presence();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_set_pusher();
+uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_set_user_status();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_set_utd_delegate();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_sliding_sync_version();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_space_service();
@@ -2544,6 +2697,8 @@ uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_client_subscribe_to_media_preview_config();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_client_subscribe_to_own_beacon_info_updates();
+uint16_t
+uniffi_matrix_sdk_ffi_checksum_method_client_subscribe_to_own_profile();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_subscribe_to_room_info();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_client_subscribe_to_send_queue_status();
@@ -2552,6 +2707,7 @@ uniffi_matrix_sdk_ffi_checksum_method_client_subscribe_to_send_queue_updates();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_sync_once_v2();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_sync_service();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_sync_v2();
+uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_tile_server();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_client_track_recently_visited_room();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_unignore_user();
@@ -2562,7 +2718,7 @@ uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_user_id();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_user_id_server_name();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_add_recent_emoji();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_get_recent_emojis();
-uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_search_messages();
+uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_search_service();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_homeservercapabilities_can_change_avatar();
 uint16_t
@@ -2625,12 +2781,19 @@ uint16_t uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_user_agent();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_username();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_with_search_index_store();
+uint16_t uniffi_matrix_sdk_ffi_checksum_method_contentscanner_scan();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_encryption_backup_exists_on_server();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_encryption_backup_state();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_encryption_backup_state_listener();
+uint16_t
+uniffi_matrix_sdk_ffi_checksum_method_encryption_create_dehydrated_device();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_encryption_curve25519_key();
+uint16_t
+uniffi_matrix_sdk_ffi_checksum_method_encryption_dehydrated_device_event_listener();
+uint16_t
+uniffi_matrix_sdk_ffi_checksum_method_encryption_delete_dehydrated_device();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_encryption_disable_recovery();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_encryption_ed25519_key();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_encryption_enable_backups();
@@ -2639,6 +2802,8 @@ uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_encryption_has_devices_to_verify_against();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_encryption_import_secrets_bundle();
+uint16_t
+uniffi_matrix_sdk_ffi_checksum_method_encryption_is_dehydrated_device_supported();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_encryption_is_last_device();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_encryption_recover();
 uint16_t
@@ -2647,8 +2812,14 @@ uint16_t uniffi_matrix_sdk_ffi_checksum_method_encryption_recover_and_reset();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_encryption_recovery_state();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_encryption_recovery_state_listener();
+uint16_t
+uniffi_matrix_sdk_ffi_checksum_method_encryption_rehydrate_dehydrated_device();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_encryption_reset_identity();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_encryption_reset_recovery_key();
+uint16_t
+uniffi_matrix_sdk_ffi_checksum_method_encryption_start_dehydrated_devices();
+uint16_t
+uniffi_matrix_sdk_ffi_checksum_method_encryption_stop_dehydrated_devices();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_encryption_user_identity();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_encryption_verification_state();
 uint16_t
@@ -2728,10 +2899,18 @@ uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_notificationsettings_set_user_mention_enabled();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_notificationsettings_unmute_room();
+uint16_t
+uniffi_matrix_sdk_ffi_checksum_method_passwordstrengthestimator_estimate();
+uint16_t
+uniffi_matrix_sdk_ffi_checksum_method_passwordstrengthestimator_thresholds();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_span_enter();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_span_exit();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_span_is_none();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_checkcodesender_send();
+uint16_t
+uniffi_matrix_sdk_ffi_checksum_method_continuationmessagesender_cancel();
+uint16_t
+uniffi_matrix_sdk_ffi_checksum_method_continuationmessagesender_confirm();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_grantloginwithqrcodehandler_generate();
 uint16_t
@@ -2758,7 +2937,6 @@ uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_avatar_url();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_ban_user();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_canonical_alias();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_clear_composer_draft();
-uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_clear_event_cache_storage();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_decline_call();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_discard_room_key();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_display_name();
@@ -2793,6 +2971,7 @@ uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_leave();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_live_locations_observer();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_load_composer_draft();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_load_or_fetch_event();
+uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_load_user_receipt();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_room_mark_as_fully_read_unchecked();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_mark_as_read();
@@ -2823,6 +3002,7 @@ uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_room_info();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_save_composer_draft();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_send_live_location();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_send_raw();
+uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_send_single_receipt();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_send_state_event_raw();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_set_is_favourite();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_set_is_low_priority();
@@ -2864,7 +3044,6 @@ uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_update_room_visibility();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_upload_avatar();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_room_withdraw_verification_and_resend();
-uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_search_messages();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_roommembersiterator_len();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_roommembersiterator_next_chunk();
 uint16_t
@@ -2946,9 +3125,13 @@ uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_roompreview_own_membership_details();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_mediasource_to_json();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_mediasource_url();
+uint16_t uniffi_matrix_sdk_ffi_checksum_method_searchservice_paginate();
+uint16_t uniffi_matrix_sdk_ffi_checksum_method_searchservice_pagination_state();
+uint16_t uniffi_matrix_sdk_ffi_checksum_method_searchservice_set_query();
 uint16_t
-uniffi_matrix_sdk_ffi_checksum_method_globalsearchiterator_next_events();
-uint16_t uniffi_matrix_sdk_ffi_checksum_method_roomsearchiterator_next_events();
+uniffi_matrix_sdk_ffi_checksum_method_searchservice_subscribe_to_pagination_state_updates();
+uint16_t
+uniffi_matrix_sdk_ffi_checksum_method_searchservice_subscribe_to_results();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_sessionverificationcontroller_accept_verification_request();
 uint16_t
@@ -3004,6 +3187,7 @@ uniffi_matrix_sdk_ffi_checksum_method_spaceservice_top_level_joined_spaces();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_sqlitestorebuilder_cache_size();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_sqlitestorebuilder_journal_size_limit();
+uint16_t uniffi_matrix_sdk_ffi_checksum_method_sqlitestorebuilder_key();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_sqlitestorebuilder_passphrase();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_sqlitestorebuilder_pool_max_size();
@@ -3017,6 +3201,10 @@ uint16_t uniffi_matrix_sdk_ffi_checksum_method_syncservice_stop();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_syncservicebuilder_finish();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_syncservicebuilder_with_offline_mode();
+uint16_t
+uniffi_matrix_sdk_ffi_checksum_method_syncservicebuilder_with_parent_span();
+uint16_t
+uniffi_matrix_sdk_ffi_checksum_method_syncservicebuilder_with_profiles_extension();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_syncservicebuilder_with_room_list_connection_id();
 uint16_t
@@ -3070,6 +3258,8 @@ uint16_t uniffi_matrix_sdk_ffi_checksum_method_timeline_send_reply();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_timeline_send_video();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_timeline_send_voice_message();
 uint16_t
+uniffi_matrix_sdk_ffi_checksum_method_timeline_send_with_extra_content();
+uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_timeline_subscribe_to_back_pagination_status();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_timeline_toggle_reaction();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_timeline_unpin_event();
@@ -3097,10 +3287,17 @@ uint16_t uniffi_matrix_sdk_ffi_checksum_method_widgetdriver_run();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_widgetdriverhandle_recv();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_widgetdriverhandle_send();
 uint16_t uniffi_matrix_sdk_ffi_checksum_constructor_clientbuilder_new();
+uint16_t uniffi_matrix_sdk_ffi_checksum_constructor_contentscanner_new();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_constructor_secretsbundlewithuserid_from_database();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_constructor_secretsbundlewithuserid_from_str();
+uint16_t
+uniffi_matrix_sdk_ffi_checksum_constructor_passwordstrengthestimator_new();
+uint16_t
+uniffi_matrix_sdk_ffi_checksum_constructor_passwordstrengthestimator_with_modern_defaults2025();
+uint16_t
+uniffi_matrix_sdk_ffi_checksum_constructor_passwordstrengthestimator_with_zxcvbn_defaults();
 uint16_t uniffi_matrix_sdk_ffi_checksum_constructor_span_current();
 uint16_t uniffi_matrix_sdk_ffi_checksum_constructor_span_new();
 uint16_t uniffi_matrix_sdk_ffi_checksum_constructor_span_new_bridge_span();
@@ -3131,6 +3328,7 @@ uniffi_matrix_sdk_ffi_checksum_method_duplicatekeyuploaderrorlistener_on_duplica
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_ignoreduserslistener_call();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_mediapreviewconfiglistener_on_change();
+uint16_t uniffi_matrix_sdk_ffi_checksum_method_profilelistener_on_update();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_progresswatcher_transmission_progress();
 uint16_t
@@ -3144,6 +3342,8 @@ uniffi_matrix_sdk_ffi_checksum_method_syncnotificationlistener_on_notification()
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_backupstatelistener_on_update();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_backupsteadystatelistener_on_update();
+uint16_t
+uniffi_matrix_sdk_ffi_checksum_method_dehydrateddeviceeventlistener_on_event();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_enablerecoveryprogresslistener_on_update();
 uint16_t
@@ -3180,6 +3380,10 @@ uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_roomlistservicestatelistener_on_update();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_roomlistservicesyncindicatorlistener_on_update();
+uint16_t
+uniffi_matrix_sdk_ffi_checksum_method_searchservicepaginationstatelistener_on_update();
+uint16_t
+uniffi_matrix_sdk_ffi_checksum_method_searchserviceresultslistener_on_update();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_sessionverificationcontrollerdelegate_did_receive_verification_request();
 uint16_t
@@ -4446,6 +4650,118 @@ static void cleanup() {
   // uniffi::matrix_sdk_ffi::st::vtablecallbackinterfacemediapreviewconfiglistener::vtablecallbackinterfacemediapreviewconfiglistener::free
 
 // Callback function:
+// uniffi::matrix_sdk_ffi::st::vtablecallbackinterfaceprofilelistener::vtablecallbackinterfaceprofilelistener::free::UniffiCallbackInterfaceFree
+//
+// We have the following constraints:
+// - we need to pass a function pointer to Rust.
+// - we need a jsi::Runtime and jsi::Function to call into JS.
+// - function pointers can't store state, so we can't use a lamda.
+//
+// For this, we store a lambda as a global, as `rsLambda`. The `callback`
+// function calls the lambda, which itself calls the `body` which then calls
+// into JS.
+//
+// We then give the `callback` function pointer to Rust which will call the
+// lambda sometime in the future.
+namespace uniffi::matrix_sdk_ffi::st::vtablecallbackinterfaceprofilelistener::
+    vtablecallbackinterfaceprofilelistener::free {
+using namespace facebook;
+
+// We need to store a lambda in a global so we can call it from
+// a function pointer. The function pointer is passed to Rust.
+static std::function<void(uint64_t)> rsLambda = nullptr;
+
+// This is the main body of the callback. It's called from the lambda,
+// which itself is called from the callback function which is passed to Rust.
+static void body(jsi::Runtime &rt,
+                 std::shared_ptr<uniffi_runtime::UniffiCallInvoker> callInvoker,
+                 std::shared_ptr<jsi::Value> callbackValue,
+                 uint64_t rs_handle) {
+
+  // Convert the arguments from Rust, into jsi::Values.
+  // We'll use the Bridging class to do this…
+  auto js_handle =
+      uniffi_jsi::Bridging<uint64_t>::toJs(rt, callInvoker, rs_handle);
+
+  // Now we are ready to call the callback.
+  // We are already on the JS thread, because this `body` function was
+  // invoked from the CallInvoker.
+  try {
+    // Getting the callback function
+    auto cb = callbackValue->asObject(rt).asFunction(rt);
+    auto uniffiResult = cb.call(rt, js_handle);
+
+  } catch (const jsi::JSError &error) {
+    std::cout << "Error in callback UniffiCallbackInterfaceFree: "
+              << error.what() << std::endl;
+    throw error;
+  }
+}
+
+static void callback(uint64_t rs_handle) {
+  // If the runtime has shutdown, then there is no point in trying to
+  // call into Javascript. BUT how do we tell if the runtime has shutdown?
+  //
+  // Answer: the module destructor calls into callback `cleanup` method,
+  // which nulls out the rsLamda.
+  //
+  // If rsLamda is null, then there is no runtime to call into.
+  if (rsLambda == nullptr) {
+    // This only occurs when destructors are calling into Rust free/drop,
+    // which causes the JS callback to be dropped.
+    return;
+  }
+
+  // The runtime, the actual callback jsi::funtion, and the callInvoker
+  // are all in the lambda.
+  rsLambda(rs_handle);
+}
+
+[[maybe_unused]] static UniffiCallbackInterfaceFree
+makeCallbackFunction( // uniffi::matrix_sdk_ffi::st::vtablecallbackinterfaceprofilelistener::vtablecallbackinterfaceprofilelistener::free
+    jsi::Runtime &rt,
+    std::shared_ptr<uniffi_runtime::UniffiCallInvoker> callInvoker,
+    const jsi::Value &value) {
+  if (rsLambda != nullptr) {
+    // `makeCallbackFunction` is called in two circumstances:
+    //
+    // 1. at startup, when initializing callback interface vtables.
+    // 2. when polling futures. This happens at least once per future that is
+    //    exposed to Javascript. We know that this is always the same function,
+    //    `uniffiFutureContinuationCallback` in `async-rust-calls.ts`.
+    //
+    // We can therefore return the callback function without making anything
+    // new if we've been initialized already.
+    return callback;
+  }
+  auto callbackFunction = value.asObject(rt).asFunction(rt);
+  auto callbackValue = std::make_shared<jsi::Value>(rt, callbackFunction);
+  rsLambda = [&rt, callInvoker, callbackValue](uint64_t rs_handle) {
+    // We immediately make a lambda which will do the work of transforming the
+    // arguments into JSI values and calling the callback.
+    uniffi_runtime::UniffiCallFunc jsLambda =
+        [callInvoker, callbackValue, rs_handle](jsi::Runtime &rt) mutable {
+          body(rt, callInvoker, callbackValue, rs_handle);
+        };
+    // We'll then call that lambda from the callInvoker which will
+    // look after calling it on the correct thread.
+
+    callInvoker->invokeNonBlocking(rt, jsLambda);
+  };
+  return callback;
+}
+
+// This method is called from the destructor of NativeMatrixSdkFfi, which only
+// happens when the jsi::Runtime is being destroyed.
+static void cleanup() {
+  // The lambda holds a reference to the the Runtime, so when this is nulled
+  // out, then the pointer will no longer be left dangling.
+  rsLambda = nullptr;
+}
+} // namespace
+  // uniffi::matrix_sdk_ffi::st::vtablecallbackinterfaceprofilelistener::vtablecallbackinterfaceprofilelistener::free
+
+// Callback function:
 // uniffi::matrix_sdk_ffi::st::vtablecallbackinterfaceprogresswatcher::vtablecallbackinterfaceprogresswatcher::free::UniffiCallbackInterfaceFree
 //
 // We have the following constraints:
@@ -5234,6 +5550,119 @@ static void cleanup() {
 }
 } // namespace
   // uniffi::matrix_sdk_ffi::st::vtablecallbackinterfacebackupsteadystatelistener::vtablecallbackinterfacebackupsteadystatelistener::free
+
+// Callback function:
+// uniffi::matrix_sdk_ffi::st::vtablecallbackinterfacedehydrateddeviceeventlistener::vtablecallbackinterfacedehydrateddeviceeventlistener::free::UniffiCallbackInterfaceFree
+//
+// We have the following constraints:
+// - we need to pass a function pointer to Rust.
+// - we need a jsi::Runtime and jsi::Function to call into JS.
+// - function pointers can't store state, so we can't use a lamda.
+//
+// For this, we store a lambda as a global, as `rsLambda`. The `callback`
+// function calls the lambda, which itself calls the `body` which then calls
+// into JS.
+//
+// We then give the `callback` function pointer to Rust which will call the
+// lambda sometime in the future.
+namespace uniffi::matrix_sdk_ffi::st::
+    vtablecallbackinterfacedehydrateddeviceeventlistener::
+        vtablecallbackinterfacedehydrateddeviceeventlistener::free {
+using namespace facebook;
+
+// We need to store a lambda in a global so we can call it from
+// a function pointer. The function pointer is passed to Rust.
+static std::function<void(uint64_t)> rsLambda = nullptr;
+
+// This is the main body of the callback. It's called from the lambda,
+// which itself is called from the callback function which is passed to Rust.
+static void body(jsi::Runtime &rt,
+                 std::shared_ptr<uniffi_runtime::UniffiCallInvoker> callInvoker,
+                 std::shared_ptr<jsi::Value> callbackValue,
+                 uint64_t rs_handle) {
+
+  // Convert the arguments from Rust, into jsi::Values.
+  // We'll use the Bridging class to do this…
+  auto js_handle =
+      uniffi_jsi::Bridging<uint64_t>::toJs(rt, callInvoker, rs_handle);
+
+  // Now we are ready to call the callback.
+  // We are already on the JS thread, because this `body` function was
+  // invoked from the CallInvoker.
+  try {
+    // Getting the callback function
+    auto cb = callbackValue->asObject(rt).asFunction(rt);
+    auto uniffiResult = cb.call(rt, js_handle);
+
+  } catch (const jsi::JSError &error) {
+    std::cout << "Error in callback UniffiCallbackInterfaceFree: "
+              << error.what() << std::endl;
+    throw error;
+  }
+}
+
+static void callback(uint64_t rs_handle) {
+  // If the runtime has shutdown, then there is no point in trying to
+  // call into Javascript. BUT how do we tell if the runtime has shutdown?
+  //
+  // Answer: the module destructor calls into callback `cleanup` method,
+  // which nulls out the rsLamda.
+  //
+  // If rsLamda is null, then there is no runtime to call into.
+  if (rsLambda == nullptr) {
+    // This only occurs when destructors are calling into Rust free/drop,
+    // which causes the JS callback to be dropped.
+    return;
+  }
+
+  // The runtime, the actual callback jsi::funtion, and the callInvoker
+  // are all in the lambda.
+  rsLambda(rs_handle);
+}
+
+[[maybe_unused]] static UniffiCallbackInterfaceFree
+makeCallbackFunction( // uniffi::matrix_sdk_ffi::st::vtablecallbackinterfacedehydrateddeviceeventlistener::vtablecallbackinterfacedehydrateddeviceeventlistener::free
+    jsi::Runtime &rt,
+    std::shared_ptr<uniffi_runtime::UniffiCallInvoker> callInvoker,
+    const jsi::Value &value) {
+  if (rsLambda != nullptr) {
+    // `makeCallbackFunction` is called in two circumstances:
+    //
+    // 1. at startup, when initializing callback interface vtables.
+    // 2. when polling futures. This happens at least once per future that is
+    //    exposed to Javascript. We know that this is always the same function,
+    //    `uniffiFutureContinuationCallback` in `async-rust-calls.ts`.
+    //
+    // We can therefore return the callback function without making anything
+    // new if we've been initialized already.
+    return callback;
+  }
+  auto callbackFunction = value.asObject(rt).asFunction(rt);
+  auto callbackValue = std::make_shared<jsi::Value>(rt, callbackFunction);
+  rsLambda = [&rt, callInvoker, callbackValue](uint64_t rs_handle) {
+    // We immediately make a lambda which will do the work of transforming the
+    // arguments into JSI values and calling the callback.
+    uniffi_runtime::UniffiCallFunc jsLambda =
+        [callInvoker, callbackValue, rs_handle](jsi::Runtime &rt) mutable {
+          body(rt, callInvoker, callbackValue, rs_handle);
+        };
+    // We'll then call that lambda from the callInvoker which will
+    // look after calling it on the correct thread.
+
+    callInvoker->invokeNonBlocking(rt, jsLambda);
+  };
+  return callback;
+}
+
+// This method is called from the destructor of NativeMatrixSdkFfi, which only
+// happens when the jsi::Runtime is being destroyed.
+static void cleanup() {
+  // The lambda holds a reference to the the Runtime, so when this is nulled
+  // out, then the pointer will no longer be left dangling.
+  rsLambda = nullptr;
+}
+} // namespace
+  // uniffi::matrix_sdk_ffi::st::vtablecallbackinterfacedehydrateddeviceeventlistener::vtablecallbackinterfacedehydrateddeviceeventlistener::free
 
 // Callback function:
 // uniffi::matrix_sdk_ffi::st::vtablecallbackinterfaceenablerecoveryprogresslistener::vtablecallbackinterfaceenablerecoveryprogresslistener::free::UniffiCallbackInterfaceFree
@@ -7492,6 +7921,232 @@ static void cleanup() {
 }
 } // namespace
   // uniffi::matrix_sdk_ffi::st::vtablecallbackinterfaceroomlistservicesyncindicatorlistener::vtablecallbackinterfaceroomlistservicesyncindicatorlistener::free
+
+// Callback function:
+// uniffi::matrix_sdk_ffi::st::vtablecallbackinterfacesearchservicepaginationstatelistener::vtablecallbackinterfacesearchservicepaginationstatelistener::free::UniffiCallbackInterfaceFree
+//
+// We have the following constraints:
+// - we need to pass a function pointer to Rust.
+// - we need a jsi::Runtime and jsi::Function to call into JS.
+// - function pointers can't store state, so we can't use a lamda.
+//
+// For this, we store a lambda as a global, as `rsLambda`. The `callback`
+// function calls the lambda, which itself calls the `body` which then calls
+// into JS.
+//
+// We then give the `callback` function pointer to Rust which will call the
+// lambda sometime in the future.
+namespace uniffi::matrix_sdk_ffi::st::
+    vtablecallbackinterfacesearchservicepaginationstatelistener::
+        vtablecallbackinterfacesearchservicepaginationstatelistener::free {
+using namespace facebook;
+
+// We need to store a lambda in a global so we can call it from
+// a function pointer. The function pointer is passed to Rust.
+static std::function<void(uint64_t)> rsLambda = nullptr;
+
+// This is the main body of the callback. It's called from the lambda,
+// which itself is called from the callback function which is passed to Rust.
+static void body(jsi::Runtime &rt,
+                 std::shared_ptr<uniffi_runtime::UniffiCallInvoker> callInvoker,
+                 std::shared_ptr<jsi::Value> callbackValue,
+                 uint64_t rs_handle) {
+
+  // Convert the arguments from Rust, into jsi::Values.
+  // We'll use the Bridging class to do this…
+  auto js_handle =
+      uniffi_jsi::Bridging<uint64_t>::toJs(rt, callInvoker, rs_handle);
+
+  // Now we are ready to call the callback.
+  // We are already on the JS thread, because this `body` function was
+  // invoked from the CallInvoker.
+  try {
+    // Getting the callback function
+    auto cb = callbackValue->asObject(rt).asFunction(rt);
+    auto uniffiResult = cb.call(rt, js_handle);
+
+  } catch (const jsi::JSError &error) {
+    std::cout << "Error in callback UniffiCallbackInterfaceFree: "
+              << error.what() << std::endl;
+    throw error;
+  }
+}
+
+static void callback(uint64_t rs_handle) {
+  // If the runtime has shutdown, then there is no point in trying to
+  // call into Javascript. BUT how do we tell if the runtime has shutdown?
+  //
+  // Answer: the module destructor calls into callback `cleanup` method,
+  // which nulls out the rsLamda.
+  //
+  // If rsLamda is null, then there is no runtime to call into.
+  if (rsLambda == nullptr) {
+    // This only occurs when destructors are calling into Rust free/drop,
+    // which causes the JS callback to be dropped.
+    return;
+  }
+
+  // The runtime, the actual callback jsi::funtion, and the callInvoker
+  // are all in the lambda.
+  rsLambda(rs_handle);
+}
+
+[[maybe_unused]] static UniffiCallbackInterfaceFree
+makeCallbackFunction( // uniffi::matrix_sdk_ffi::st::vtablecallbackinterfacesearchservicepaginationstatelistener::vtablecallbackinterfacesearchservicepaginationstatelistener::free
+    jsi::Runtime &rt,
+    std::shared_ptr<uniffi_runtime::UniffiCallInvoker> callInvoker,
+    const jsi::Value &value) {
+  if (rsLambda != nullptr) {
+    // `makeCallbackFunction` is called in two circumstances:
+    //
+    // 1. at startup, when initializing callback interface vtables.
+    // 2. when polling futures. This happens at least once per future that is
+    //    exposed to Javascript. We know that this is always the same function,
+    //    `uniffiFutureContinuationCallback` in `async-rust-calls.ts`.
+    //
+    // We can therefore return the callback function without making anything
+    // new if we've been initialized already.
+    return callback;
+  }
+  auto callbackFunction = value.asObject(rt).asFunction(rt);
+  auto callbackValue = std::make_shared<jsi::Value>(rt, callbackFunction);
+  rsLambda = [&rt, callInvoker, callbackValue](uint64_t rs_handle) {
+    // We immediately make a lambda which will do the work of transforming the
+    // arguments into JSI values and calling the callback.
+    uniffi_runtime::UniffiCallFunc jsLambda =
+        [callInvoker, callbackValue, rs_handle](jsi::Runtime &rt) mutable {
+          body(rt, callInvoker, callbackValue, rs_handle);
+        };
+    // We'll then call that lambda from the callInvoker which will
+    // look after calling it on the correct thread.
+
+    callInvoker->invokeNonBlocking(rt, jsLambda);
+  };
+  return callback;
+}
+
+// This method is called from the destructor of NativeMatrixSdkFfi, which only
+// happens when the jsi::Runtime is being destroyed.
+static void cleanup() {
+  // The lambda holds a reference to the the Runtime, so when this is nulled
+  // out, then the pointer will no longer be left dangling.
+  rsLambda = nullptr;
+}
+} // namespace
+  // uniffi::matrix_sdk_ffi::st::vtablecallbackinterfacesearchservicepaginationstatelistener::vtablecallbackinterfacesearchservicepaginationstatelistener::free
+
+// Callback function:
+// uniffi::matrix_sdk_ffi::st::vtablecallbackinterfacesearchserviceresultslistener::vtablecallbackinterfacesearchserviceresultslistener::free::UniffiCallbackInterfaceFree
+//
+// We have the following constraints:
+// - we need to pass a function pointer to Rust.
+// - we need a jsi::Runtime and jsi::Function to call into JS.
+// - function pointers can't store state, so we can't use a lamda.
+//
+// For this, we store a lambda as a global, as `rsLambda`. The `callback`
+// function calls the lambda, which itself calls the `body` which then calls
+// into JS.
+//
+// We then give the `callback` function pointer to Rust which will call the
+// lambda sometime in the future.
+namespace uniffi::matrix_sdk_ffi::st::
+    vtablecallbackinterfacesearchserviceresultslistener::
+        vtablecallbackinterfacesearchserviceresultslistener::free {
+using namespace facebook;
+
+// We need to store a lambda in a global so we can call it from
+// a function pointer. The function pointer is passed to Rust.
+static std::function<void(uint64_t)> rsLambda = nullptr;
+
+// This is the main body of the callback. It's called from the lambda,
+// which itself is called from the callback function which is passed to Rust.
+static void body(jsi::Runtime &rt,
+                 std::shared_ptr<uniffi_runtime::UniffiCallInvoker> callInvoker,
+                 std::shared_ptr<jsi::Value> callbackValue,
+                 uint64_t rs_handle) {
+
+  // Convert the arguments from Rust, into jsi::Values.
+  // We'll use the Bridging class to do this…
+  auto js_handle =
+      uniffi_jsi::Bridging<uint64_t>::toJs(rt, callInvoker, rs_handle);
+
+  // Now we are ready to call the callback.
+  // We are already on the JS thread, because this `body` function was
+  // invoked from the CallInvoker.
+  try {
+    // Getting the callback function
+    auto cb = callbackValue->asObject(rt).asFunction(rt);
+    auto uniffiResult = cb.call(rt, js_handle);
+
+  } catch (const jsi::JSError &error) {
+    std::cout << "Error in callback UniffiCallbackInterfaceFree: "
+              << error.what() << std::endl;
+    throw error;
+  }
+}
+
+static void callback(uint64_t rs_handle) {
+  // If the runtime has shutdown, then there is no point in trying to
+  // call into Javascript. BUT how do we tell if the runtime has shutdown?
+  //
+  // Answer: the module destructor calls into callback `cleanup` method,
+  // which nulls out the rsLamda.
+  //
+  // If rsLamda is null, then there is no runtime to call into.
+  if (rsLambda == nullptr) {
+    // This only occurs when destructors are calling into Rust free/drop,
+    // which causes the JS callback to be dropped.
+    return;
+  }
+
+  // The runtime, the actual callback jsi::funtion, and the callInvoker
+  // are all in the lambda.
+  rsLambda(rs_handle);
+}
+
+[[maybe_unused]] static UniffiCallbackInterfaceFree
+makeCallbackFunction( // uniffi::matrix_sdk_ffi::st::vtablecallbackinterfacesearchserviceresultslistener::vtablecallbackinterfacesearchserviceresultslistener::free
+    jsi::Runtime &rt,
+    std::shared_ptr<uniffi_runtime::UniffiCallInvoker> callInvoker,
+    const jsi::Value &value) {
+  if (rsLambda != nullptr) {
+    // `makeCallbackFunction` is called in two circumstances:
+    //
+    // 1. at startup, when initializing callback interface vtables.
+    // 2. when polling futures. This happens at least once per future that is
+    //    exposed to Javascript. We know that this is always the same function,
+    //    `uniffiFutureContinuationCallback` in `async-rust-calls.ts`.
+    //
+    // We can therefore return the callback function without making anything
+    // new if we've been initialized already.
+    return callback;
+  }
+  auto callbackFunction = value.asObject(rt).asFunction(rt);
+  auto callbackValue = std::make_shared<jsi::Value>(rt, callbackFunction);
+  rsLambda = [&rt, callInvoker, callbackValue](uint64_t rs_handle) {
+    // We immediately make a lambda which will do the work of transforming the
+    // arguments into JSI values and calling the callback.
+    uniffi_runtime::UniffiCallFunc jsLambda =
+        [callInvoker, callbackValue, rs_handle](jsi::Runtime &rt) mutable {
+          body(rt, callInvoker, callbackValue, rs_handle);
+        };
+    // We'll then call that lambda from the callInvoker which will
+    // look after calling it on the correct thread.
+
+    callInvoker->invokeNonBlocking(rt, jsLambda);
+  };
+  return callback;
+}
+
+// This method is called from the destructor of NativeMatrixSdkFfi, which only
+// happens when the jsi::Runtime is being destroyed.
+static void cleanup() {
+  // The lambda holds a reference to the the Runtime, so when this is nulled
+  // out, then the pointer will no longer be left dangling.
+  rsLambda = nullptr;
+}
+} // namespace
+  // uniffi::matrix_sdk_ffi::st::vtablecallbackinterfacesearchserviceresultslistener::vtablecallbackinterfacesearchserviceresultslistener::free
 
 // Callback function:
 // uniffi::matrix_sdk_ffi::st::vtablecallbackinterfacesessionverificationcontrollerdelegate::vtablecallbackinterfacesessionverificationcontrollerdelegate::free::UniffiCallbackInterfaceFree
@@ -12295,6 +12950,300 @@ struct Bridging<UniffiVTableCallbackInterfaceMediaPreviewConfigListener> {
 
 } // namespace uniffi::matrix_sdk_ffi
   // Implementation of CallbackInterfaceClone for vtable field uniffi_clone in
+  // VTableCallbackInterfaceProfileListener
+
+// Callback function:
+// uniffi::matrix_sdk_ffi::cb::callbackinterfaceclone::vtablecallbackinterfaceprofilelistener::UniffiCallbackInterfaceClone
+//
+// We have the following constraints:
+// - we need to pass a function pointer to Rust.
+// - we need a jsi::Runtime and jsi::Function to call into JS.
+// - function pointers can't store state, so we can't use a lamda.
+//
+// For this, we store a lambda as a global, as `rsLambda`. The `callback`
+// function calls the lambda, which itself calls the `body` which then calls
+// into JS.
+//
+// We then give the `callback` function pointer to Rust which will call the
+// lambda sometime in the future.
+namespace uniffi::matrix_sdk_ffi::cb::callbackinterfaceclone::
+    vtablecallbackinterfaceprofilelistener {
+using namespace facebook;
+
+// We need to store a lambda in a global so we can call it from
+// a function pointer. The function pointer is passed to Rust.
+static std::function<void(uint64_t, uint64_t *)> rsLambda = nullptr;
+
+// This is the main body of the callback. It's called from the lambda,
+// which itself is called from the callback function which is passed to Rust.
+static void body(jsi::Runtime &rt,
+                 std::shared_ptr<uniffi_runtime::UniffiCallInvoker> callInvoker,
+                 std::shared_ptr<jsi::Value> callbackValue, uint64_t rs_handle,
+                 uint64_t *uniffi_direct_return) {
+
+  // Convert the arguments from Rust, into jsi::Values.
+  // We'll use the Bridging class to do this…
+  auto js_handle =
+      uniffi_jsi::Bridging<uint64_t>::toJs(rt, callInvoker, rs_handle);
+
+  // Now we are ready to call the callback.
+  // We are already on the JS thread, because this `body` function was
+  // invoked from the CallInvoker.
+  try {
+    // Getting the callback function
+    auto cb = callbackValue->asObject(rt).asFunction(rt);
+    auto uniffiResult = cb.call(rt, js_handle);
+
+    // Write the direct return value back to the caller.
+    if (uniffi_direct_return != nullptr) {
+      *uniffi_direct_return =
+          uniffi_jsi::Bridging<uint64_t>::fromJs(rt, callInvoker, uniffiResult);
+    }
+  } catch (const jsi::JSError &error) {
+    std::cout << "Error in callback UniffiCallbackInterfaceClone: "
+              << error.what() << std::endl;
+    throw error;
+  }
+}
+
+static uint64_t callback(uint64_t rs_handle) {
+  // If the runtime has shutdown, then there is no point in trying to
+  // call into Javascript. BUT how do we tell if the runtime has shutdown?
+  //
+  // Answer: the module destructor calls into callback `cleanup` method,
+  // which nulls out the rsLamda.
+  //
+  // If rsLamda is null, then there is no runtime to call into.
+  if (rsLambda == nullptr) {
+    // This only occurs when destructors are calling into Rust free/drop,
+    // which causes the JS callback to be dropped.
+    return 0;
+  }
+  uint64_t uniffi_result = 0;
+
+  // The runtime, the actual callback jsi::funtion, and the callInvoker
+  // are all in the lambda.
+  rsLambda(rs_handle, &uniffi_result);
+  return uniffi_result;
+}
+
+[[maybe_unused]] static UniffiCallbackInterfaceClone
+makeCallbackFunction( // uniffi::matrix_sdk_ffi::cb::callbackinterfaceclone::vtablecallbackinterfaceprofilelistener
+    jsi::Runtime &rt,
+    std::shared_ptr<uniffi_runtime::UniffiCallInvoker> callInvoker,
+    const jsi::Value &value) {
+  if (rsLambda != nullptr) {
+    // `makeCallbackFunction` is called in two circumstances:
+    //
+    // 1. at startup, when initializing callback interface vtables.
+    // 2. when polling futures. This happens at least once per future that is
+    //    exposed to Javascript. We know that this is always the same function,
+    //    `uniffiFutureContinuationCallback` in `async-rust-calls.ts`.
+    //
+    // We can therefore return the callback function without making anything
+    // new if we've been initialized already.
+    return callback;
+  }
+  auto callbackFunction = value.asObject(rt).asFunction(rt);
+  auto callbackValue = std::make_shared<jsi::Value>(rt, callbackFunction);
+  rsLambda = [&rt, callInvoker, callbackValue](uint64_t rs_handle,
+                                               uint64_t *uniffi_direct_return) {
+    // We immediately make a lambda which will do the work of transforming the
+    // arguments into JSI values and calling the callback.
+    uniffi_runtime::UniffiCallFunc jsLambda =
+        [callInvoker, callbackValue, rs_handle,
+         uniffi_direct_return](jsi::Runtime &rt) mutable {
+          body(rt, callInvoker, callbackValue, rs_handle, uniffi_direct_return);
+        };
+    // We'll then call that lambda from the callInvoker which will
+    // look after calling it on the correct thread.
+    callInvoker->invokeBlocking(rt, jsLambda);
+  };
+  return callback;
+}
+
+// This method is called from the destructor of NativeMatrixSdkFfi, which only
+// happens when the jsi::Runtime is being destroyed.
+static void cleanup() {
+  // The lambda holds a reference to the the Runtime, so when this is nulled
+  // out, then the pointer will no longer be left dangling.
+  rsLambda = nullptr;
+}
+} // namespace
+  // uniffi::matrix_sdk_ffi::cb::callbackinterfaceclone::vtablecallbackinterfaceprofilelistener
+  // Implementation of CallbackInterfaceProfileListenerMethod0 for vtable field
+  // on_update in VTableCallbackInterfaceProfileListener
+
+// Callback function:
+// uniffi::matrix_sdk_ffi::cb::callbackinterfaceprofilelistenermethod0::vtablecallbackinterfaceprofilelistener::UniffiCallbackInterfaceProfileListenerMethod0
+//
+// We have the following constraints:
+// - we need to pass a function pointer to Rust.
+// - we need a jsi::Runtime and jsi::Function to call into JS.
+// - function pointers can't store state, so we can't use a lamda.
+//
+// For this, we store a lambda as a global, as `rsLambda`. The `callback`
+// function calls the lambda, which itself calls the `body` which then calls
+// into JS.
+//
+// We then give the `callback` function pointer to Rust which will call the
+// lambda sometime in the future.
+namespace uniffi::matrix_sdk_ffi::cb::callbackinterfaceprofilelistenermethod0::
+    vtablecallbackinterfaceprofilelistener {
+using namespace facebook;
+
+// We need to store a lambda in a global so we can call it from
+// a function pointer. The function pointer is passed to Rust.
+static std::function<void(uint64_t, RustBuffer, void *, RustCallStatus *)>
+    rsLambda = nullptr;
+
+// This is the main body of the callback. It's called from the lambda,
+// which itself is called from the callback function which is passed to Rust.
+static void body(jsi::Runtime &rt,
+                 std::shared_ptr<uniffi_runtime::UniffiCallInvoker> callInvoker,
+                 std::shared_ptr<jsi::Value> callbackValue,
+                 uint64_t rs_uniffiHandle, RustBuffer rs_profile,
+                 void *rs_uniffiOutReturn, RustCallStatus *uniffi_call_status) {
+
+  // Convert the arguments from Rust, into jsi::Values.
+  // We'll use the Bridging class to do this…
+  auto js_uniffiHandle =
+      uniffi_jsi::Bridging<uint64_t>::toJs(rt, callInvoker, rs_uniffiHandle);
+  auto js_profile = uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::toJs(
+      rt, callInvoker, rs_profile);
+
+  // Now we are ready to call the callback.
+  // We are already on the JS thread, because this `body` function was
+  // invoked from the CallInvoker.
+  try {
+    // Getting the callback function
+    auto cb = callbackValue->asObject(rt).asFunction(rt);
+    auto uniffiResult = cb.call(rt, js_uniffiHandle, js_profile);
+
+    // Now copy the result back from JS into the RustCallStatus object.
+    uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyFromJs(
+        rt, callInvoker, uniffiResult, uniffi_call_status);
+
+    if (uniffi_call_status->code != UNIFFI_CALL_STATUS_OK) {
+      // The JS callback finished abnormally, so we cannot retrieve the return
+      // value.
+      return;
+    }
+
+  } catch (const jsi::JSError &error) {
+    std::cout
+        << "Error in callback UniffiCallbackInterfaceProfileListenerMethod0: "
+        << error.what() << std::endl;
+    throw error;
+  }
+}
+
+static void callback(uint64_t rs_uniffiHandle, RustBuffer rs_profile,
+                     void *rs_uniffiOutReturn,
+                     RustCallStatus *uniffi_call_status) {
+  // If the runtime has shutdown, then there is no point in trying to
+  // call into Javascript. BUT how do we tell if the runtime has shutdown?
+  //
+  // Answer: the module destructor calls into callback `cleanup` method,
+  // which nulls out the rsLamda.
+  //
+  // If rsLamda is null, then there is no runtime to call into.
+  if (rsLambda == nullptr) {
+    // This only occurs when destructors are calling into Rust free/drop,
+    // which causes the JS callback to be dropped.
+    return;
+  }
+
+  // The runtime, the actual callback jsi::funtion, and the callInvoker
+  // are all in the lambda.
+  rsLambda(rs_uniffiHandle, rs_profile, rs_uniffiOutReturn, uniffi_call_status);
+}
+
+[[maybe_unused]] static UniffiCallbackInterfaceProfileListenerMethod0
+makeCallbackFunction( // uniffi::matrix_sdk_ffi::cb::callbackinterfaceprofilelistenermethod0::vtablecallbackinterfaceprofilelistener
+    jsi::Runtime &rt,
+    std::shared_ptr<uniffi_runtime::UniffiCallInvoker> callInvoker,
+    const jsi::Value &value) {
+  if (rsLambda != nullptr) {
+    // `makeCallbackFunction` is called in two circumstances:
+    //
+    // 1. at startup, when initializing callback interface vtables.
+    // 2. when polling futures. This happens at least once per future that is
+    //    exposed to Javascript. We know that this is always the same function,
+    //    `uniffiFutureContinuationCallback` in `async-rust-calls.ts`.
+    //
+    // We can therefore return the callback function without making anything
+    // new if we've been initialized already.
+    return callback;
+  }
+  auto callbackFunction = value.asObject(rt).asFunction(rt);
+  auto callbackValue = std::make_shared<jsi::Value>(rt, callbackFunction);
+  rsLambda = [&rt, callInvoker, callbackValue](
+                 uint64_t rs_uniffiHandle, RustBuffer rs_profile,
+                 void *rs_uniffiOutReturn, RustCallStatus *uniffi_call_status) {
+    // We immediately make a lambda which will do the work of transforming the
+    // arguments into JSI values and calling the callback.
+    uniffi_runtime::UniffiCallFunc jsLambda =
+        [callInvoker, callbackValue, rs_uniffiHandle, rs_profile,
+         rs_uniffiOutReturn, uniffi_call_status](jsi::Runtime &rt) mutable {
+          body(rt, callInvoker, callbackValue, rs_uniffiHandle, rs_profile,
+               rs_uniffiOutReturn, uniffi_call_status);
+        };
+    // We'll then call that lambda from the callInvoker which will
+    // look after calling it on the correct thread.
+    callInvoker->invokeBlocking(rt, jsLambda);
+  };
+  return callback;
+}
+
+// This method is called from the destructor of NativeMatrixSdkFfi, which only
+// happens when the jsi::Runtime is being destroyed.
+static void cleanup() {
+  // The lambda holds a reference to the the Runtime, so when this is nulled
+  // out, then the pointer will no longer be left dangling.
+  rsLambda = nullptr;
+}
+} // namespace
+  // uniffi::matrix_sdk_ffi::cb::callbackinterfaceprofilelistenermethod0::vtablecallbackinterfaceprofilelistener
+namespace uniffi::matrix_sdk_ffi {
+using namespace facebook;
+using CallInvoker = uniffi_runtime::UniffiCallInvoker;
+
+template <> struct Bridging<UniffiVTableCallbackInterfaceProfileListener> {
+  static UniffiVTableCallbackInterfaceProfileListener
+  fromJs(jsi::Runtime &rt, std::shared_ptr<CallInvoker> callInvoker,
+         const jsi::Value &jsValue) {
+    // Check if the input is an object
+    if (!jsValue.isObject()) {
+      throw jsi::JSError(rt, "Expected an object for "
+                             "UniffiVTableCallbackInterfaceProfileListener");
+    }
+
+    // Get the object from the jsi::Value
+    auto jsObject = jsValue.getObject(rt);
+
+    // Create the vtable struct
+    UniffiVTableCallbackInterfaceProfileListener rsObject;
+
+    // Create the vtable from the js callbacks.
+    rsObject.uniffi_free =
+        uniffi::matrix_sdk_ffi::st::vtablecallbackinterfaceprofilelistener::
+            vtablecallbackinterfaceprofilelistener::free::makeCallbackFunction(
+                rt, callInvoker, jsObject.getProperty(rt, "uniffiFree"));
+    rsObject.uniffi_clone = uniffi::matrix_sdk_ffi::cb::callbackinterfaceclone::
+        vtablecallbackinterfaceprofilelistener::makeCallbackFunction(
+            rt, callInvoker, jsObject.getProperty(rt, "uniffiClone"));
+    rsObject.on_update =
+        uniffi::matrix_sdk_ffi::cb::callbackinterfaceprofilelistenermethod0::
+            vtablecallbackinterfaceprofilelistener::makeCallbackFunction(
+                rt, callInvoker, jsObject.getProperty(rt, "onUpdate"));
+
+    return rsObject;
+  }
+};
+
+} // namespace uniffi::matrix_sdk_ffi
+  // Implementation of CallbackInterfaceClone for vtable field uniffi_clone in
   // VTableCallbackInterfaceProgressWatcher
 
 // Callback function:
@@ -14406,6 +15355,307 @@ struct Bridging<UniffiVTableCallbackInterfaceBackupSteadyStateListener> {
             vtablecallbackinterfacebackupsteadystatelistener::
                 makeCallbackFunction(rt, callInvoker,
                                      jsObject.getProperty(rt, "onUpdate"));
+
+    return rsObject;
+  }
+};
+
+} // namespace uniffi::matrix_sdk_ffi
+  // Implementation of CallbackInterfaceClone for vtable field uniffi_clone in
+  // VTableCallbackInterfaceDehydratedDeviceEventListener
+
+// Callback function:
+// uniffi::matrix_sdk_ffi::cb::callbackinterfaceclone::vtablecallbackinterfacedehydrateddeviceeventlistener::UniffiCallbackInterfaceClone
+//
+// We have the following constraints:
+// - we need to pass a function pointer to Rust.
+// - we need a jsi::Runtime and jsi::Function to call into JS.
+// - function pointers can't store state, so we can't use a lamda.
+//
+// For this, we store a lambda as a global, as `rsLambda`. The `callback`
+// function calls the lambda, which itself calls the `body` which then calls
+// into JS.
+//
+// We then give the `callback` function pointer to Rust which will call the
+// lambda sometime in the future.
+namespace uniffi::matrix_sdk_ffi::cb::callbackinterfaceclone::
+    vtablecallbackinterfacedehydrateddeviceeventlistener {
+using namespace facebook;
+
+// We need to store a lambda in a global so we can call it from
+// a function pointer. The function pointer is passed to Rust.
+static std::function<void(uint64_t, uint64_t *)> rsLambda = nullptr;
+
+// This is the main body of the callback. It's called from the lambda,
+// which itself is called from the callback function which is passed to Rust.
+static void body(jsi::Runtime &rt,
+                 std::shared_ptr<uniffi_runtime::UniffiCallInvoker> callInvoker,
+                 std::shared_ptr<jsi::Value> callbackValue, uint64_t rs_handle,
+                 uint64_t *uniffi_direct_return) {
+
+  // Convert the arguments from Rust, into jsi::Values.
+  // We'll use the Bridging class to do this…
+  auto js_handle =
+      uniffi_jsi::Bridging<uint64_t>::toJs(rt, callInvoker, rs_handle);
+
+  // Now we are ready to call the callback.
+  // We are already on the JS thread, because this `body` function was
+  // invoked from the CallInvoker.
+  try {
+    // Getting the callback function
+    auto cb = callbackValue->asObject(rt).asFunction(rt);
+    auto uniffiResult = cb.call(rt, js_handle);
+
+    // Write the direct return value back to the caller.
+    if (uniffi_direct_return != nullptr) {
+      *uniffi_direct_return =
+          uniffi_jsi::Bridging<uint64_t>::fromJs(rt, callInvoker, uniffiResult);
+    }
+  } catch (const jsi::JSError &error) {
+    std::cout << "Error in callback UniffiCallbackInterfaceClone: "
+              << error.what() << std::endl;
+    throw error;
+  }
+}
+
+static uint64_t callback(uint64_t rs_handle) {
+  // If the runtime has shutdown, then there is no point in trying to
+  // call into Javascript. BUT how do we tell if the runtime has shutdown?
+  //
+  // Answer: the module destructor calls into callback `cleanup` method,
+  // which nulls out the rsLamda.
+  //
+  // If rsLamda is null, then there is no runtime to call into.
+  if (rsLambda == nullptr) {
+    // This only occurs when destructors are calling into Rust free/drop,
+    // which causes the JS callback to be dropped.
+    return 0;
+  }
+  uint64_t uniffi_result = 0;
+
+  // The runtime, the actual callback jsi::funtion, and the callInvoker
+  // are all in the lambda.
+  rsLambda(rs_handle, &uniffi_result);
+  return uniffi_result;
+}
+
+[[maybe_unused]] static UniffiCallbackInterfaceClone
+makeCallbackFunction( // uniffi::matrix_sdk_ffi::cb::callbackinterfaceclone::vtablecallbackinterfacedehydrateddeviceeventlistener
+    jsi::Runtime &rt,
+    std::shared_ptr<uniffi_runtime::UniffiCallInvoker> callInvoker,
+    const jsi::Value &value) {
+  if (rsLambda != nullptr) {
+    // `makeCallbackFunction` is called in two circumstances:
+    //
+    // 1. at startup, when initializing callback interface vtables.
+    // 2. when polling futures. This happens at least once per future that is
+    //    exposed to Javascript. We know that this is always the same function,
+    //    `uniffiFutureContinuationCallback` in `async-rust-calls.ts`.
+    //
+    // We can therefore return the callback function without making anything
+    // new if we've been initialized already.
+    return callback;
+  }
+  auto callbackFunction = value.asObject(rt).asFunction(rt);
+  auto callbackValue = std::make_shared<jsi::Value>(rt, callbackFunction);
+  rsLambda = [&rt, callInvoker, callbackValue](uint64_t rs_handle,
+                                               uint64_t *uniffi_direct_return) {
+    // We immediately make a lambda which will do the work of transforming the
+    // arguments into JSI values and calling the callback.
+    uniffi_runtime::UniffiCallFunc jsLambda =
+        [callInvoker, callbackValue, rs_handle,
+         uniffi_direct_return](jsi::Runtime &rt) mutable {
+          body(rt, callInvoker, callbackValue, rs_handle, uniffi_direct_return);
+        };
+    // We'll then call that lambda from the callInvoker which will
+    // look after calling it on the correct thread.
+    callInvoker->invokeBlocking(rt, jsLambda);
+  };
+  return callback;
+}
+
+// This method is called from the destructor of NativeMatrixSdkFfi, which only
+// happens when the jsi::Runtime is being destroyed.
+static void cleanup() {
+  // The lambda holds a reference to the the Runtime, so when this is nulled
+  // out, then the pointer will no longer be left dangling.
+  rsLambda = nullptr;
+}
+} // namespace
+  // uniffi::matrix_sdk_ffi::cb::callbackinterfaceclone::vtablecallbackinterfacedehydrateddeviceeventlistener
+  // Implementation of CallbackInterfaceDehydratedDeviceEventListenerMethod0 for
+  // vtable field on_event in
+  // VTableCallbackInterfaceDehydratedDeviceEventListener
+
+// Callback function:
+// uniffi::matrix_sdk_ffi::cb::callbackinterfacedehydrateddeviceeventlistenermethod0::vtablecallbackinterfacedehydrateddeviceeventlistener::UniffiCallbackInterfaceDehydratedDeviceEventListenerMethod0
+//
+// We have the following constraints:
+// - we need to pass a function pointer to Rust.
+// - we need a jsi::Runtime and jsi::Function to call into JS.
+// - function pointers can't store state, so we can't use a lamda.
+//
+// For this, we store a lambda as a global, as `rsLambda`. The `callback`
+// function calls the lambda, which itself calls the `body` which then calls
+// into JS.
+//
+// We then give the `callback` function pointer to Rust which will call the
+// lambda sometime in the future.
+namespace uniffi::matrix_sdk_ffi::cb::
+    callbackinterfacedehydrateddeviceeventlistenermethod0::
+        vtablecallbackinterfacedehydrateddeviceeventlistener {
+using namespace facebook;
+
+// We need to store a lambda in a global so we can call it from
+// a function pointer. The function pointer is passed to Rust.
+static std::function<void(uint64_t, RustBuffer, void *, RustCallStatus *)>
+    rsLambda = nullptr;
+
+// This is the main body of the callback. It's called from the lambda,
+// which itself is called from the callback function which is passed to Rust.
+static void body(jsi::Runtime &rt,
+                 std::shared_ptr<uniffi_runtime::UniffiCallInvoker> callInvoker,
+                 std::shared_ptr<jsi::Value> callbackValue,
+                 uint64_t rs_uniffiHandle, RustBuffer rs_event,
+                 void *rs_uniffiOutReturn, RustCallStatus *uniffi_call_status) {
+
+  // Convert the arguments from Rust, into jsi::Values.
+  // We'll use the Bridging class to do this…
+  auto js_uniffiHandle =
+      uniffi_jsi::Bridging<uint64_t>::toJs(rt, callInvoker, rs_uniffiHandle);
+  auto js_event = uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::toJs(
+      rt, callInvoker, rs_event);
+
+  // Now we are ready to call the callback.
+  // We are already on the JS thread, because this `body` function was
+  // invoked from the CallInvoker.
+  try {
+    // Getting the callback function
+    auto cb = callbackValue->asObject(rt).asFunction(rt);
+    auto uniffiResult = cb.call(rt, js_uniffiHandle, js_event);
+
+    // Now copy the result back from JS into the RustCallStatus object.
+    uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyFromJs(
+        rt, callInvoker, uniffiResult, uniffi_call_status);
+
+    if (uniffi_call_status->code != UNIFFI_CALL_STATUS_OK) {
+      // The JS callback finished abnormally, so we cannot retrieve the return
+      // value.
+      return;
+    }
+
+  } catch (const jsi::JSError &error) {
+    std::cout << "Error in callback "
+                 "UniffiCallbackInterfaceDehydratedDeviceEventListenerMethod0: "
+              << error.what() << std::endl;
+    throw error;
+  }
+}
+
+static void callback(uint64_t rs_uniffiHandle, RustBuffer rs_event,
+                     void *rs_uniffiOutReturn,
+                     RustCallStatus *uniffi_call_status) {
+  // If the runtime has shutdown, then there is no point in trying to
+  // call into Javascript. BUT how do we tell if the runtime has shutdown?
+  //
+  // Answer: the module destructor calls into callback `cleanup` method,
+  // which nulls out the rsLamda.
+  //
+  // If rsLamda is null, then there is no runtime to call into.
+  if (rsLambda == nullptr) {
+    // This only occurs when destructors are calling into Rust free/drop,
+    // which causes the JS callback to be dropped.
+    return;
+  }
+
+  // The runtime, the actual callback jsi::funtion, and the callInvoker
+  // are all in the lambda.
+  rsLambda(rs_uniffiHandle, rs_event, rs_uniffiOutReturn, uniffi_call_status);
+}
+
+[[maybe_unused]] static UniffiCallbackInterfaceDehydratedDeviceEventListenerMethod0
+makeCallbackFunction( // uniffi::matrix_sdk_ffi::cb::callbackinterfacedehydrateddeviceeventlistenermethod0::vtablecallbackinterfacedehydrateddeviceeventlistener
+    jsi::Runtime &rt,
+    std::shared_ptr<uniffi_runtime::UniffiCallInvoker> callInvoker,
+    const jsi::Value &value) {
+  if (rsLambda != nullptr) {
+    // `makeCallbackFunction` is called in two circumstances:
+    //
+    // 1. at startup, when initializing callback interface vtables.
+    // 2. when polling futures. This happens at least once per future that is
+    //    exposed to Javascript. We know that this is always the same function,
+    //    `uniffiFutureContinuationCallback` in `async-rust-calls.ts`.
+    //
+    // We can therefore return the callback function without making anything
+    // new if we've been initialized already.
+    return callback;
+  }
+  auto callbackFunction = value.asObject(rt).asFunction(rt);
+  auto callbackValue = std::make_shared<jsi::Value>(rt, callbackFunction);
+  rsLambda = [&rt, callInvoker, callbackValue](
+                 uint64_t rs_uniffiHandle, RustBuffer rs_event,
+                 void *rs_uniffiOutReturn, RustCallStatus *uniffi_call_status) {
+    // We immediately make a lambda which will do the work of transforming the
+    // arguments into JSI values and calling the callback.
+    uniffi_runtime::UniffiCallFunc jsLambda =
+        [callInvoker, callbackValue, rs_uniffiHandle, rs_event,
+         rs_uniffiOutReturn, uniffi_call_status](jsi::Runtime &rt) mutable {
+          body(rt, callInvoker, callbackValue, rs_uniffiHandle, rs_event,
+               rs_uniffiOutReturn, uniffi_call_status);
+        };
+    // We'll then call that lambda from the callInvoker which will
+    // look after calling it on the correct thread.
+    callInvoker->invokeBlocking(rt, jsLambda);
+  };
+  return callback;
+}
+
+// This method is called from the destructor of NativeMatrixSdkFfi, which only
+// happens when the jsi::Runtime is being destroyed.
+static void cleanup() {
+  // The lambda holds a reference to the the Runtime, so when this is nulled
+  // out, then the pointer will no longer be left dangling.
+  rsLambda = nullptr;
+}
+} // namespace
+  // uniffi::matrix_sdk_ffi::cb::callbackinterfacedehydrateddeviceeventlistenermethod0::vtablecallbackinterfacedehydrateddeviceeventlistener
+namespace uniffi::matrix_sdk_ffi {
+using namespace facebook;
+using CallInvoker = uniffi_runtime::UniffiCallInvoker;
+
+template <>
+struct Bridging<UniffiVTableCallbackInterfaceDehydratedDeviceEventListener> {
+  static UniffiVTableCallbackInterfaceDehydratedDeviceEventListener
+  fromJs(jsi::Runtime &rt, std::shared_ptr<CallInvoker> callInvoker,
+         const jsi::Value &jsValue) {
+    // Check if the input is an object
+    if (!jsValue.isObject()) {
+      throw jsi::JSError(
+          rt, "Expected an object for "
+              "UniffiVTableCallbackInterfaceDehydratedDeviceEventListener");
+    }
+
+    // Get the object from the jsi::Value
+    auto jsObject = jsValue.getObject(rt);
+
+    // Create the vtable struct
+    UniffiVTableCallbackInterfaceDehydratedDeviceEventListener rsObject;
+
+    // Create the vtable from the js callbacks.
+    rsObject.uniffi_free = uniffi::matrix_sdk_ffi::st::
+        vtablecallbackinterfacedehydrateddeviceeventlistener::
+            vtablecallbackinterfacedehydrateddeviceeventlistener::free::
+                makeCallbackFunction(rt, callInvoker,
+                                     jsObject.getProperty(rt, "uniffiFree"));
+    rsObject.uniffi_clone = uniffi::matrix_sdk_ffi::cb::callbackinterfaceclone::
+        vtablecallbackinterfacedehydrateddeviceeventlistener::
+            makeCallbackFunction(rt, callInvoker,
+                                 jsObject.getProperty(rt, "uniffiClone"));
+    rsObject.on_event = uniffi::matrix_sdk_ffi::cb::
+        callbackinterfacedehydrateddeviceeventlistenermethod0::
+            vtablecallbackinterfacedehydrateddeviceeventlistener::
+                makeCallbackFunction(rt, callInvoker,
+                                     jsObject.getProperty(rt, "onEvent"));
 
     return rsObject;
   }
@@ -20423,6 +21673,613 @@ struct Bridging<
 
 } // namespace uniffi::matrix_sdk_ffi
   // Implementation of CallbackInterfaceClone for vtable field uniffi_clone in
+  // VTableCallbackInterfaceSearchServicePaginationStateListener
+
+// Callback function:
+// uniffi::matrix_sdk_ffi::cb::callbackinterfaceclone::vtablecallbackinterfacesearchservicepaginationstatelistener::UniffiCallbackInterfaceClone
+//
+// We have the following constraints:
+// - we need to pass a function pointer to Rust.
+// - we need a jsi::Runtime and jsi::Function to call into JS.
+// - function pointers can't store state, so we can't use a lamda.
+//
+// For this, we store a lambda as a global, as `rsLambda`. The `callback`
+// function calls the lambda, which itself calls the `body` which then calls
+// into JS.
+//
+// We then give the `callback` function pointer to Rust which will call the
+// lambda sometime in the future.
+namespace uniffi::matrix_sdk_ffi::cb::callbackinterfaceclone::
+    vtablecallbackinterfacesearchservicepaginationstatelistener {
+using namespace facebook;
+
+// We need to store a lambda in a global so we can call it from
+// a function pointer. The function pointer is passed to Rust.
+static std::function<void(uint64_t, uint64_t *)> rsLambda = nullptr;
+
+// This is the main body of the callback. It's called from the lambda,
+// which itself is called from the callback function which is passed to Rust.
+static void body(jsi::Runtime &rt,
+                 std::shared_ptr<uniffi_runtime::UniffiCallInvoker> callInvoker,
+                 std::shared_ptr<jsi::Value> callbackValue, uint64_t rs_handle,
+                 uint64_t *uniffi_direct_return) {
+
+  // Convert the arguments from Rust, into jsi::Values.
+  // We'll use the Bridging class to do this…
+  auto js_handle =
+      uniffi_jsi::Bridging<uint64_t>::toJs(rt, callInvoker, rs_handle);
+
+  // Now we are ready to call the callback.
+  // We are already on the JS thread, because this `body` function was
+  // invoked from the CallInvoker.
+  try {
+    // Getting the callback function
+    auto cb = callbackValue->asObject(rt).asFunction(rt);
+    auto uniffiResult = cb.call(rt, js_handle);
+
+    // Write the direct return value back to the caller.
+    if (uniffi_direct_return != nullptr) {
+      *uniffi_direct_return =
+          uniffi_jsi::Bridging<uint64_t>::fromJs(rt, callInvoker, uniffiResult);
+    }
+  } catch (const jsi::JSError &error) {
+    std::cout << "Error in callback UniffiCallbackInterfaceClone: "
+              << error.what() << std::endl;
+    throw error;
+  }
+}
+
+static uint64_t callback(uint64_t rs_handle) {
+  // If the runtime has shutdown, then there is no point in trying to
+  // call into Javascript. BUT how do we tell if the runtime has shutdown?
+  //
+  // Answer: the module destructor calls into callback `cleanup` method,
+  // which nulls out the rsLamda.
+  //
+  // If rsLamda is null, then there is no runtime to call into.
+  if (rsLambda == nullptr) {
+    // This only occurs when destructors are calling into Rust free/drop,
+    // which causes the JS callback to be dropped.
+    return 0;
+  }
+  uint64_t uniffi_result = 0;
+
+  // The runtime, the actual callback jsi::funtion, and the callInvoker
+  // are all in the lambda.
+  rsLambda(rs_handle, &uniffi_result);
+  return uniffi_result;
+}
+
+[[maybe_unused]] static UniffiCallbackInterfaceClone
+makeCallbackFunction( // uniffi::matrix_sdk_ffi::cb::callbackinterfaceclone::vtablecallbackinterfacesearchservicepaginationstatelistener
+    jsi::Runtime &rt,
+    std::shared_ptr<uniffi_runtime::UniffiCallInvoker> callInvoker,
+    const jsi::Value &value) {
+  if (rsLambda != nullptr) {
+    // `makeCallbackFunction` is called in two circumstances:
+    //
+    // 1. at startup, when initializing callback interface vtables.
+    // 2. when polling futures. This happens at least once per future that is
+    //    exposed to Javascript. We know that this is always the same function,
+    //    `uniffiFutureContinuationCallback` in `async-rust-calls.ts`.
+    //
+    // We can therefore return the callback function without making anything
+    // new if we've been initialized already.
+    return callback;
+  }
+  auto callbackFunction = value.asObject(rt).asFunction(rt);
+  auto callbackValue = std::make_shared<jsi::Value>(rt, callbackFunction);
+  rsLambda = [&rt, callInvoker, callbackValue](uint64_t rs_handle,
+                                               uint64_t *uniffi_direct_return) {
+    // We immediately make a lambda which will do the work of transforming the
+    // arguments into JSI values and calling the callback.
+    uniffi_runtime::UniffiCallFunc jsLambda =
+        [callInvoker, callbackValue, rs_handle,
+         uniffi_direct_return](jsi::Runtime &rt) mutable {
+          body(rt, callInvoker, callbackValue, rs_handle, uniffi_direct_return);
+        };
+    // We'll then call that lambda from the callInvoker which will
+    // look after calling it on the correct thread.
+    callInvoker->invokeBlocking(rt, jsLambda);
+  };
+  return callback;
+}
+
+// This method is called from the destructor of NativeMatrixSdkFfi, which only
+// happens when the jsi::Runtime is being destroyed.
+static void cleanup() {
+  // The lambda holds a reference to the the Runtime, so when this is nulled
+  // out, then the pointer will no longer be left dangling.
+  rsLambda = nullptr;
+}
+} // namespace
+  // uniffi::matrix_sdk_ffi::cb::callbackinterfaceclone::vtablecallbackinterfacesearchservicepaginationstatelistener
+  // Implementation of
+  // CallbackInterfaceSearchServicePaginationStateListenerMethod0 for vtable
+  // field on_update in
+  // VTableCallbackInterfaceSearchServicePaginationStateListener
+
+// Callback function:
+// uniffi::matrix_sdk_ffi::cb::callbackinterfacesearchservicepaginationstatelistenermethod0::vtablecallbackinterfacesearchservicepaginationstatelistener::UniffiCallbackInterfaceSearchServicePaginationStateListenerMethod0
+//
+// We have the following constraints:
+// - we need to pass a function pointer to Rust.
+// - we need a jsi::Runtime and jsi::Function to call into JS.
+// - function pointers can't store state, so we can't use a lamda.
+//
+// For this, we store a lambda as a global, as `rsLambda`. The `callback`
+// function calls the lambda, which itself calls the `body` which then calls
+// into JS.
+//
+// We then give the `callback` function pointer to Rust which will call the
+// lambda sometime in the future.
+namespace uniffi::matrix_sdk_ffi::cb::
+    callbackinterfacesearchservicepaginationstatelistenermethod0::
+        vtablecallbackinterfacesearchservicepaginationstatelistener {
+using namespace facebook;
+
+// We need to store a lambda in a global so we can call it from
+// a function pointer. The function pointer is passed to Rust.
+static std::function<void(uint64_t, RustBuffer, void *, RustCallStatus *)>
+    rsLambda = nullptr;
+
+// This is the main body of the callback. It's called from the lambda,
+// which itself is called from the callback function which is passed to Rust.
+static void body(jsi::Runtime &rt,
+                 std::shared_ptr<uniffi_runtime::UniffiCallInvoker> callInvoker,
+                 std::shared_ptr<jsi::Value> callbackValue,
+                 uint64_t rs_uniffiHandle, RustBuffer rs_paginationState,
+                 void *rs_uniffiOutReturn, RustCallStatus *uniffi_call_status) {
+
+  // Convert the arguments from Rust, into jsi::Values.
+  // We'll use the Bridging class to do this…
+  auto js_uniffiHandle =
+      uniffi_jsi::Bridging<uint64_t>::toJs(rt, callInvoker, rs_uniffiHandle);
+  auto js_paginationState = uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::toJs(
+      rt, callInvoker, rs_paginationState);
+
+  // Now we are ready to call the callback.
+  // We are already on the JS thread, because this `body` function was
+  // invoked from the CallInvoker.
+  try {
+    // Getting the callback function
+    auto cb = callbackValue->asObject(rt).asFunction(rt);
+    auto uniffiResult = cb.call(rt, js_uniffiHandle, js_paginationState);
+
+    // Now copy the result back from JS into the RustCallStatus object.
+    uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyFromJs(
+        rt, callInvoker, uniffiResult, uniffi_call_status);
+
+    if (uniffi_call_status->code != UNIFFI_CALL_STATUS_OK) {
+      // The JS callback finished abnormally, so we cannot retrieve the return
+      // value.
+      return;
+    }
+
+  } catch (const jsi::JSError &error) {
+    std::cout << "Error in callback "
+                 "UniffiCallbackInterfaceSearchServicePaginationStateListenerMe"
+                 "thod0: "
+              << error.what() << std::endl;
+    throw error;
+  }
+}
+
+static void callback(uint64_t rs_uniffiHandle, RustBuffer rs_paginationState,
+                     void *rs_uniffiOutReturn,
+                     RustCallStatus *uniffi_call_status) {
+  // If the runtime has shutdown, then there is no point in trying to
+  // call into Javascript. BUT how do we tell if the runtime has shutdown?
+  //
+  // Answer: the module destructor calls into callback `cleanup` method,
+  // which nulls out the rsLamda.
+  //
+  // If rsLamda is null, then there is no runtime to call into.
+  if (rsLambda == nullptr) {
+    // This only occurs when destructors are calling into Rust free/drop,
+    // which causes the JS callback to be dropped.
+    return;
+  }
+
+  // The runtime, the actual callback jsi::funtion, and the callInvoker
+  // are all in the lambda.
+  rsLambda(rs_uniffiHandle, rs_paginationState, rs_uniffiOutReturn,
+           uniffi_call_status);
+}
+
+[[maybe_unused]] static UniffiCallbackInterfaceSearchServicePaginationStateListenerMethod0
+makeCallbackFunction( // uniffi::matrix_sdk_ffi::cb::callbackinterfacesearchservicepaginationstatelistenermethod0::vtablecallbackinterfacesearchservicepaginationstatelistener
+    jsi::Runtime &rt,
+    std::shared_ptr<uniffi_runtime::UniffiCallInvoker> callInvoker,
+    const jsi::Value &value) {
+  if (rsLambda != nullptr) {
+    // `makeCallbackFunction` is called in two circumstances:
+    //
+    // 1. at startup, when initializing callback interface vtables.
+    // 2. when polling futures. This happens at least once per future that is
+    //    exposed to Javascript. We know that this is always the same function,
+    //    `uniffiFutureContinuationCallback` in `async-rust-calls.ts`.
+    //
+    // We can therefore return the callback function without making anything
+    // new if we've been initialized already.
+    return callback;
+  }
+  auto callbackFunction = value.asObject(rt).asFunction(rt);
+  auto callbackValue = std::make_shared<jsi::Value>(rt, callbackFunction);
+  rsLambda = [&rt, callInvoker, callbackValue](
+                 uint64_t rs_uniffiHandle, RustBuffer rs_paginationState,
+                 void *rs_uniffiOutReturn, RustCallStatus *uniffi_call_status) {
+    // We immediately make a lambda which will do the work of transforming the
+    // arguments into JSI values and calling the callback.
+    uniffi_runtime::UniffiCallFunc jsLambda =
+        [callInvoker, callbackValue, rs_uniffiHandle, rs_paginationState,
+         rs_uniffiOutReturn, uniffi_call_status](jsi::Runtime &rt) mutable {
+          body(rt, callInvoker, callbackValue, rs_uniffiHandle,
+               rs_paginationState, rs_uniffiOutReturn, uniffi_call_status);
+        };
+    // We'll then call that lambda from the callInvoker which will
+    // look after calling it on the correct thread.
+    callInvoker->invokeBlocking(rt, jsLambda);
+  };
+  return callback;
+}
+
+// This method is called from the destructor of NativeMatrixSdkFfi, which only
+// happens when the jsi::Runtime is being destroyed.
+static void cleanup() {
+  // The lambda holds a reference to the the Runtime, so when this is nulled
+  // out, then the pointer will no longer be left dangling.
+  rsLambda = nullptr;
+}
+} // namespace
+  // uniffi::matrix_sdk_ffi::cb::callbackinterfacesearchservicepaginationstatelistenermethod0::vtablecallbackinterfacesearchservicepaginationstatelistener
+namespace uniffi::matrix_sdk_ffi {
+using namespace facebook;
+using CallInvoker = uniffi_runtime::UniffiCallInvoker;
+
+template <>
+struct Bridging<
+    UniffiVTableCallbackInterfaceSearchServicePaginationStateListener> {
+  static UniffiVTableCallbackInterfaceSearchServicePaginationStateListener
+  fromJs(jsi::Runtime &rt, std::shared_ptr<CallInvoker> callInvoker,
+         const jsi::Value &jsValue) {
+    // Check if the input is an object
+    if (!jsValue.isObject()) {
+      throw jsi::JSError(
+          rt,
+          "Expected an object for "
+          "UniffiVTableCallbackInterfaceSearchServicePaginationStateListener");
+    }
+
+    // Get the object from the jsi::Value
+    auto jsObject = jsValue.getObject(rt);
+
+    // Create the vtable struct
+    UniffiVTableCallbackInterfaceSearchServicePaginationStateListener rsObject;
+
+    // Create the vtable from the js callbacks.
+    rsObject.uniffi_free = uniffi::matrix_sdk_ffi::st::
+        vtablecallbackinterfacesearchservicepaginationstatelistener::
+            vtablecallbackinterfacesearchservicepaginationstatelistener::free::
+                makeCallbackFunction(rt, callInvoker,
+                                     jsObject.getProperty(rt, "uniffiFree"));
+    rsObject.uniffi_clone = uniffi::matrix_sdk_ffi::cb::callbackinterfaceclone::
+        vtablecallbackinterfacesearchservicepaginationstatelistener::
+            makeCallbackFunction(rt, callInvoker,
+                                 jsObject.getProperty(rt, "uniffiClone"));
+    rsObject.on_update = uniffi::matrix_sdk_ffi::cb::
+        callbackinterfacesearchservicepaginationstatelistenermethod0::
+            vtablecallbackinterfacesearchservicepaginationstatelistener::
+                makeCallbackFunction(rt, callInvoker,
+                                     jsObject.getProperty(rt, "onUpdate"));
+
+    return rsObject;
+  }
+};
+
+} // namespace uniffi::matrix_sdk_ffi
+  // Implementation of CallbackInterfaceClone for vtable field uniffi_clone in
+  // VTableCallbackInterfaceSearchServiceResultsListener
+
+// Callback function:
+// uniffi::matrix_sdk_ffi::cb::callbackinterfaceclone::vtablecallbackinterfacesearchserviceresultslistener::UniffiCallbackInterfaceClone
+//
+// We have the following constraints:
+// - we need to pass a function pointer to Rust.
+// - we need a jsi::Runtime and jsi::Function to call into JS.
+// - function pointers can't store state, so we can't use a lamda.
+//
+// For this, we store a lambda as a global, as `rsLambda`. The `callback`
+// function calls the lambda, which itself calls the `body` which then calls
+// into JS.
+//
+// We then give the `callback` function pointer to Rust which will call the
+// lambda sometime in the future.
+namespace uniffi::matrix_sdk_ffi::cb::callbackinterfaceclone::
+    vtablecallbackinterfacesearchserviceresultslistener {
+using namespace facebook;
+
+// We need to store a lambda in a global so we can call it from
+// a function pointer. The function pointer is passed to Rust.
+static std::function<void(uint64_t, uint64_t *)> rsLambda = nullptr;
+
+// This is the main body of the callback. It's called from the lambda,
+// which itself is called from the callback function which is passed to Rust.
+static void body(jsi::Runtime &rt,
+                 std::shared_ptr<uniffi_runtime::UniffiCallInvoker> callInvoker,
+                 std::shared_ptr<jsi::Value> callbackValue, uint64_t rs_handle,
+                 uint64_t *uniffi_direct_return) {
+
+  // Convert the arguments from Rust, into jsi::Values.
+  // We'll use the Bridging class to do this…
+  auto js_handle =
+      uniffi_jsi::Bridging<uint64_t>::toJs(rt, callInvoker, rs_handle);
+
+  // Now we are ready to call the callback.
+  // We are already on the JS thread, because this `body` function was
+  // invoked from the CallInvoker.
+  try {
+    // Getting the callback function
+    auto cb = callbackValue->asObject(rt).asFunction(rt);
+    auto uniffiResult = cb.call(rt, js_handle);
+
+    // Write the direct return value back to the caller.
+    if (uniffi_direct_return != nullptr) {
+      *uniffi_direct_return =
+          uniffi_jsi::Bridging<uint64_t>::fromJs(rt, callInvoker, uniffiResult);
+    }
+  } catch (const jsi::JSError &error) {
+    std::cout << "Error in callback UniffiCallbackInterfaceClone: "
+              << error.what() << std::endl;
+    throw error;
+  }
+}
+
+static uint64_t callback(uint64_t rs_handle) {
+  // If the runtime has shutdown, then there is no point in trying to
+  // call into Javascript. BUT how do we tell if the runtime has shutdown?
+  //
+  // Answer: the module destructor calls into callback `cleanup` method,
+  // which nulls out the rsLamda.
+  //
+  // If rsLamda is null, then there is no runtime to call into.
+  if (rsLambda == nullptr) {
+    // This only occurs when destructors are calling into Rust free/drop,
+    // which causes the JS callback to be dropped.
+    return 0;
+  }
+  uint64_t uniffi_result = 0;
+
+  // The runtime, the actual callback jsi::funtion, and the callInvoker
+  // are all in the lambda.
+  rsLambda(rs_handle, &uniffi_result);
+  return uniffi_result;
+}
+
+[[maybe_unused]] static UniffiCallbackInterfaceClone
+makeCallbackFunction( // uniffi::matrix_sdk_ffi::cb::callbackinterfaceclone::vtablecallbackinterfacesearchserviceresultslistener
+    jsi::Runtime &rt,
+    std::shared_ptr<uniffi_runtime::UniffiCallInvoker> callInvoker,
+    const jsi::Value &value) {
+  if (rsLambda != nullptr) {
+    // `makeCallbackFunction` is called in two circumstances:
+    //
+    // 1. at startup, when initializing callback interface vtables.
+    // 2. when polling futures. This happens at least once per future that is
+    //    exposed to Javascript. We know that this is always the same function,
+    //    `uniffiFutureContinuationCallback` in `async-rust-calls.ts`.
+    //
+    // We can therefore return the callback function without making anything
+    // new if we've been initialized already.
+    return callback;
+  }
+  auto callbackFunction = value.asObject(rt).asFunction(rt);
+  auto callbackValue = std::make_shared<jsi::Value>(rt, callbackFunction);
+  rsLambda = [&rt, callInvoker, callbackValue](uint64_t rs_handle,
+                                               uint64_t *uniffi_direct_return) {
+    // We immediately make a lambda which will do the work of transforming the
+    // arguments into JSI values and calling the callback.
+    uniffi_runtime::UniffiCallFunc jsLambda =
+        [callInvoker, callbackValue, rs_handle,
+         uniffi_direct_return](jsi::Runtime &rt) mutable {
+          body(rt, callInvoker, callbackValue, rs_handle, uniffi_direct_return);
+        };
+    // We'll then call that lambda from the callInvoker which will
+    // look after calling it on the correct thread.
+    callInvoker->invokeBlocking(rt, jsLambda);
+  };
+  return callback;
+}
+
+// This method is called from the destructor of NativeMatrixSdkFfi, which only
+// happens when the jsi::Runtime is being destroyed.
+static void cleanup() {
+  // The lambda holds a reference to the the Runtime, so when this is nulled
+  // out, then the pointer will no longer be left dangling.
+  rsLambda = nullptr;
+}
+} // namespace
+  // uniffi::matrix_sdk_ffi::cb::callbackinterfaceclone::vtablecallbackinterfacesearchserviceresultslistener
+  // Implementation of CallbackInterfaceSearchServiceResultsListenerMethod0 for
+  // vtable field on_update in
+  // VTableCallbackInterfaceSearchServiceResultsListener
+
+// Callback function:
+// uniffi::matrix_sdk_ffi::cb::callbackinterfacesearchserviceresultslistenermethod0::vtablecallbackinterfacesearchserviceresultslistener::UniffiCallbackInterfaceSearchServiceResultsListenerMethod0
+//
+// We have the following constraints:
+// - we need to pass a function pointer to Rust.
+// - we need a jsi::Runtime and jsi::Function to call into JS.
+// - function pointers can't store state, so we can't use a lamda.
+//
+// For this, we store a lambda as a global, as `rsLambda`. The `callback`
+// function calls the lambda, which itself calls the `body` which then calls
+// into JS.
+//
+// We then give the `callback` function pointer to Rust which will call the
+// lambda sometime in the future.
+namespace uniffi::matrix_sdk_ffi::cb::
+    callbackinterfacesearchserviceresultslistenermethod0::
+        vtablecallbackinterfacesearchserviceresultslistener {
+using namespace facebook;
+
+// We need to store a lambda in a global so we can call it from
+// a function pointer. The function pointer is passed to Rust.
+static std::function<void(uint64_t, RustBuffer, void *, RustCallStatus *)>
+    rsLambda = nullptr;
+
+// This is the main body of the callback. It's called from the lambda,
+// which itself is called from the callback function which is passed to Rust.
+static void body(jsi::Runtime &rt,
+                 std::shared_ptr<uniffi_runtime::UniffiCallInvoker> callInvoker,
+                 std::shared_ptr<jsi::Value> callbackValue,
+                 uint64_t rs_uniffiHandle, RustBuffer rs_updates,
+                 void *rs_uniffiOutReturn, RustCallStatus *uniffi_call_status) {
+
+  // Convert the arguments from Rust, into jsi::Values.
+  // We'll use the Bridging class to do this…
+  auto js_uniffiHandle =
+      uniffi_jsi::Bridging<uint64_t>::toJs(rt, callInvoker, rs_uniffiHandle);
+  auto js_updates = uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::toJs(
+      rt, callInvoker, rs_updates);
+
+  // Now we are ready to call the callback.
+  // We are already on the JS thread, because this `body` function was
+  // invoked from the CallInvoker.
+  try {
+    // Getting the callback function
+    auto cb = callbackValue->asObject(rt).asFunction(rt);
+    auto uniffiResult = cb.call(rt, js_uniffiHandle, js_updates);
+
+    // Now copy the result back from JS into the RustCallStatus object.
+    uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyFromJs(
+        rt, callInvoker, uniffiResult, uniffi_call_status);
+
+    if (uniffi_call_status->code != UNIFFI_CALL_STATUS_OK) {
+      // The JS callback finished abnormally, so we cannot retrieve the return
+      // value.
+      return;
+    }
+
+  } catch (const jsi::JSError &error) {
+    std::cout << "Error in callback "
+                 "UniffiCallbackInterfaceSearchServiceResultsListenerMethod0: "
+              << error.what() << std::endl;
+    throw error;
+  }
+}
+
+static void callback(uint64_t rs_uniffiHandle, RustBuffer rs_updates,
+                     void *rs_uniffiOutReturn,
+                     RustCallStatus *uniffi_call_status) {
+  // If the runtime has shutdown, then there is no point in trying to
+  // call into Javascript. BUT how do we tell if the runtime has shutdown?
+  //
+  // Answer: the module destructor calls into callback `cleanup` method,
+  // which nulls out the rsLamda.
+  //
+  // If rsLamda is null, then there is no runtime to call into.
+  if (rsLambda == nullptr) {
+    // This only occurs when destructors are calling into Rust free/drop,
+    // which causes the JS callback to be dropped.
+    return;
+  }
+
+  // The runtime, the actual callback jsi::funtion, and the callInvoker
+  // are all in the lambda.
+  rsLambda(rs_uniffiHandle, rs_updates, rs_uniffiOutReturn, uniffi_call_status);
+}
+
+[[maybe_unused]] static UniffiCallbackInterfaceSearchServiceResultsListenerMethod0
+makeCallbackFunction( // uniffi::matrix_sdk_ffi::cb::callbackinterfacesearchserviceresultslistenermethod0::vtablecallbackinterfacesearchserviceresultslistener
+    jsi::Runtime &rt,
+    std::shared_ptr<uniffi_runtime::UniffiCallInvoker> callInvoker,
+    const jsi::Value &value) {
+  if (rsLambda != nullptr) {
+    // `makeCallbackFunction` is called in two circumstances:
+    //
+    // 1. at startup, when initializing callback interface vtables.
+    // 2. when polling futures. This happens at least once per future that is
+    //    exposed to Javascript. We know that this is always the same function,
+    //    `uniffiFutureContinuationCallback` in `async-rust-calls.ts`.
+    //
+    // We can therefore return the callback function without making anything
+    // new if we've been initialized already.
+    return callback;
+  }
+  auto callbackFunction = value.asObject(rt).asFunction(rt);
+  auto callbackValue = std::make_shared<jsi::Value>(rt, callbackFunction);
+  rsLambda = [&rt, callInvoker, callbackValue](
+                 uint64_t rs_uniffiHandle, RustBuffer rs_updates,
+                 void *rs_uniffiOutReturn, RustCallStatus *uniffi_call_status) {
+    // We immediately make a lambda which will do the work of transforming the
+    // arguments into JSI values and calling the callback.
+    uniffi_runtime::UniffiCallFunc jsLambda =
+        [callInvoker, callbackValue, rs_uniffiHandle, rs_updates,
+         rs_uniffiOutReturn, uniffi_call_status](jsi::Runtime &rt) mutable {
+          body(rt, callInvoker, callbackValue, rs_uniffiHandle, rs_updates,
+               rs_uniffiOutReturn, uniffi_call_status);
+        };
+    // We'll then call that lambda from the callInvoker which will
+    // look after calling it on the correct thread.
+    callInvoker->invokeBlocking(rt, jsLambda);
+  };
+  return callback;
+}
+
+// This method is called from the destructor of NativeMatrixSdkFfi, which only
+// happens when the jsi::Runtime is being destroyed.
+static void cleanup() {
+  // The lambda holds a reference to the the Runtime, so when this is nulled
+  // out, then the pointer will no longer be left dangling.
+  rsLambda = nullptr;
+}
+} // namespace
+  // uniffi::matrix_sdk_ffi::cb::callbackinterfacesearchserviceresultslistenermethod0::vtablecallbackinterfacesearchserviceresultslistener
+namespace uniffi::matrix_sdk_ffi {
+using namespace facebook;
+using CallInvoker = uniffi_runtime::UniffiCallInvoker;
+
+template <>
+struct Bridging<UniffiVTableCallbackInterfaceSearchServiceResultsListener> {
+  static UniffiVTableCallbackInterfaceSearchServiceResultsListener
+  fromJs(jsi::Runtime &rt, std::shared_ptr<CallInvoker> callInvoker,
+         const jsi::Value &jsValue) {
+    // Check if the input is an object
+    if (!jsValue.isObject()) {
+      throw jsi::JSError(
+          rt, "Expected an object for "
+              "UniffiVTableCallbackInterfaceSearchServiceResultsListener");
+    }
+
+    // Get the object from the jsi::Value
+    auto jsObject = jsValue.getObject(rt);
+
+    // Create the vtable struct
+    UniffiVTableCallbackInterfaceSearchServiceResultsListener rsObject;
+
+    // Create the vtable from the js callbacks.
+    rsObject.uniffi_free = uniffi::matrix_sdk_ffi::st::
+        vtablecallbackinterfacesearchserviceresultslistener::
+            vtablecallbackinterfacesearchserviceresultslistener::free::
+                makeCallbackFunction(rt, callInvoker,
+                                     jsObject.getProperty(rt, "uniffiFree"));
+    rsObject.uniffi_clone = uniffi::matrix_sdk_ffi::cb::callbackinterfaceclone::
+        vtablecallbackinterfacesearchserviceresultslistener::
+            makeCallbackFunction(rt, callInvoker,
+                                 jsObject.getProperty(rt, "uniffiClone"));
+    rsObject.on_update = uniffi::matrix_sdk_ffi::cb::
+        callbackinterfacesearchserviceresultslistenermethod0::
+            vtablecallbackinterfacesearchserviceresultslistener::
+                makeCallbackFunction(rt, callInvoker,
+                                     jsObject.getProperty(rt, "onUpdate"));
+
+    return rsObject;
+  }
+};
+
+} // namespace uniffi::matrix_sdk_ffi
+  // Implementation of CallbackInterfaceClone for vtable field uniffi_clone in
   // VTableCallbackInterfaceSessionVerificationControllerDelegate
 
 // Callback function:
@@ -25860,6 +27717,32 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_fn_method_client_clear_caches(
                     rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_client_clear_user_status"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_matrix_sdk_ffi_fn_method_client_clear_user_status"),
+          1,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_fn_method_client_clear_user_status(
+                    rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_client_content_scanner"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_matrix_sdk_ffi_fn_method_client_content_scanner"),
+          1,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_fn_method_client_content_scanner(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_client_create_room"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -25953,6 +27836,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
              const jsi::Value *args, size_t count) -> jsi::Value {
         return this
             ->cpp_uniffi_matrix_sdk_ffi_fn_method_client_enable_automatic_backpagination(
+                rt, thisVal, args, count);
+      });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_client_enable_automatic_call_"
+        "status"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
+                                    "client_enable_automatic_call_status"),
+      2,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_client_enable_automatic_call_status(
                 rt, thisVal, args, count);
       });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_client_enable_send_queue_upload_"
@@ -26256,7 +28151,7 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
       rt,
       jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
                                     "client_is_livekit_rtc_supported"),
-      1,
+      2,
       [this](jsi::Runtime &rt, const jsi::Value &thisVal,
              const jsi::Value *args, size_t count) -> jsi::Value {
         return this
@@ -26299,6 +28194,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_fn_method_client_is_room_alias_available(
                     rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_client_is_user_status_"
+        "supported"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
+                                    "client_is_user_status_supported"),
+      1,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_client_is_user_status_supported(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_client_join_room_by_id"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -26382,6 +28289,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             return this->cpp_uniffi_matrix_sdk_ffi_fn_method_client_logout(
                 rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_client_mark_all_rooms_as_read"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
+                                        "client_mark_all_rooms_as_read"),
+          1,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_fn_method_client_mark_all_rooms_as_read(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_client_new_grant_login_with_qr_"
         "code_handler"] = jsi::Function::createFromHostFunction(
       rt,
@@ -26455,6 +28374,17 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             return this
                 ->cpp_uniffi_matrix_sdk_ffi_fn_method_client_optimize_stores(
                     rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_client_pause"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_client_pause"),
+          1,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_matrix_sdk_ffi_fn_method_client_pause(
+                rt, thisVal, args, count);
           });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_client_register_notification_"
         "handler"] = jsi::Function::createFromHostFunction(
@@ -26554,6 +28484,17 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             return this
                 ->cpp_uniffi_matrix_sdk_ffi_fn_method_client_restore_session_with(
                     rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_client_resume"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_client_resume"),
+          1,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_matrix_sdk_ffi_fn_method_client_resume(
+                rt, thisVal, args, count);
           });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_client_room_alias_exists"] =
       jsi::Function::createFromHostFunction(
@@ -26663,6 +28604,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_fn_method_client_set_avatar_url(
                     rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_client_set_content_scanner"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
+                                        "client_set_content_scanner"),
+          2,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_fn_method_client_set_content_scanner(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_client_set_delegate"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -26724,16 +28677,41 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             ->cpp_uniffi_matrix_sdk_ffi_fn_method_client_set_media_retention_policy(
                 rt, thisVal, args, count);
       });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_client_set_presence"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_client_set_presence"),
+          3,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_fn_method_client_set_presence(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_client_set_pusher"] =
       jsi::Function::createFromHostFunction(
           rt,
           jsi::PropNameID::forAscii(
               rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_client_set_pusher"),
-          7,
+          8,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
             return this->cpp_uniffi_matrix_sdk_ffi_fn_method_client_set_pusher(
                 rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_client_set_user_status"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_matrix_sdk_ffi_fn_method_client_set_user_status"),
+          2,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_fn_method_client_set_user_status(
+                    rt, thisVal, args, count);
           });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_client_set_utd_delegate"] =
       jsi::Function::createFromHostFunction(
@@ -26835,6 +28813,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             ->cpp_uniffi_matrix_sdk_ffi_fn_method_client_subscribe_to_own_beacon_info_updates(
                 rt, thisVal, args, count);
       });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_client_subscribe_to_own_"
+        "profile"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
+                                    "client_subscribe_to_own_profile"),
+      2,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_client_subscribe_to_own_profile(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_client_subscribe_to_room_info"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -26904,6 +28894,17 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
             return this->cpp_uniffi_matrix_sdk_ffi_fn_method_client_sync_v2(
+                rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_client_tile_server"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_client_tile_server"),
+          1,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_matrix_sdk_ffi_fn_method_client_tile_server(
                 rt, thisVal, args, count);
           });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_client_track_recently_visited_"
@@ -27015,17 +29016,16 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_fn_method_client_get_recent_emojis(
                     rt, thisVal, args, count);
           });
-  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_client_search_messages"] =
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_client_search_service"] =
       jsi::Function::createFromHostFunction(
           rt,
           jsi::PropNameID::forAscii(
-              rt,
-              "ubrn_uniffi_matrix_sdk_ffi_fn_method_client_search_messages"),
-          4,
+              rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_client_search_service"),
+          1,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
             return this
-                ->cpp_uniffi_matrix_sdk_ffi_fn_method_client_search_messages(
+                ->cpp_uniffi_matrix_sdk_ffi_fn_method_client_search_service(
                     rt, thisVal, args, count);
           });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_clone_homeservercapabilities"] =
@@ -27582,6 +29582,53 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             ->cpp_uniffi_matrix_sdk_ffi_fn_method_clientbuilder_with_search_index_store(
                 rt, thisVal, args, count);
       });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_clone_contentscanner"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt, "ubrn_uniffi_matrix_sdk_ffi_fn_clone_contentscanner"),
+          1,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_matrix_sdk_ffi_fn_clone_contentscanner(
+                rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_free_contentscanner"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt, "ubrn_uniffi_matrix_sdk_ffi_fn_free_contentscanner"),
+          1,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_matrix_sdk_ffi_fn_free_contentscanner(
+                rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_constructor_contentscanner_new"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_matrix_sdk_ffi_fn_constructor_contentscanner_new"),
+          1,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_fn_constructor_contentscanner_new(
+                    rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_contentscanner_scan"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_contentscanner_scan"),
+          3,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_fn_method_contentscanner_scan(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_clone_encryption"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -27641,6 +29688,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             ->cpp_uniffi_matrix_sdk_ffi_fn_method_encryption_backup_state_listener(
                 rt, thisVal, args, count);
       });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_encryption_create_dehydrated_"
+        "device"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
+                                    "encryption_create_dehydrated_device"),
+      3,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_encryption_create_dehydrated_device(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_encryption_curve25519_key"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -27654,6 +29713,31 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_fn_method_encryption_curve25519_key(
                     rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_encryption_dehydrated_device_"
+        "event_listener"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt,
+                                "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
+                                "encryption_dehydrated_device_event_listener"),
+      2,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_encryption_dehydrated_device_event_listener(
+                rt, thisVal, args, count);
+      });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_encryption_delete_dehydrated_"
+        "device"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
+                                    "encryption_delete_dehydrated_device"),
+      1,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_encryption_delete_dehydrated_device(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_encryption_disable_recovery"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -27726,6 +29810,19 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
              const jsi::Value *args, size_t count) -> jsi::Value {
         return this
             ->cpp_uniffi_matrix_sdk_ffi_fn_method_encryption_import_secrets_bundle(
+                rt, thisVal, args, count);
+      });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_encryption_is_dehydrated_device_"
+        "supported"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt,
+                                "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
+                                "encryption_is_dehydrated_device_supported"),
+      1,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_encryption_is_dehydrated_device_supported(
                 rt, thisVal, args, count);
       });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_encryption_is_last_device"] =
@@ -27801,6 +29898,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             ->cpp_uniffi_matrix_sdk_ffi_fn_method_encryption_recovery_state_listener(
                 rt, thisVal, args, count);
       });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_encryption_rehydrate_dehydrated_"
+        "device"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
+                                    "encryption_rehydrate_dehydrated_device"),
+      2,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_encryption_rehydrate_dehydrated_device(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_encryption_reset_identity"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -27826,6 +29935,30 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_fn_method_encryption_reset_recovery_key(
                     rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_encryption_start_dehydrated_"
+        "devices"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
+                                    "encryption_start_dehydrated_devices"),
+      3,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_encryption_start_dehydrated_devices(
+                rt, thisVal, args, count);
+      });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_encryption_stop_dehydrated_"
+        "devices"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
+                                    "encryption_stop_dehydrated_devices"),
+      1,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_encryption_stop_dehydrated_devices(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_encryption_user_identity"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -28589,6 +30722,94 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             ->cpp_uniffi_matrix_sdk_ffi_fn_method_notificationsettings_unmute_room(
                 rt, thisVal, args, count);
       });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_clone_passwordstrengthestimator"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_matrix_sdk_ffi_fn_clone_passwordstrengthestimator"),
+          1,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_fn_clone_passwordstrengthestimator(
+                    rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_free_passwordstrengthestimator"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_matrix_sdk_ffi_fn_free_passwordstrengthestimator"),
+          1,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_fn_free_passwordstrengthestimator(
+                    rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_constructor_passwordstrengthestimator_"
+        "new"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_constructor_"
+                                    "passwordstrengthestimator_new"),
+      1,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_constructor_passwordstrengthestimator_new(
+                rt, thisVal, args, count);
+      });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_constructor_passwordstrengthestimator_"
+        "with_modern_defaults2025"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(
+          rt, "ubrn_uniffi_matrix_sdk_ffi_fn_constructor_"
+              "passwordstrengthestimator_with_modern_defaults2025"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_constructor_passwordstrengthestimator_with_modern_defaults2025(
+                rt, thisVal, args, count);
+      });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_constructor_passwordstrengthestimator_"
+        "with_zxcvbn_defaults"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(
+          rt, "ubrn_uniffi_matrix_sdk_ffi_fn_constructor_"
+              "passwordstrengthestimator_with_zxcvbn_defaults"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_constructor_passwordstrengthestimator_with_zxcvbn_defaults(
+                rt, thisVal, args, count);
+      });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_passwordstrengthestimator_"
+        "estimate"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
+                                    "passwordstrengthestimator_estimate"),
+      3,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_passwordstrengthestimator_estimate(
+                rt, thisVal, args, count);
+      });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_passwordstrengthestimator_"
+        "thresholds"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
+                                    "passwordstrengthestimator_thresholds"),
+      1,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_passwordstrengthestimator_thresholds(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_clone_span"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -28713,6 +30934,56 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_fn_method_checkcodesender_send(
                     rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_clone_continuationmessagesender"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_matrix_sdk_ffi_fn_clone_continuationmessagesender"),
+          1,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_fn_clone_continuationmessagesender(
+                    rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_free_continuationmessagesender"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_matrix_sdk_ffi_fn_free_continuationmessagesender"),
+          1,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_fn_free_continuationmessagesender(
+                    rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_continuationmessagesender_"
+        "cancel"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
+                                    "continuationmessagesender_cancel"),
+      1,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_continuationmessagesender_cancel(
+                rt, thisVal, args, count);
+      });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_continuationmessagesender_"
+        "confirm"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
+                                    "continuationmessagesender_confirm"),
+      1,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_continuationmessagesender_confirm(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_clone_grantloginwithqrcodehandler"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -29079,18 +31350,6 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                  const jsi::Value *args, size_t count) -> jsi::Value {
             return this
                 ->cpp_uniffi_matrix_sdk_ffi_fn_method_room_clear_composer_draft(
-                    rt, thisVal, args, count);
-          });
-  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_room_clear_event_cache_storage"] =
-      jsi::Function::createFromHostFunction(
-          rt,
-          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
-                                        "room_clear_event_cache_storage"),
-          1,
-          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-                 const jsi::Value *args, size_t count) -> jsi::Value {
-            return this
-                ->cpp_uniffi_matrix_sdk_ffi_fn_method_room_clear_event_cache_storage(
                     rt, thisVal, args, count);
           });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_room_decline_call"] =
@@ -29481,6 +31740,19 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_fn_method_room_load_or_fetch_event(
                     rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_room_load_user_receipt"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_matrix_sdk_ffi_fn_method_room_load_user_receipt"),
+          4,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_fn_method_room_load_user_receipt(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_room_mark_as_fully_read_"
         "unchecked"] = jsi::Function::createFromHostFunction(
       rt,
@@ -29798,6 +32070,19 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                  const jsi::Value *args, size_t count) -> jsi::Value {
             return this->cpp_uniffi_matrix_sdk_ffi_fn_method_room_send_raw(
                 rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_room_send_single_receipt"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_matrix_sdk_ffi_fn_method_room_send_single_receipt"),
+          4,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_fn_method_room_send_single_receipt(
+                    rt, thisVal, args, count);
           });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_room_send_state_event_raw"] =
       jsi::Function::createFromHostFunction(
@@ -30168,18 +32453,6 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             ->cpp_uniffi_matrix_sdk_ffi_fn_method_room_withdraw_verification_and_resend(
                 rt, thisVal, args, count);
       });
-  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_room_search_messages"] =
-      jsi::Function::createFromHostFunction(
-          rt,
-          jsi::PropNameID::forAscii(
-              rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_room_search_messages"),
-          3,
-          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-                 const jsi::Value *args, size_t count) -> jsi::Value {
-            return this
-                ->cpp_uniffi_matrix_sdk_ffi_fn_method_room_search_messages(
-                    rt, thisVal, args, count);
-          });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_clone_roommembersiterator"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -31062,75 +33335,91 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             return this->cpp_uniffi_matrix_sdk_ffi_fn_method_mediasource_url(
                 rt, thisVal, args, count);
           });
-  props["ubrn_uniffi_matrix_sdk_ffi_fn_clone_globalsearchiterator"] =
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_clone_searchservice"] =
       jsi::Function::createFromHostFunction(
           rt,
           jsi::PropNameID::forAscii(
-              rt, "ubrn_uniffi_matrix_sdk_ffi_fn_clone_globalsearchiterator"),
+              rt, "ubrn_uniffi_matrix_sdk_ffi_fn_clone_searchservice"),
+          1,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_matrix_sdk_ffi_fn_clone_searchservice(
+                rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_free_searchservice"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt, "ubrn_uniffi_matrix_sdk_ffi_fn_free_searchservice"),
+          1,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_matrix_sdk_ffi_fn_free_searchservice(
+                rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_searchservice_paginate"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_matrix_sdk_ffi_fn_method_searchservice_paginate"),
           1,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
             return this
-                ->cpp_uniffi_matrix_sdk_ffi_fn_clone_globalsearchiterator(
+                ->cpp_uniffi_matrix_sdk_ffi_fn_method_searchservice_paginate(
                     rt, thisVal, args, count);
           });
-  props["ubrn_uniffi_matrix_sdk_ffi_fn_free_globalsearchiterator"] =
-      jsi::Function::createFromHostFunction(
-          rt,
-          jsi::PropNameID::forAscii(
-              rt, "ubrn_uniffi_matrix_sdk_ffi_fn_free_globalsearchiterator"),
-          1,
-          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-                 const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_matrix_sdk_ffi_fn_free_globalsearchiterator(
-                rt, thisVal, args, count);
-          });
-  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_globalsearchiterator_next_"
-        "events"] = jsi::Function::createFromHostFunction(
-      rt,
-      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
-                                    "globalsearchiterator_next_events"),
-      1,
-      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-             const jsi::Value *args, size_t count) -> jsi::Value {
-        return this
-            ->cpp_uniffi_matrix_sdk_ffi_fn_method_globalsearchiterator_next_events(
-                rt, thisVal, args, count);
-      });
-  props["ubrn_uniffi_matrix_sdk_ffi_fn_clone_roomsearchiterator"] =
-      jsi::Function::createFromHostFunction(
-          rt,
-          jsi::PropNameID::forAscii(
-              rt, "ubrn_uniffi_matrix_sdk_ffi_fn_clone_roomsearchiterator"),
-          1,
-          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-                 const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_matrix_sdk_ffi_fn_clone_roomsearchiterator(
-                rt, thisVal, args, count);
-          });
-  props["ubrn_uniffi_matrix_sdk_ffi_fn_free_roomsearchiterator"] =
-      jsi::Function::createFromHostFunction(
-          rt,
-          jsi::PropNameID::forAscii(
-              rt, "ubrn_uniffi_matrix_sdk_ffi_fn_free_roomsearchiterator"),
-          1,
-          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-                 const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_matrix_sdk_ffi_fn_free_roomsearchiterator(
-                rt, thisVal, args, count);
-          });
-  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_roomsearchiterator_next_events"] =
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_searchservice_pagination_state"] =
       jsi::Function::createFromHostFunction(
           rt,
           jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
-                                        "roomsearchiterator_next_events"),
+                                        "searchservice_pagination_state"),
           1,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
             return this
-                ->cpp_uniffi_matrix_sdk_ffi_fn_method_roomsearchiterator_next_events(
+                ->cpp_uniffi_matrix_sdk_ffi_fn_method_searchservice_pagination_state(
                     rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_searchservice_set_query"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_matrix_sdk_ffi_fn_method_searchservice_set_query"),
+          2,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_fn_method_searchservice_set_query(
+                    rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_searchservice_subscribe_to_"
+        "pagination_state_updates"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(
+          rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_searchservice_subscribe_to_"
+              "pagination_state_updates"),
+      2,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_searchservice_subscribe_to_pagination_state_updates(
+                rt, thisVal, args, count);
+      });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_searchservice_subscribe_to_"
+        "results"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
+                                    "searchservice_subscribe_to_results"),
+      2,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_searchservice_subscribe_to_results(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_clone_sessionverificationcontroller"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -31704,6 +33993,19 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             ->cpp_uniffi_matrix_sdk_ffi_fn_method_sqlitestorebuilder_journal_size_limit(
                 rt, thisVal, args, count);
       });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_sqlitestorebuilder_key"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_matrix_sdk_ffi_fn_method_sqlitestorebuilder_key"),
+          2,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_fn_method_sqlitestorebuilder_key(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_sqlitestorebuilder_passphrase"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -31865,6 +34167,31 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
              const jsi::Value *args, size_t count) -> jsi::Value {
         return this
             ->cpp_uniffi_matrix_sdk_ffi_fn_method_syncservicebuilder_with_offline_mode(
+                rt, thisVal, args, count);
+      });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_syncservicebuilder_with_parent_"
+        "span"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
+                                    "syncservicebuilder_with_parent_span"),
+      2,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_syncservicebuilder_with_parent_span(
+                rt, thisVal, args, count);
+      });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_syncservicebuilder_with_profiles_"
+        "extension"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt,
+                                "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
+                                "syncservicebuilder_with_profiles_extension"),
+      1,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_syncservicebuilder_with_profiles_extension(
                 rt, thisVal, args, count);
       });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_syncservicebuilder_with_room_"
@@ -32376,7 +34703,7 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
           rt,
           jsi::PropNameID::forAscii(
               rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_timeline_send_file"),
-          3,
+          4,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
             return this->cpp_uniffi_matrix_sdk_ffi_fn_method_timeline_send_file(
@@ -32467,6 +34794,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_fn_method_timeline_send_voice_message(
                     rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_timeline_send_with_extra_"
+        "content"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
+                                    "timeline_send_with_extra_content"),
+      3,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_timeline_send_with_extra_content(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_timeline_subscribe_to_back_"
         "pagination_status"] = jsi::Function::createFromHostFunction(
       rt,
@@ -33068,6 +35407,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             ->cpp_uniffi_matrix_sdk_ffi_fn_init_callback_vtable_mediapreviewconfiglistener(
                 rt, thisVal, args, count);
       });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_init_callback_vtable_profilelistener"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_init_"
+                                        "callback_vtable_profilelistener"),
+          1,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_fn_init_callback_vtable_profilelistener(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_init_callback_vtable_progresswatcher"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -33153,6 +35504,19 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
              const jsi::Value *args, size_t count) -> jsi::Value {
         return this
             ->cpp_uniffi_matrix_sdk_ffi_fn_init_callback_vtable_backupsteadystatelistener(
+                rt, thisVal, args, count);
+      });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_init_callback_vtable_"
+        "dehydrateddeviceeventlistener"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt,
+                                "ubrn_uniffi_matrix_sdk_ffi_fn_init_callback_"
+                                "vtable_dehydrateddeviceeventlistener"),
+      1,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_init_callback_vtable_dehydrateddeviceeventlistener(
                 rt, thisVal, args, count);
       });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_init_callback_vtable_"
@@ -33411,6 +35775,33 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                     rt, thisVal, args, count);
           });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_init_callback_vtable_"
+        "searchservicepaginationstatelistener"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt, "ubrn_uniffi_matrix_sdk_ffi_fn_init_callback_vtable_"
+                  "searchservicepaginationstatelistener"),
+          1,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_fn_init_callback_vtable_searchservicepaginationstatelistener(
+                    rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_init_callback_vtable_"
+        "searchserviceresultslistener"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt,
+                                "ubrn_uniffi_matrix_sdk_ffi_fn_init_callback_"
+                                "vtable_searchserviceresultslistener"),
+      1,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_init_callback_vtable_searchserviceresultslistener(
+                rt, thisVal, args, count);
+      });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_init_callback_vtable_"
         "sessionverificationcontrollerdelegate"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -33590,40 +35981,40 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             ->cpp_uniffi_matrix_sdk_ffi_fn_init_callback_vtable_widgetcapabilitiesprovider(
                 rt, thisVal, args, count);
       });
-  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_timelineeventtype_uniffi_trait_"
-        "eq_eq"] = jsi::Function::createFromHostFunction(
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_ffitimelineeventtype_uniffi_"
+        "trait_eq_eq"] = jsi::Function::createFromHostFunction(
       rt,
       jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
-                                    "timelineeventtype_uniffi_trait_eq_eq"),
+                                    "ffitimelineeventtype_uniffi_trait_eq_eq"),
       2,
       [this](jsi::Runtime &rt, const jsi::Value &thisVal,
              const jsi::Value *args, size_t count) -> jsi::Value {
         return this
-            ->cpp_uniffi_matrix_sdk_ffi_fn_method_timelineeventtype_uniffi_trait_eq_eq(
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_ffitimelineeventtype_uniffi_trait_eq_eq(
                 rt, thisVal, args, count);
       });
-  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_timelineeventtype_uniffi_trait_"
-        "eq_ne"] = jsi::Function::createFromHostFunction(
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_ffitimelineeventtype_uniffi_"
+        "trait_eq_ne"] = jsi::Function::createFromHostFunction(
       rt,
       jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
-                                    "timelineeventtype_uniffi_trait_eq_ne"),
+                                    "ffitimelineeventtype_uniffi_trait_eq_ne"),
       2,
       [this](jsi::Runtime &rt, const jsi::Value &thisVal,
              const jsi::Value *args, size_t count) -> jsi::Value {
         return this
-            ->cpp_uniffi_matrix_sdk_ffi_fn_method_timelineeventtype_uniffi_trait_eq_ne(
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_ffitimelineeventtype_uniffi_trait_eq_ne(
                 rt, thisVal, args, count);
       });
-  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_timelineeventtype_uniffi_trait_"
-        "hash"] = jsi::Function::createFromHostFunction(
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_ffitimelineeventtype_uniffi_"
+        "trait_hash"] = jsi::Function::createFromHostFunction(
       rt,
       jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
-                                    "timelineeventtype_uniffi_trait_hash"),
+                                    "ffitimelineeventtype_uniffi_trait_hash"),
       1,
       [this](jsi::Runtime &rt, const jsi::Value &thisVal,
              const jsi::Value *args, size_t count) -> jsi::Value {
         return this
-            ->cpp_uniffi_matrix_sdk_ffi_fn_method_timelineeventtype_uniffi_trait_hash(
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_ffitimelineeventtype_uniffi_trait_hash(
                 rt, thisVal, args, count);
       });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_tagname_uniffi_trait_eq_eq"] =
@@ -35022,6 +37413,30 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_clear_caches(
                     rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_clear_user_status"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_"
+                                        "method_client_clear_user_status"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_clear_user_status(
+                    rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_content_scanner"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_"
+                                        "method_client_content_scanner"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_content_scanner(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_create_room"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -35120,6 +37535,19 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
              const jsi::Value *args, size_t count) -> jsi::Value {
         return this
             ->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_enable_automatic_backpagination(
+                rt, thisVal, args, count);
+      });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_enable_automatic_"
+        "call_status"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt,
+                                "ubrn_uniffi_matrix_sdk_ffi_checksum_method_"
+                                "client_enable_automatic_call_status"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_enable_automatic_call_status(
                 rt, thisVal, args, count);
       });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_enable_send_queue_"
@@ -35484,6 +37912,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             ->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_is_room_alias_available(
                 rt, thisVal, args, count);
       });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_is_user_status_"
+        "supported"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_"
+                                    "method_client_is_user_status_supported"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_is_user_status_supported(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_join_room_by_id"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -35566,6 +38006,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_logout(
                     rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_mark_all_rooms_as_"
+        "read"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_"
+                                    "method_client_mark_all_rooms_as_read"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_mark_all_rooms_as_read(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_new_grant_login_"
         "with_qr_code_handler"] = jsi::Function::createFromHostFunction(
       rt,
@@ -35640,6 +38092,17 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             return this
                 ->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_optimize_stores(
                     rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_pause"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_pause"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_pause(
+                rt, thisVal, args, count);
           });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_register_"
         "notification_handler"] = jsi::Function::createFromHostFunction(
@@ -35738,6 +38201,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             ->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_restore_session_with(
                 rt, thisVal, args, count);
       });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_resume"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_resume"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_resume(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_room_alias_exists"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -35846,6 +38321,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_set_avatar_url(
                     rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_set_content_"
+        "scanner"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_"
+                                    "method_client_set_content_scanner"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_set_content_scanner(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_set_delegate"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -35909,6 +38396,19 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             ->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_set_media_retention_policy(
                 rt, thisVal, args, count);
       });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_set_presence"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_set_presence"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_set_presence(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_set_pusher"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -35920,6 +38420,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                  const jsi::Value *args, size_t count) -> jsi::Value {
             return this
                 ->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_set_pusher(
+                    rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_set_user_status"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_"
+                                        "method_client_set_user_status"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_set_user_status(
                     rt, thisVal, args, count);
           });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_set_utd_delegate"] =
@@ -36021,6 +38533,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             ->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_subscribe_to_own_beacon_info_updates(
                 rt, thisVal, args, count);
       });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_subscribe_to_own_"
+        "profile"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_"
+                                    "method_client_subscribe_to_own_profile"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_subscribe_to_own_profile(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_subscribe_to_room_"
         "info"] = jsi::Function::createFromHostFunction(
       rt,
@@ -36095,6 +38619,19 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                  const jsi::Value *args, size_t count) -> jsi::Value {
             return this
                 ->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_sync_v2(
+                    rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_tile_server"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_tile_server"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_tile_server(
                     rt, thisVal, args, count);
           });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_track_recently_"
@@ -36207,16 +38744,16 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_get_recent_emojis(
                     rt, thisVal, args, count);
           });
-  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_search_messages"] =
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_search_service"] =
       jsi::Function::createFromHostFunction(
           rt,
           jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_"
-                                        "method_client_search_messages"),
+                                        "method_client_search_service"),
           0,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
             return this
-                ->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_search_messages(
+                ->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_search_service(
                     rt, thisVal, args, count);
           });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_homeservercapabilities_can_"
@@ -36698,6 +39235,19 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             ->cpp_uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_with_search_index_store(
                 rt, thisVal, args, count);
       });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_contentscanner_scan"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_matrix_sdk_ffi_checksum_method_contentscanner_scan"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_checksum_method_contentscanner_scan(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_encryption_backup_exists_"
         "on_server"] = jsi::Function::createFromHostFunction(
       rt,
@@ -36735,6 +39285,19 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             ->cpp_uniffi_matrix_sdk_ffi_checksum_method_encryption_backup_state_listener(
                 rt, thisVal, args, count);
       });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_encryption_create_"
+        "dehydrated_device"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt,
+                                "ubrn_uniffi_matrix_sdk_ffi_checksum_method_"
+                                "encryption_create_dehydrated_device"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_encryption_create_dehydrated_device(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_encryption_curve25519_"
         "key"] = jsi::Function::createFromHostFunction(
       rt,
@@ -36745,6 +39308,32 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
              const jsi::Value *args, size_t count) -> jsi::Value {
         return this
             ->cpp_uniffi_matrix_sdk_ffi_checksum_method_encryption_curve25519_key(
+                rt, thisVal, args, count);
+      });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_encryption_dehydrated_"
+        "device_event_listener"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt,
+                                "ubrn_uniffi_matrix_sdk_ffi_checksum_method_"
+                                "encryption_dehydrated_device_event_listener"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_encryption_dehydrated_device_event_listener(
+                rt, thisVal, args, count);
+      });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_encryption_delete_"
+        "dehydrated_device"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt,
+                                "ubrn_uniffi_matrix_sdk_ffi_checksum_method_"
+                                "encryption_delete_dehydrated_device"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_encryption_delete_dehydrated_device(
                 rt, thisVal, args, count);
       });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_encryption_disable_"
@@ -36818,6 +39407,19 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
              const jsi::Value *args, size_t count) -> jsi::Value {
         return this
             ->cpp_uniffi_matrix_sdk_ffi_checksum_method_encryption_import_secrets_bundle(
+                rt, thisVal, args, count);
+      });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_encryption_is_dehydrated_"
+        "device_supported"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt,
+                                "ubrn_uniffi_matrix_sdk_ffi_checksum_method_"
+                                "encryption_is_dehydrated_device_supported"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_encryption_is_dehydrated_device_supported(
                 rt, thisVal, args, count);
       });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_encryption_is_last_"
@@ -36894,6 +39496,19 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             ->cpp_uniffi_matrix_sdk_ffi_checksum_method_encryption_recovery_state_listener(
                 rt, thisVal, args, count);
       });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_encryption_rehydrate_"
+        "dehydrated_device"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt,
+                                "ubrn_uniffi_matrix_sdk_ffi_checksum_method_"
+                                "encryption_rehydrate_dehydrated_device"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_encryption_rehydrate_dehydrated_device(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_encryption_reset_"
         "identity"] = jsi::Function::createFromHostFunction(
       rt,
@@ -36916,6 +39531,32 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
              const jsi::Value *args, size_t count) -> jsi::Value {
         return this
             ->cpp_uniffi_matrix_sdk_ffi_checksum_method_encryption_reset_recovery_key(
+                rt, thisVal, args, count);
+      });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_encryption_start_"
+        "dehydrated_devices"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt,
+                                "ubrn_uniffi_matrix_sdk_ffi_checksum_method_"
+                                "encryption_start_dehydrated_devices"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_encryption_start_dehydrated_devices(
+                rt, thisVal, args, count);
+      });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_encryption_stop_dehydrated_"
+        "devices"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt,
+                                "ubrn_uniffi_matrix_sdk_ffi_checksum_method_"
+                                "encryption_stop_dehydrated_devices"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_encryption_stop_dehydrated_devices(
                 rt, thisVal, args, count);
       });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_encryption_user_identity"] =
@@ -37507,6 +40148,32 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             ->cpp_uniffi_matrix_sdk_ffi_checksum_method_notificationsettings_unmute_room(
                 rt, thisVal, args, count);
       });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_passwordstrengthestimator_"
+        "estimate"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt,
+                                "ubrn_uniffi_matrix_sdk_ffi_checksum_method_"
+                                "passwordstrengthestimator_estimate"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_passwordstrengthestimator_estimate(
+                rt, thisVal, args, count);
+      });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_passwordstrengthestimator_"
+        "thresholds"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt,
+                                "ubrn_uniffi_matrix_sdk_ffi_checksum_method_"
+                                "passwordstrengthestimator_thresholds"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_passwordstrengthestimator_thresholds(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_span_enter"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -37552,6 +40219,30 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_checksum_method_checkcodesender_send(
                     rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_continuationmessagesender_"
+        "cancel"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_"
+                                    "method_continuationmessagesender_cancel"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_continuationmessagesender_cancel(
+                rt, thisVal, args, count);
+      });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_continuationmessagesender_"
+        "confirm"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_"
+                                    "method_continuationmessagesender_confirm"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_continuationmessagesender_confirm(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_"
         "grantloginwithqrcodehandler_generate"] =
       jsi::Function::createFromHostFunction(
@@ -37797,18 +40488,6 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
              const jsi::Value *args, size_t count) -> jsi::Value {
         return this
             ->cpp_uniffi_matrix_sdk_ffi_checksum_method_room_clear_composer_draft(
-                rt, thisVal, args, count);
-      });
-  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_room_clear_event_cache_"
-        "storage"] = jsi::Function::createFromHostFunction(
-      rt,
-      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_"
-                                    "method_room_clear_event_cache_storage"),
-      0,
-      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-             const jsi::Value *args, size_t count) -> jsi::Value {
-        return this
-            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_room_clear_event_cache_storage(
                 rt, thisVal, args, count);
       });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_room_decline_call"] =
@@ -38206,6 +40885,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_checksum_method_room_load_or_fetch_event(
                     rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_room_load_user_receipt"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_"
+                                        "method_room_load_user_receipt"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_checksum_method_room_load_user_receipt(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_room_mark_as_fully_read_"
         "unchecked"] = jsi::Function::createFromHostFunction(
       rt,
@@ -38533,6 +41224,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                  const jsi::Value *args, size_t count) -> jsi::Value {
             return this
                 ->cpp_uniffi_matrix_sdk_ffi_checksum_method_room_send_raw(
+                    rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_room_send_single_receipt"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_"
+                                        "method_room_send_single_receipt"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_checksum_method_room_send_single_receipt(
                     rt, thisVal, args, count);
           });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_room_send_state_event_"
@@ -38916,18 +41619,6 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             ->cpp_uniffi_matrix_sdk_ffi_checksum_method_room_withdraw_verification_and_resend(
                 rt, thisVal, args, count);
       });
-  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_room_search_messages"] =
-      jsi::Function::createFromHostFunction(
-          rt,
-          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_"
-                                        "method_room_search_messages"),
-          0,
-          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-                 const jsi::Value *args, size_t count) -> jsi::Value {
-            return this
-                ->cpp_uniffi_matrix_sdk_ffi_checksum_method_room_search_messages(
-                    rt, thisVal, args, count);
-          });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_roommembersiterator_len"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -39575,28 +42266,66 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_checksum_method_mediasource_url(
                     rt, thisVal, args, count);
           });
-  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_globalsearchiterator_next_"
-        "events"] = jsi::Function::createFromHostFunction(
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_searchservice_paginate"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_"
+                                        "method_searchservice_paginate"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_checksum_method_searchservice_paginate(
+                    rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_searchservice_pagination_"
+        "state"] = jsi::Function::createFromHostFunction(
       rt,
       jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_"
-                                    "method_globalsearchiterator_next_events"),
+                                    "method_searchservice_pagination_state"),
       0,
       [this](jsi::Runtime &rt, const jsi::Value &thisVal,
              const jsi::Value *args, size_t count) -> jsi::Value {
         return this
-            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_globalsearchiterator_next_events(
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_searchservice_pagination_state(
                 rt, thisVal, args, count);
       });
-  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_roomsearchiterator_next_"
-        "events"] = jsi::Function::createFromHostFunction(
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_searchservice_set_query"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_"
+                                        "method_searchservice_set_query"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_checksum_method_searchservice_set_query(
+                    rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_searchservice_subscribe_to_"
+        "pagination_state_updates"] = jsi::Function::createFromHostFunction(
       rt,
-      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_"
-                                    "method_roomsearchiterator_next_events"),
+      jsi::PropNameID::forAscii(
+          rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_method_searchservice_"
+              "subscribe_to_pagination_state_updates"),
       0,
       [this](jsi::Runtime &rt, const jsi::Value &thisVal,
              const jsi::Value *args, size_t count) -> jsi::Value {
         return this
-            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_roomsearchiterator_next_events(
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_searchservice_subscribe_to_pagination_state_updates(
+                rt, thisVal, args, count);
+      });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_searchservice_subscribe_to_"
+        "results"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt,
+                                "ubrn_uniffi_matrix_sdk_ffi_checksum_method_"
+                                "searchservice_subscribe_to_results"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_searchservice_subscribe_to_results(
                 rt, thisVal, args, count);
       });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_"
@@ -40039,6 +42768,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             ->cpp_uniffi_matrix_sdk_ffi_checksum_method_sqlitestorebuilder_journal_size_limit(
                 rt, thisVal, args, count);
       });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_sqlitestorebuilder_key"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_"
+                                        "method_sqlitestorebuilder_key"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_checksum_method_sqlitestorebuilder_key(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_sqlitestorebuilder_"
         "passphrase"] = jsi::Function::createFromHostFunction(
       rt,
@@ -40162,6 +42903,32 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
              const jsi::Value *args, size_t count) -> jsi::Value {
         return this
             ->cpp_uniffi_matrix_sdk_ffi_checksum_method_syncservicebuilder_with_offline_mode(
+                rt, thisVal, args, count);
+      });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_syncservicebuilder_with_"
+        "parent_span"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt,
+                                "ubrn_uniffi_matrix_sdk_ffi_checksum_method_"
+                                "syncservicebuilder_with_parent_span"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_syncservicebuilder_with_parent_span(
+                rt, thisVal, args, count);
+      });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_syncservicebuilder_with_"
+        "profiles_extension"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt,
+                                "ubrn_uniffi_matrix_sdk_ffi_checksum_method_"
+                                "syncservicebuilder_with_profiles_extension"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_syncservicebuilder_with_profiles_extension(
                 rt, thisVal, args, count);
       });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_syncservicebuilder_with_"
@@ -40661,6 +43428,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             ->cpp_uniffi_matrix_sdk_ffi_checksum_method_timeline_send_voice_message(
                 rt, thisVal, args, count);
       });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_timeline_send_with_extra_"
+        "content"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_"
+                                    "method_timeline_send_with_extra_content"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_timeline_send_with_extra_content(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_timeline_subscribe_to_back_"
         "pagination_status"] = jsi::Function::createFromHostFunction(
       rt,
@@ -40955,6 +43734,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_checksum_constructor_clientbuilder_new(
                     rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_constructor_contentscanner_new"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_"
+                                        "constructor_contentscanner_new"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_checksum_constructor_contentscanner_new(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_constructor_"
         "secretsbundlewithuserid_from_database"] =
       jsi::Function::createFromHostFunction(
@@ -40982,6 +43773,47 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             ->cpp_uniffi_matrix_sdk_ffi_checksum_constructor_secretsbundlewithuserid_from_str(
                 rt, thisVal, args, count);
       });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_constructor_"
+        "passwordstrengthestimator_new"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt,
+                                "ubrn_uniffi_matrix_sdk_ffi_checksum_"
+                                "constructor_passwordstrengthestimator_new"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_constructor_passwordstrengthestimator_new(
+                rt, thisVal, args, count);
+      });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_constructor_"
+        "passwordstrengthestimator_with_modern_defaults2025"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_constructor_"
+                  "passwordstrengthestimator_with_modern_defaults2025"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_checksum_constructor_passwordstrengthestimator_with_modern_defaults2025(
+                    rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_constructor_"
+        "passwordstrengthestimator_with_zxcvbn_defaults"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_constructor_"
+                  "passwordstrengthestimator_with_zxcvbn_defaults"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_checksum_constructor_passwordstrengthestimator_with_zxcvbn_defaults(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_constructor_span_current"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -41233,6 +44065,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             ->cpp_uniffi_matrix_sdk_ffi_checksum_method_mediapreviewconfiglistener_on_change(
                 rt, thisVal, args, count);
       });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_profilelistener_on_"
+        "update"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_"
+                                    "method_profilelistener_on_update"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_profilelistener_on_update(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_progresswatcher_"
         "transmission_progress"] = jsi::Function::createFromHostFunction(
       rt,
@@ -41323,6 +44167,20 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             ->cpp_uniffi_matrix_sdk_ffi_checksum_method_backupsteadystatelistener_on_update(
                 rt, thisVal, args, count);
       });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_"
+        "dehydrateddeviceeventlistener_on_event"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_method_"
+                  "dehydrateddeviceeventlistener_on_event"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_checksum_method_dehydrateddeviceeventlistener_on_event(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_"
         "enablerecoveryprogresslistener_on_update"] =
       jsi::Function::createFromHostFunction(
@@ -41582,6 +44440,34 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                  const jsi::Value *args, size_t count) -> jsi::Value {
             return this
                 ->cpp_uniffi_matrix_sdk_ffi_checksum_method_roomlistservicesyncindicatorlistener_on_update(
+                    rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_"
+        "searchservicepaginationstatelistener_on_update"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_method_"
+                  "searchservicepaginationstatelistener_on_update"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_checksum_method_searchservicepaginationstatelistener_on_update(
+                    rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_"
+        "searchserviceresultslistener_on_update"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_method_"
+                  "searchserviceresultslistener_on_update"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_checksum_method_searchserviceresultslistener_on_update(
                     rt, thisVal, args, count);
           });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_"
@@ -41956,6 +44842,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_internal_fn_method_clientbuilder_ffi__bless_pointer(
                     rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_internal_fn_method_contentscanner_ffi__bless_pointer"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_internal_fn_method_"
+                                        "contentscanner_ffi__bless_pointer"),
+          1,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_internal_fn_method_contentscanner_ffi__bless_pointer(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_internal_fn_method_encryption_ffi__bless_pointer"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -42055,6 +44953,19 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             ->cpp_uniffi_internal_fn_method_notificationsettings_ffi__bless_pointer(
                 rt, thisVal, args, count);
       });
+  props["ubrn_uniffi_internal_fn_method_passwordstrengthestimator_ffi__bless_"
+        "pointer"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt,
+                                "ubrn_uniffi_internal_fn_method_"
+                                "passwordstrengthestimator_ffi__bless_pointer"),
+      1,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_internal_fn_method_passwordstrengthestimator_ffi__bless_pointer(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_internal_fn_method_span_ffi__bless_pointer"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -42078,6 +44989,19 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_internal_fn_method_checkcodesender_ffi__bless_pointer(
                     rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_internal_fn_method_continuationmessagesender_ffi__bless_"
+        "pointer"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt,
+                                "ubrn_uniffi_internal_fn_method_"
+                                "continuationmessagesender_ffi__bless_pointer"),
+      1,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_internal_fn_method_continuationmessagesender_ffi__bless_pointer(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_internal_fn_method_grantloginwithqrcodehandler_ffi__bless_"
         "pointer"] = jsi::Function::createFromHostFunction(
       rt,
@@ -42267,30 +45191,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_internal_fn_method_mediasource_ffi__bless_pointer(
                     rt, thisVal, args, count);
           });
-  props["ubrn_uniffi_internal_fn_method_globalsearchiterator_ffi__bless_"
-        "pointer"] = jsi::Function::createFromHostFunction(
-      rt,
-      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_internal_fn_method_"
-                                    "globalsearchiterator_ffi__bless_pointer"),
-      1,
-      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-             const jsi::Value *args, size_t count) -> jsi::Value {
-        return this
-            ->cpp_uniffi_internal_fn_method_globalsearchiterator_ffi__bless_pointer(
-                rt, thisVal, args, count);
-      });
-  props["ubrn_uniffi_internal_fn_method_roomsearchiterator_ffi__bless_"
-        "pointer"] = jsi::Function::createFromHostFunction(
-      rt,
-      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_internal_fn_method_"
-                                    "roomsearchiterator_ffi__bless_pointer"),
-      1,
-      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-             const jsi::Value *args, size_t count) -> jsi::Value {
-        return this
-            ->cpp_uniffi_internal_fn_method_roomsearchiterator_ffi__bless_pointer(
-                rt, thisVal, args, count);
-      });
+  props["ubrn_uniffi_internal_fn_method_searchservice_ffi__bless_pointer"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_internal_fn_method_"
+                                        "searchservice_ffi__bless_pointer"),
+          1,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_internal_fn_method_searchservice_ffi__bless_pointer(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_internal_fn_method_sessionverificationcontroller_ffi__"
         "bless_pointer"] = jsi::Function::createFromHostFunction(
       rt,
@@ -42614,6 +45526,8 @@ NativeMatrixSdkFfi::~NativeMatrixSdkFfi() {
   uniffi::matrix_sdk_ffi::st::
       vtablecallbackinterfacemediapreviewconfiglistener::
           vtablecallbackinterfacemediapreviewconfiglistener::free::cleanup();
+  uniffi::matrix_sdk_ffi::st::vtablecallbackinterfaceprofilelistener::
+      vtablecallbackinterfaceprofilelistener::free::cleanup();
   uniffi::matrix_sdk_ffi::st::vtablecallbackinterfaceprogresswatcher::
       vtablecallbackinterfaceprogresswatcher::free::cleanup();
   uniffi::matrix_sdk_ffi::st::vtablecallbackinterfaceroomaccountdatalistener::
@@ -42630,6 +45544,9 @@ NativeMatrixSdkFfi::~NativeMatrixSdkFfi() {
       vtablecallbackinterfacebackupstatelistener::free::cleanup();
   uniffi::matrix_sdk_ffi::st::vtablecallbackinterfacebackupsteadystatelistener::
       vtablecallbackinterfacebackupsteadystatelistener::free::cleanup();
+  uniffi::matrix_sdk_ffi::st::
+      vtablecallbackinterfacedehydrateddeviceeventlistener::
+          vtablecallbackinterfacedehydrateddeviceeventlistener::free::cleanup();
   uniffi::matrix_sdk_ffi::st::
       vtablecallbackinterfaceenablerecoveryprogresslistener::
           vtablecallbackinterfaceenablerecoveryprogresslistener::free::
@@ -42686,6 +45603,13 @@ NativeMatrixSdkFfi::~NativeMatrixSdkFfi() {
       vtablecallbackinterfaceroomlistservicesyncindicatorlistener::
           vtablecallbackinterfaceroomlistservicesyncindicatorlistener::free::
               cleanup();
+  uniffi::matrix_sdk_ffi::st::
+      vtablecallbackinterfacesearchservicepaginationstatelistener::
+          vtablecallbackinterfacesearchservicepaginationstatelistener::free::
+              cleanup();
+  uniffi::matrix_sdk_ffi::st::
+      vtablecallbackinterfacesearchserviceresultslistener::
+          vtablecallbackinterfacesearchserviceresultslistener::free::cleanup();
   uniffi::matrix_sdk_ffi::st::
       vtablecallbackinterfacesessionverificationcontrollerdelegate::
           vtablecallbackinterfacesessionverificationcontrollerdelegate::free::
@@ -42762,6 +45686,10 @@ NativeMatrixSdkFfi::~NativeMatrixSdkFfi() {
       callbackinterfacemediapreviewconfiglistenermethod0::
           vtablecallbackinterfacemediapreviewconfiglistener::cleanup();
   uniffi::matrix_sdk_ffi::cb::callbackinterfaceclone::
+      vtablecallbackinterfaceprofilelistener::cleanup();
+  uniffi::matrix_sdk_ffi::cb::callbackinterfaceprofilelistenermethod0::
+      vtablecallbackinterfaceprofilelistener::cleanup();
+  uniffi::matrix_sdk_ffi::cb::callbackinterfaceclone::
       vtablecallbackinterfaceprogresswatcher::cleanup();
   uniffi::matrix_sdk_ffi::cb::callbackinterfaceprogresswatchermethod0::
       vtablecallbackinterfaceprogresswatcher::cleanup();
@@ -42792,6 +45720,11 @@ NativeMatrixSdkFfi::~NativeMatrixSdkFfi() {
   uniffi::matrix_sdk_ffi::cb::
       callbackinterfacebackupsteadystatelistenermethod0::
           vtablecallbackinterfacebackupsteadystatelistener::cleanup();
+  uniffi::matrix_sdk_ffi::cb::callbackinterfaceclone::
+      vtablecallbackinterfacedehydrateddeviceeventlistener::cleanup();
+  uniffi::matrix_sdk_ffi::cb::
+      callbackinterfacedehydrateddeviceeventlistenermethod0::
+          vtablecallbackinterfacedehydrateddeviceeventlistener::cleanup();
   uniffi::matrix_sdk_ffi::cb::callbackinterfaceclone::
       vtablecallbackinterfaceenablerecoveryprogresslistener::cleanup();
   uniffi::matrix_sdk_ffi::cb::
@@ -42886,6 +45819,17 @@ NativeMatrixSdkFfi::~NativeMatrixSdkFfi() {
       callbackinterfaceroomlistservicesyncindicatorlistenermethod0::
           vtablecallbackinterfaceroomlistservicesyncindicatorlistener::
               cleanup();
+  uniffi::matrix_sdk_ffi::cb::callbackinterfaceclone::
+      vtablecallbackinterfacesearchservicepaginationstatelistener::cleanup();
+  uniffi::matrix_sdk_ffi::cb::
+      callbackinterfacesearchservicepaginationstatelistenermethod0::
+          vtablecallbackinterfacesearchservicepaginationstatelistener::
+              cleanup();
+  uniffi::matrix_sdk_ffi::cb::callbackinterfaceclone::
+      vtablecallbackinterfacesearchserviceresultslistener::cleanup();
+  uniffi::matrix_sdk_ffi::cb::
+      callbackinterfacesearchserviceresultslistenermethod0::
+          vtablecallbackinterfacesearchserviceresultslistener::cleanup();
   uniffi::matrix_sdk_ffi::cb::callbackinterfaceclone::
       vtablecallbackinterfacesessionverificationcontrollerdelegate::cleanup();
   uniffi::matrix_sdk_ffi::cb::
@@ -43106,6 +46050,21 @@ jsi::Value NativeMatrixSdkFfi::
   auto obj = jsi::Object::createFromHostObject(rt, ptrObj);
   return jsi::Value(rt, obj);
 }
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_internal_fn_method_contentscanner_ffi__bless_pointer(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto pointer =
+      uniffi_jsi::Bridging<uint64_t>::fromJs(rt, callInvoker, args[0]);
+  auto static destructor = [](uint64_t p) {
+    RustCallStatus status = {0};
+    uniffi_matrix_sdk_ffi_fn_free_contentscanner(p, &status);
+  };
+  auto ptrObj =
+      std::make_shared<uniffi_jsi::DestructibleObject>(pointer, destructor);
+  auto obj = jsi::Object::createFromHostObject(rt, ptrObj);
+  return jsi::Value(rt, obj);
+}
 jsi::Value
 NativeMatrixSdkFfi::cpp_uniffi_internal_fn_method_encryption_ffi__bless_pointer(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
@@ -43226,6 +46185,21 @@ jsi::Value NativeMatrixSdkFfi::
   auto obj = jsi::Object::createFromHostObject(rt, ptrObj);
   return jsi::Value(rt, obj);
 }
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_internal_fn_method_passwordstrengthestimator_ffi__bless_pointer(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto pointer =
+      uniffi_jsi::Bridging<uint64_t>::fromJs(rt, callInvoker, args[0]);
+  auto static destructor = [](uint64_t p) {
+    RustCallStatus status = {0};
+    uniffi_matrix_sdk_ffi_fn_free_passwordstrengthestimator(p, &status);
+  };
+  auto ptrObj =
+      std::make_shared<uniffi_jsi::DestructibleObject>(pointer, destructor);
+  auto obj = jsi::Object::createFromHostObject(rt, ptrObj);
+  return jsi::Value(rt, obj);
+}
 jsi::Value
 NativeMatrixSdkFfi::cpp_uniffi_internal_fn_method_span_ffi__bless_pointer(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
@@ -43250,6 +46224,21 @@ jsi::Value NativeMatrixSdkFfi::
   auto static destructor = [](uint64_t p) {
     RustCallStatus status = {0};
     uniffi_matrix_sdk_ffi_fn_free_checkcodesender(p, &status);
+  };
+  auto ptrObj =
+      std::make_shared<uniffi_jsi::DestructibleObject>(pointer, destructor);
+  auto obj = jsi::Object::createFromHostObject(rt, ptrObj);
+  return jsi::Value(rt, obj);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_internal_fn_method_continuationmessagesender_ffi__bless_pointer(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto pointer =
+      uniffi_jsi::Bridging<uint64_t>::fromJs(rt, callInvoker, args[0]);
+  auto static destructor = [](uint64_t p) {
+    RustCallStatus status = {0};
+    uniffi_matrix_sdk_ffi_fn_free_continuationmessagesender(p, &status);
   };
   auto ptrObj =
       std::make_shared<uniffi_jsi::DestructibleObject>(pointer, destructor);
@@ -43483,29 +46472,14 @@ jsi::Value NativeMatrixSdkFfi::
   return jsi::Value(rt, obj);
 }
 jsi::Value NativeMatrixSdkFfi::
-    cpp_uniffi_internal_fn_method_globalsearchiterator_ffi__bless_pointer(
+    cpp_uniffi_internal_fn_method_searchservice_ffi__bless_pointer(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
   auto pointer =
       uniffi_jsi::Bridging<uint64_t>::fromJs(rt, callInvoker, args[0]);
   auto static destructor = [](uint64_t p) {
     RustCallStatus status = {0};
-    uniffi_matrix_sdk_ffi_fn_free_globalsearchiterator(p, &status);
-  };
-  auto ptrObj =
-      std::make_shared<uniffi_jsi::DestructibleObject>(pointer, destructor);
-  auto obj = jsi::Object::createFromHostObject(rt, ptrObj);
-  return jsi::Value(rt, obj);
-}
-jsi::Value NativeMatrixSdkFfi::
-    cpp_uniffi_internal_fn_method_roomsearchiterator_ffi__bless_pointer(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
-  auto pointer =
-      uniffi_jsi::Bridging<uint64_t>::fromJs(rt, callInvoker, args[0]);
-  auto static destructor = [](uint64_t p) {
-    RustCallStatus status = {0};
-    uniffi_matrix_sdk_ffi_fn_free_roomsearchiterator(p, &status);
+    uniffi_matrix_sdk_ffi_fn_free_searchservice(p, &status);
   };
   auto ptrObj =
       std::make_shared<uniffi_jsi::DestructibleObject>(pointer, destructor);
@@ -44210,6 +47184,28 @@ NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_client_clear_caches(
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
 }
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_client_clear_user_status(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_fn_method_client_clear_user_status(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value
+NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_client_content_scanner(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_fn_method_client_content_scanner(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
 jsi::Value
 NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_client_create_room(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
@@ -44316,6 +47312,21 @@ jsi::Value NativeMatrixSdkFfi::
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       &status);
+  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
+      rt, callInvoker, status, args[count - 1]);
+
+  return jsi::Value::undefined();
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_client_enable_automatic_call_status(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  RustCallStatus status =
+      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+  uniffi_matrix_sdk_ffi_fn_method_client_enable_automatic_call_status(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]),
+      uniffi_jsi::Bridging<int8_t>::fromJs(rt, callInvoker, args[1]), &status);
   uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
       rt, callInvoker, status, args[count - 1]);
 
@@ -44676,7 +47687,8 @@ jsi::Value NativeMatrixSdkFfi::
         size_t count) {
   auto value = uniffi_matrix_sdk_ffi_fn_method_client_is_livekit_rtc_supported(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
-                                                        args[0]));
+                                                        args[0]),
+      uniffi_jsi::Bridging<int8_t>::fromJs(rt, callInvoker, args[1]));
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -44714,6 +47726,17 @@ jsi::Value NativeMatrixSdkFfi::
                                                         args[0]),
       uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
                                                            args[1]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_client_is_user_status_supported(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_fn_method_client_is_user_status_supported(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]));
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -44824,6 +47847,17 @@ NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_client_logout(
                                                          value);
 }
 jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_client_mark_all_rooms_as_read(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_fn_method_client_mark_all_rooms_as_read(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_fn_method_client_new_grant_login_with_qr_code_handler(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
@@ -44925,6 +47959,16 @@ NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_client_optimize_stores(
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
 }
+jsi::Value NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_client_pause(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_fn_method_client_pause(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
 jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_fn_method_client_register_notification_handler(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
@@ -45019,6 +48063,17 @@ jsi::Value NativeMatrixSdkFfi::
                                                            args[1]),
       uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
                                                            args[2]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value
+NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_client_resume(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_fn_method_client_resume(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]));
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -45152,6 +48207,19 @@ NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_client_set_avatar_url(
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
 }
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_client_set_content_scanner(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_fn_method_client_set_content_scanner(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]),
+      uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                           args[1]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
 jsi::Value
 NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_client_set_delegate(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
@@ -45226,6 +48294,20 @@ jsi::Value NativeMatrixSdkFfi::
                                                          value);
 }
 jsi::Value
+NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_client_set_presence(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_fn_method_client_set_presence(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]),
+      uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                           args[1]),
+      uniffi_jsi::Bridging<int8_t>::fromJs(rt, callInvoker, args[2]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value
 NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_client_set_pusher(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
     size_t count) {
@@ -45243,7 +48325,21 @@ NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_client_set_pusher(
       uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
                                                            args[5]),
       uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
-                                                           args[6]));
+                                                           args[6]),
+      uniffi_jsi::Bridging<int8_t>::fromJs(rt, callInvoker, args[7]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value
+NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_client_set_user_status(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_fn_method_client_set_user_status(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]),
+      uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                           args[1]));
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -45370,6 +48466,23 @@ jsi::Value NativeMatrixSdkFfi::
                                                          value);
 }
 jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_client_subscribe_to_own_profile(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  RustCallStatus status =
+      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+  auto value = uniffi_matrix_sdk_ffi_fn_method_client_subscribe_to_own_profile(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]),
+      uniffi_jsi::Bridging<uint64_t>::fromJs(rt, callInvoker, args[1]),
+      &status);
+  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
+      rt, callInvoker, status, args[count - 1]);
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_fn_method_client_subscribe_to_room_info(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
@@ -45458,6 +48571,17 @@ NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_client_sync_v2(
       &status);
   uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
       rt, callInvoker, status, args[count - 1]);
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value
+NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_client_tile_server(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_fn_method_client_tile_server(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]));
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -45599,17 +48723,17 @@ jsi::Value NativeMatrixSdkFfi::
                                                          value);
 }
 jsi::Value
-NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_client_search_messages(
+NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_client_search_service(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
     size_t count) {
-  auto value = uniffi_matrix_sdk_ffi_fn_method_client_search_messages(
+  RustCallStatus status =
+      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+  auto value = uniffi_matrix_sdk_ffi_fn_method_client_search_service(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
-      uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
-                                                           args[1]),
-      uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
-                                                           args[2]),
-      uniffi_jsi::Bridging<uint32_t>::fromJs(rt, callInvoker, args[3]));
+      &status);
+  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
+      rt, callInvoker, status, args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -46348,6 +49472,67 @@ jsi::Value NativeMatrixSdkFfi::
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
 }
+jsi::Value
+NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_clone_contentscanner(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  RustCallStatus status =
+      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+  auto value = uniffi_matrix_sdk_ffi_fn_clone_contentscanner(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]),
+      &status);
+  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
+      rt, callInvoker, status, args[count - 1]);
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_free_contentscanner(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  RustCallStatus status =
+      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+  uniffi_matrix_sdk_ffi_fn_free_contentscanner(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]),
+      &status);
+  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
+      rt, callInvoker, status, args[count - 1]);
+
+  return jsi::Value::undefined();
+}
+jsi::Value
+NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_constructor_contentscanner_new(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  RustCallStatus status =
+      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+  auto value = uniffi_matrix_sdk_ffi_fn_constructor_contentscanner_new(
+      uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                           args[0]),
+      &status);
+  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
+      rt, callInvoker, status, args[count - 1]);
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value
+NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_contentscanner_scan(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_fn_method_contentscanner_scan(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]),
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[1]),
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[2]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
 jsi::Value NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_clone_encryption(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
     size_t count) {
@@ -46423,12 +49608,58 @@ jsi::Value NativeMatrixSdkFfi::
                                                          value);
 }
 jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_encryption_create_dehydrated_device(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_fn_method_encryption_create_dehydrated_device(
+          uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                            args[0]),
+          uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                               args[1]),
+          uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                               args[2]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_fn_method_encryption_curve25519_key(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
   auto value = uniffi_matrix_sdk_ffi_fn_method_encryption_curve25519_key(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_encryption_dehydrated_device_event_listener(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  RustCallStatus status =
+      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+  auto value =
+      uniffi_matrix_sdk_ffi_fn_method_encryption_dehydrated_device_event_listener(
+          uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                            args[0]),
+          uniffi_jsi::Bridging<uint64_t>::fromJs(rt, callInvoker, args[1]),
+          &status);
+  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
+      rt, callInvoker, status, args[count - 1]);
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_encryption_delete_dehydrated_device(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_fn_method_encryption_delete_dehydrated_device(
+          uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                            args[0]));
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -46502,6 +49733,18 @@ jsi::Value NativeMatrixSdkFfi::
                                                         args[0]),
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[1]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_encryption_is_dehydrated_device_supported(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_fn_method_encryption_is_dehydrated_device_supported(
+          uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                            args[0]));
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -46592,6 +49835,20 @@ jsi::Value NativeMatrixSdkFfi::
                                                          value);
 }
 jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_encryption_rehydrate_dehydrated_device(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_fn_method_encryption_rehydrate_dehydrated_device(
+          uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                            args[0]),
+          uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                               args[1]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_fn_method_encryption_reset_identity(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
@@ -46612,6 +49869,37 @@ jsi::Value NativeMatrixSdkFfi::
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_encryption_start_dehydrated_devices(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_fn_method_encryption_start_dehydrated_devices(
+          uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                            args[0]),
+          uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                               args[1]),
+          uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                               args[2]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_encryption_stop_dehydrated_devices(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  RustCallStatus status =
+      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+  uniffi_matrix_sdk_ffi_fn_method_encryption_stop_dehydrated_devices(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]),
+      &status);
+  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
+      rt, callInvoker, status, args[count - 1]);
+
+  return jsi::Value::undefined();
 }
 jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_fn_method_encryption_user_identity(
@@ -47528,6 +50816,122 @@ jsi::Value NativeMatrixSdkFfi::
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
 }
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_clone_passwordstrengthestimator(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  RustCallStatus status =
+      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+  auto value = uniffi_matrix_sdk_ffi_fn_clone_passwordstrengthestimator(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]),
+      &status);
+  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
+      rt, callInvoker, status, args[count - 1]);
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value
+NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_free_passwordstrengthestimator(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  RustCallStatus status =
+      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+  uniffi_matrix_sdk_ffi_fn_free_passwordstrengthestimator(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]),
+      &status);
+  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
+      rt, callInvoker, status, args[count - 1]);
+
+  return jsi::Value::undefined();
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_constructor_passwordstrengthestimator_new(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  RustCallStatus status =
+      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+  auto value =
+      uniffi_matrix_sdk_ffi_fn_constructor_passwordstrengthestimator_new(
+          uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                               args[0]),
+          &status);
+  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
+      rt, callInvoker, status, args[count - 1]);
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_constructor_passwordstrengthestimator_with_modern_defaults2025(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  RustCallStatus status =
+      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+  auto value =
+      uniffi_matrix_sdk_ffi_fn_constructor_passwordstrengthestimator_with_modern_defaults2025(
+          &status);
+  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
+      rt, callInvoker, status, args[count - 1]);
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_constructor_passwordstrengthestimator_with_zxcvbn_defaults(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  RustCallStatus status =
+      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+  auto value =
+      uniffi_matrix_sdk_ffi_fn_constructor_passwordstrengthestimator_with_zxcvbn_defaults(
+          &status);
+  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
+      rt, callInvoker, status, args[count - 1]);
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_passwordstrengthestimator_estimate(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  RustCallStatus status =
+      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+  auto value =
+      uniffi_matrix_sdk_ffi_fn_method_passwordstrengthestimator_estimate(
+          uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                            args[0]),
+          uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                               args[1]),
+          uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                               args[2]),
+          &status);
+  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
+      rt, callInvoker, status, args[count - 1]);
+
+  return uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::toJs(rt, callInvoker,
+                                                            value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_passwordstrengthestimator_thresholds(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  RustCallStatus status =
+      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+  auto value =
+      uniffi_matrix_sdk_ffi_fn_method_passwordstrengthestimator_thresholds(
+          uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                            args[0]),
+          &status);
+  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
+      rt, callInvoker, status, args[count - 1]);
+
+  return uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::toJs(rt, callInvoker,
+                                                            value);
+}
 jsi::Value NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_clone_span(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
     size_t count) {
@@ -47695,6 +51099,60 @@ NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_checkcodesender_send(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       uniffi_jsi::Bridging<uint8_t>::fromJs(rt, callInvoker, args[1]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_clone_continuationmessagesender(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  RustCallStatus status =
+      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+  auto value = uniffi_matrix_sdk_ffi_fn_clone_continuationmessagesender(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]),
+      &status);
+  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
+      rt, callInvoker, status, args[count - 1]);
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value
+NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_free_continuationmessagesender(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  RustCallStatus status =
+      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+  uniffi_matrix_sdk_ffi_fn_free_continuationmessagesender(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]),
+      &status);
+  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
+      rt, callInvoker, status, args[count - 1]);
+
+  return jsi::Value::undefined();
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_continuationmessagesender_cancel(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_fn_method_continuationmessagesender_cancel(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_continuationmessagesender_confirm(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_fn_method_continuationmessagesender_confirm(
+          uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                            args[0]));
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -48153,17 +51611,6 @@ jsi::Value NativeMatrixSdkFfi::
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
 }
-jsi::Value NativeMatrixSdkFfi::
-    cpp_uniffi_matrix_sdk_ffi_fn_method_room_clear_event_cache_storage(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
-  auto value = uniffi_matrix_sdk_ffi_fn_method_room_clear_event_cache_storage(
-      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
-                                                        args[0]));
-
-  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
-                                                         value);
-}
 jsi::Value
 NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_room_decline_call(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
@@ -48323,17 +51770,12 @@ jsi::Value NativeMatrixSdkFfi::
 jsi::Value NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_room_heroes(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
     size_t count) {
-  RustCallStatus status =
-      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
   auto value = uniffi_matrix_sdk_ffi_fn_method_room_heroes(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
-                                                        args[0]),
-      &status);
-  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+                                                        args[0]));
 
-  return uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::toJs(rt, callInvoker,
-                                                            value);
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
 }
 jsi::Value NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_room_id(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
@@ -48590,6 +52032,23 @@ jsi::Value NativeMatrixSdkFfi::
                                                         args[0]),
       uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
                                                            args[1]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value
+NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_room_load_user_receipt(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_fn_method_room_load_user_receipt(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]),
+      uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                           args[1]),
+      uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                           args[2]),
+      uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                           args[3]));
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -48947,6 +52406,23 @@ NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_room_send_raw(
                                                            args[1]),
       uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
                                                            args[2]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_room_send_single_receipt(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_fn_method_room_send_single_receipt(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]),
+      uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                           args[1]),
+      uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                           args[2]),
+      uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                           args[3]));
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -49386,25 +52862,6 @@ jsi::Value NativeMatrixSdkFfi::
                                                                args[1]),
           uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                             args[2]));
-
-  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
-                                                         value);
-}
-jsi::Value
-NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_room_search_messages(
-    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-    size_t count) {
-  RustCallStatus status =
-      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-  auto value = uniffi_matrix_sdk_ffi_fn_method_room_search_messages(
-      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
-                                                        args[0]),
-      uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
-                                                           args[1]),
-      uniffi_jsi::Bridging<uint32_t>::fromJs(rt, callInvoker, args[2]),
-      &status);
-  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -50555,13 +54012,12 @@ NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_mediasource_url(
   return uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::toJs(rt, callInvoker,
                                                             value);
 }
-jsi::Value
-NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_clone_globalsearchiterator(
+jsi::Value NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_clone_searchservice(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
     size_t count) {
   RustCallStatus status =
       uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-  auto value = uniffi_matrix_sdk_ffi_fn_clone_globalsearchiterator(
+  auto value = uniffi_matrix_sdk_ffi_fn_clone_searchservice(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       &status);
@@ -50571,13 +54027,12 @@ NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_clone_globalsearchiterator(
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
 }
-jsi::Value
-NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_free_globalsearchiterator(
+jsi::Value NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_free_searchservice(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
     size_t count) {
   RustCallStatus status =
       uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-  uniffi_matrix_sdk_ffi_fn_free_globalsearchiterator(
+  uniffi_matrix_sdk_ffi_fn_free_searchservice(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       &status);
@@ -50586,55 +54041,73 @@ NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_free_globalsearchiterator(
 
   return jsi::Value::undefined();
 }
-jsi::Value NativeMatrixSdkFfi::
-    cpp_uniffi_matrix_sdk_ffi_fn_method_globalsearchiterator_next_events(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
-  auto value = uniffi_matrix_sdk_ffi_fn_method_globalsearchiterator_next_events(
+jsi::Value
+NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_searchservice_paginate(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_fn_method_searchservice_paginate(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]));
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
 }
-jsi::Value
-NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_clone_roomsearchiterator(
-    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-    size_t count) {
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_searchservice_pagination_state(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
   RustCallStatus status =
       uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-  auto value = uniffi_matrix_sdk_ffi_fn_clone_roomsearchiterator(
+  auto value = uniffi_matrix_sdk_ffi_fn_method_searchservice_pagination_state(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       &status);
+  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
+      rt, callInvoker, status, args[count - 1]);
+
+  return uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::toJs(rt, callInvoker,
+                                                            value);
+}
+jsi::Value
+NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_searchservice_set_query(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_fn_method_searchservice_set_query(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]),
+      uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                           args[1]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_searchservice_subscribe_to_pagination_state_updates(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  RustCallStatus status =
+      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+  auto value =
+      uniffi_matrix_sdk_ffi_fn_method_searchservice_subscribe_to_pagination_state_updates(
+          uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                            args[0]),
+          uniffi_jsi::Bridging<uint64_t>::fromJs(rt, callInvoker, args[1]),
+          &status);
   uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
       rt, callInvoker, status, args[count - 1]);
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
 }
-jsi::Value
-NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_free_roomsearchiterator(
-    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-    size_t count) {
-  RustCallStatus status =
-      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-  uniffi_matrix_sdk_ffi_fn_free_roomsearchiterator(
-      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
-                                                        args[0]),
-      &status);
-  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
-
-  return jsi::Value::undefined();
-}
 jsi::Value NativeMatrixSdkFfi::
-    cpp_uniffi_matrix_sdk_ffi_fn_method_roomsearchiterator_next_events(
+    cpp_uniffi_matrix_sdk_ffi_fn_method_searchservice_subscribe_to_results(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
-  auto value = uniffi_matrix_sdk_ffi_fn_method_roomsearchiterator_next_events(
-      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
-                                                        args[0]));
+  auto value =
+      uniffi_matrix_sdk_ffi_fn_method_searchservice_subscribe_to_results(
+          uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                            args[0]),
+          uniffi_jsi::Bridging<uint64_t>::fromJs(rt, callInvoker, args[1]));
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -50984,17 +54457,12 @@ jsi::Value
 NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_spaceroomlist_rooms(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
     size_t count) {
-  RustCallStatus status =
-      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
   auto value = uniffi_matrix_sdk_ffi_fn_method_spaceroomlist_rooms(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
-                                                        args[0]),
-      &status);
-  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+                                                        args[0]));
 
-  return uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::toJs(rt, callInvoker,
-                                                            value);
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
 }
 jsi::Value
 NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_spaceroomlist_space(
@@ -51034,16 +54502,11 @@ jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_fn_method_spaceroomlist_subscribe_to_room_update(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
-  RustCallStatus status =
-      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
   auto value =
       uniffi_matrix_sdk_ffi_fn_method_spaceroomlist_subscribe_to_room_update(
           uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                             args[0]),
-          uniffi_jsi::Bridging<uint64_t>::fromJs(rt, callInvoker, args[1]),
-          &status);
-  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
+          uniffi_jsi::Bridging<uint64_t>::fromJs(rt, callInvoker, args[1]));
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -51325,6 +54788,24 @@ jsi::Value NativeMatrixSdkFfi::
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
 }
+jsi::Value
+NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_sqlitestorebuilder_key(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  RustCallStatus status =
+      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+  auto value = uniffi_matrix_sdk_ffi_fn_method_sqlitestorebuilder_key(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]),
+      uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                           args[1]),
+      &status);
+  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
+      rt, callInvoker, status, args[count - 1]);
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
 jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_fn_method_sqlitestorebuilder_passphrase(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
@@ -51523,6 +55004,42 @@ jsi::Value NativeMatrixSdkFfi::
       uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
   auto value =
       uniffi_matrix_sdk_ffi_fn_method_syncservicebuilder_with_offline_mode(
+          uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                            args[0]),
+          &status);
+  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
+      rt, callInvoker, status, args[count - 1]);
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_syncservicebuilder_with_parent_span(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  RustCallStatus status =
+      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+  auto value =
+      uniffi_matrix_sdk_ffi_fn_method_syncservicebuilder_with_parent_span(
+          uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                            args[0]),
+          uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                            args[1]),
+          &status);
+  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
+      rt, callInvoker, status, args[count - 1]);
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_syncservicebuilder_with_profiles_extension(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  RustCallStatus status =
+      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+  auto value =
+      uniffi_matrix_sdk_ffi_fn_method_syncservicebuilder_with_profiles_extension(
           uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                             args[0]),
           &status);
@@ -52167,6 +55684,8 @@ NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_timeline_send_file(
                                                            args[1]),
       uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
                                                            args[2]),
+      uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                           args[3]),
       &status);
   uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
       rt, callInvoker, status, args[count - 1]);
@@ -52304,6 +55823,21 @@ jsi::Value NativeMatrixSdkFfi::
       &status);
   uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
       rt, callInvoker, status, args[count - 1]);
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_timeline_send_with_extra_content(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_fn_method_timeline_send_with_extra_content(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]),
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[1]),
+      uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                           args[2]));
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -53070,6 +56604,21 @@ jsi::Value NativeMatrixSdkFfi::
   return jsi::Value::undefined();
 }
 jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_init_callback_vtable_profilelistener(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto vtableInstance = uniffi::matrix_sdk_ffi::Bridging<
+      UniffiVTableCallbackInterfaceProfileListener>::fromJs(rt, callInvoker,
+                                                            args[0]);
+
+  std::lock_guard<std::mutex> lock(
+      uniffi::matrix_sdk_ffi::registry::vtableMutex);
+  uniffi_matrix_sdk_ffi_fn_init_callback_vtable_profilelistener(
+      uniffi::matrix_sdk_ffi::registry::putTable(
+          "UniffiVTableCallbackInterfaceProfileListener", vtableInstance));
+  return jsi::Value::undefined();
+}
+jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_fn_init_callback_vtable_progresswatcher(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
@@ -53177,6 +56726,22 @@ jsi::Value NativeMatrixSdkFfi::
   uniffi_matrix_sdk_ffi_fn_init_callback_vtable_backupsteadystatelistener(
       uniffi::matrix_sdk_ffi::registry::putTable(
           "UniffiVTableCallbackInterfaceBackupSteadyStateListener",
+          vtableInstance));
+  return jsi::Value::undefined();
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_init_callback_vtable_dehydrateddeviceeventlistener(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto vtableInstance = uniffi::matrix_sdk_ffi::Bridging<
+      UniffiVTableCallbackInterfaceDehydratedDeviceEventListener>::
+      fromJs(rt, callInvoker, args[0]);
+
+  std::lock_guard<std::mutex> lock(
+      uniffi::matrix_sdk_ffi::registry::vtableMutex);
+  uniffi_matrix_sdk_ffi_fn_init_callback_vtable_dehydrateddeviceeventlistener(
+      uniffi::matrix_sdk_ffi::registry::putTable(
+          "UniffiVTableCallbackInterfaceDehydratedDeviceEventListener",
           vtableInstance));
   return jsi::Value::undefined();
 }
@@ -53503,6 +57068,38 @@ jsi::Value NativeMatrixSdkFfi::
   return jsi::Value::undefined();
 }
 jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_init_callback_vtable_searchservicepaginationstatelistener(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto vtableInstance = uniffi::matrix_sdk_ffi::Bridging<
+      UniffiVTableCallbackInterfaceSearchServicePaginationStateListener>::
+      fromJs(rt, callInvoker, args[0]);
+
+  std::lock_guard<std::mutex> lock(
+      uniffi::matrix_sdk_ffi::registry::vtableMutex);
+  uniffi_matrix_sdk_ffi_fn_init_callback_vtable_searchservicepaginationstatelistener(
+      uniffi::matrix_sdk_ffi::registry::putTable(
+          "UniffiVTableCallbackInterfaceSearchServicePaginationStateListener",
+          vtableInstance));
+  return jsi::Value::undefined();
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_init_callback_vtable_searchserviceresultslistener(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto vtableInstance = uniffi::matrix_sdk_ffi::Bridging<
+      UniffiVTableCallbackInterfaceSearchServiceResultsListener>::
+      fromJs(rt, callInvoker, args[0]);
+
+  std::lock_guard<std::mutex> lock(
+      uniffi::matrix_sdk_ffi::registry::vtableMutex);
+  uniffi_matrix_sdk_ffi_fn_init_callback_vtable_searchserviceresultslistener(
+      uniffi::matrix_sdk_ffi::registry::putTable(
+          "UniffiVTableCallbackInterfaceSearchServiceResultsListener",
+          vtableInstance));
+  return jsi::Value::undefined();
+}
+jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_fn_init_callback_vtable_sessionverificationcontrollerdelegate(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
@@ -53726,13 +57323,13 @@ jsi::Value NativeMatrixSdkFfi::
   return jsi::Value::undefined();
 }
 jsi::Value NativeMatrixSdkFfi::
-    cpp_uniffi_matrix_sdk_ffi_fn_method_timelineeventtype_uniffi_trait_eq_eq(
+    cpp_uniffi_matrix_sdk_ffi_fn_method_ffitimelineeventtype_uniffi_trait_eq_eq(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
   RustCallStatus status =
       uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
   auto value =
-      uniffi_matrix_sdk_ffi_fn_method_timelineeventtype_uniffi_trait_eq_eq(
+      uniffi_matrix_sdk_ffi_fn_method_ffitimelineeventtype_uniffi_trait_eq_eq(
           uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
                                                                args[0]),
           uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
@@ -53744,13 +57341,13 @@ jsi::Value NativeMatrixSdkFfi::
   return uniffi_jsi::Bridging<int8_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeMatrixSdkFfi::
-    cpp_uniffi_matrix_sdk_ffi_fn_method_timelineeventtype_uniffi_trait_eq_ne(
+    cpp_uniffi_matrix_sdk_ffi_fn_method_ffitimelineeventtype_uniffi_trait_eq_ne(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
   RustCallStatus status =
       uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
   auto value =
-      uniffi_matrix_sdk_ffi_fn_method_timelineeventtype_uniffi_trait_eq_ne(
+      uniffi_matrix_sdk_ffi_fn_method_ffitimelineeventtype_uniffi_trait_eq_ne(
           uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
                                                                args[0]),
           uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
@@ -53762,13 +57359,13 @@ jsi::Value NativeMatrixSdkFfi::
   return uniffi_jsi::Bridging<int8_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeMatrixSdkFfi::
-    cpp_uniffi_matrix_sdk_ffi_fn_method_timelineeventtype_uniffi_trait_hash(
+    cpp_uniffi_matrix_sdk_ffi_fn_method_ffitimelineeventtype_uniffi_trait_hash(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
   RustCallStatus status =
       uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
   auto value =
-      uniffi_matrix_sdk_ffi_fn_method_timelineeventtype_uniffi_trait_hash(
+      uniffi_matrix_sdk_ffi_fn_method_ffitimelineeventtype_uniffi_trait_hash(
           uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
                                                                args[0]),
           &status);
@@ -55165,6 +58762,22 @@ jsi::Value NativeMatrixSdkFfi::
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_client_clear_user_status(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_checksum_method_client_clear_user_status();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_client_content_scanner(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_checksum_method_client_content_scanner();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_checksum_method_client_create_room(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
@@ -55229,6 +58842,15 @@ jsi::Value NativeMatrixSdkFfi::
         size_t count) {
   auto value =
       uniffi_matrix_sdk_ffi_checksum_method_client_enable_automatic_backpagination();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_client_enable_automatic_call_status(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_client_enable_automatic_call_status();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -55482,6 +59104,15 @@ jsi::Value NativeMatrixSdkFfi::
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_client_is_user_status_supported(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_client_is_user_status_supported();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_checksum_method_client_join_room_by_id(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
@@ -55540,6 +59171,15 @@ NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_checksum_method_client_logout(
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_client_mark_all_rooms_as_read(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_client_mark_all_rooms_as_read();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_checksum_method_client_new_grant_login_with_qr_code_handler(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
@@ -55589,6 +59229,14 @@ jsi::Value NativeMatrixSdkFfi::
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
   auto value = uniffi_matrix_sdk_ffi_checksum_method_client_optimize_stores();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value
+NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_checksum_method_client_pause(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_checksum_method_client_pause();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -55658,6 +59306,14 @@ jsi::Value NativeMatrixSdkFfi::
         size_t count) {
   auto value =
       uniffi_matrix_sdk_ffi_checksum_method_client_restore_session_with();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value
+NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_checksum_method_client_resume(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_checksum_method_client_resume();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -55736,6 +59392,15 @@ jsi::Value NativeMatrixSdkFfi::
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_client_set_content_scanner(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_client_set_content_scanner();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_checksum_method_client_set_delegate(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
@@ -55778,11 +59443,27 @@ jsi::Value NativeMatrixSdkFfi::
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_client_set_presence(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_checksum_method_client_set_presence();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
 jsi::Value
 NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_checksum_method_client_set_pusher(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
     size_t count) {
   auto value = uniffi_matrix_sdk_ffi_checksum_method_client_set_pusher();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_client_set_user_status(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_checksum_method_client_set_user_status();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -55856,6 +59537,15 @@ jsi::Value NativeMatrixSdkFfi::
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_client_subscribe_to_own_profile(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_client_subscribe_to_own_profile();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_checksum_method_client_subscribe_to_room_info(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
@@ -55903,6 +59593,14 @@ NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_checksum_method_client_sync_v2(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
     size_t count) {
   auto value = uniffi_matrix_sdk_ffi_checksum_method_client_sync_v2();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_client_tile_server(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_checksum_method_client_tile_server();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -55981,10 +59679,10 @@ jsi::Value NativeMatrixSdkFfi::
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeMatrixSdkFfi::
-    cpp_uniffi_matrix_sdk_ffi_checksum_method_client_search_messages(
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_client_search_service(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
-  auto value = uniffi_matrix_sdk_ffi_checksum_method_client_search_messages();
+  auto value = uniffi_matrix_sdk_ffi_checksum_method_client_search_service();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -56325,6 +60023,14 @@ jsi::Value NativeMatrixSdkFfi::
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_contentscanner_scan(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_checksum_method_contentscanner_scan();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_checksum_method_encryption_backup_exists_on_server(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
@@ -56351,11 +60057,38 @@ jsi::Value NativeMatrixSdkFfi::
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_encryption_create_dehydrated_device(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_encryption_create_dehydrated_device();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_checksum_method_encryption_curve25519_key(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
   auto value =
       uniffi_matrix_sdk_ffi_checksum_method_encryption_curve25519_key();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_encryption_dehydrated_device_event_listener(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_encryption_dehydrated_device_event_listener();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_encryption_delete_dehydrated_device(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_encryption_delete_dehydrated_device();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -56413,6 +60146,15 @@ jsi::Value NativeMatrixSdkFfi::
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_encryption_is_dehydrated_device_supported(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_encryption_is_dehydrated_device_supported();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_checksum_method_encryption_is_last_device(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
@@ -56466,6 +60208,15 @@ jsi::Value NativeMatrixSdkFfi::
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_encryption_rehydrate_dehydrated_device(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_encryption_rehydrate_dehydrated_device();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_checksum_method_encryption_reset_identity(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
@@ -56480,6 +60231,24 @@ jsi::Value NativeMatrixSdkFfi::
         size_t count) {
   auto value =
       uniffi_matrix_sdk_ffi_checksum_method_encryption_reset_recovery_key();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_encryption_start_dehydrated_devices(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_encryption_start_dehydrated_devices();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_encryption_stop_dehydrated_devices(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_encryption_stop_dehydrated_devices();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -56889,6 +60658,24 @@ jsi::Value NativeMatrixSdkFfi::
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_passwordstrengthestimator_estimate(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_passwordstrengthestimator_estimate();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_passwordstrengthestimator_thresholds(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_passwordstrengthestimator_thresholds();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
 jsi::Value
 NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_checksum_method_span_enter(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
@@ -56918,6 +60705,24 @@ jsi::Value NativeMatrixSdkFfi::
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
   auto value = uniffi_matrix_sdk_ffi_checksum_method_checkcodesender_send();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_continuationmessagesender_cancel(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_continuationmessagesender_cancel();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_continuationmessagesender_confirm(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_continuationmessagesender_confirm();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -57090,15 +60895,6 @@ jsi::Value NativeMatrixSdkFfi::
         size_t count) {
   auto value =
       uniffi_matrix_sdk_ffi_checksum_method_room_clear_composer_draft();
-
-  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
-}
-jsi::Value NativeMatrixSdkFfi::
-    cpp_uniffi_matrix_sdk_ffi_checksum_method_room_clear_event_cache_storage(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
-  auto value =
-      uniffi_matrix_sdk_ffi_checksum_method_room_clear_event_cache_storage();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -57375,6 +61171,14 @@ jsi::Value NativeMatrixSdkFfi::
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_room_load_user_receipt(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_checksum_method_room_load_user_receipt();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_checksum_method_room_mark_as_fully_read_unchecked(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
@@ -57593,6 +61397,14 @@ NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_checksum_method_room_send_raw(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
     size_t count) {
   auto value = uniffi_matrix_sdk_ffi_checksum_method_room_send_raw();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_room_send_single_receipt(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_checksum_method_room_send_single_receipt();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -57859,14 +61671,6 @@ jsi::Value NativeMatrixSdkFfi::
         size_t count) {
   auto value =
       uniffi_matrix_sdk_ffi_checksum_method_room_withdraw_verification_and_resend();
-
-  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
-}
-jsi::Value NativeMatrixSdkFfi::
-    cpp_uniffi_matrix_sdk_ffi_checksum_method_room_search_messages(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
-  auto value = uniffi_matrix_sdk_ffi_checksum_method_room_search_messages();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -58317,20 +62121,45 @@ NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_checksum_method_mediasource_url(
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeMatrixSdkFfi::
-    cpp_uniffi_matrix_sdk_ffi_checksum_method_globalsearchiterator_next_events(
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_searchservice_paginate(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
-  auto value =
-      uniffi_matrix_sdk_ffi_checksum_method_globalsearchiterator_next_events();
+  auto value = uniffi_matrix_sdk_ffi_checksum_method_searchservice_paginate();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeMatrixSdkFfi::
-    cpp_uniffi_matrix_sdk_ffi_checksum_method_roomsearchiterator_next_events(
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_searchservice_pagination_state(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
   auto value =
-      uniffi_matrix_sdk_ffi_checksum_method_roomsearchiterator_next_events();
+      uniffi_matrix_sdk_ffi_checksum_method_searchservice_pagination_state();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_searchservice_set_query(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_checksum_method_searchservice_set_query();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_searchservice_subscribe_to_pagination_state_updates(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_searchservice_subscribe_to_pagination_state_updates();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_searchservice_subscribe_to_results(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_searchservice_subscribe_to_results();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -58634,6 +62463,14 @@ jsi::Value NativeMatrixSdkFfi::
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_sqlitestorebuilder_key(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_checksum_method_sqlitestorebuilder_key();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_checksum_method_sqlitestorebuilder_passphrase(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
@@ -58717,6 +62554,24 @@ jsi::Value NativeMatrixSdkFfi::
         size_t count) {
   auto value =
       uniffi_matrix_sdk_ffi_checksum_method_syncservicebuilder_with_offline_mode();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_syncservicebuilder_with_parent_span(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_syncservicebuilder_with_parent_span();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_syncservicebuilder_with_profiles_extension(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_syncservicebuilder_with_profiles_extension();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -59061,6 +62916,15 @@ jsi::Value NativeMatrixSdkFfi::
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_timeline_send_with_extra_content(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_timeline_send_with_extra_content();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_checksum_method_timeline_subscribe_to_back_pagination_status(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
@@ -59263,6 +63127,14 @@ jsi::Value NativeMatrixSdkFfi::
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_constructor_contentscanner_new(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_checksum_constructor_contentscanner_new();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_checksum_constructor_secretsbundlewithuserid_from_database(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
@@ -59277,6 +63149,33 @@ jsi::Value NativeMatrixSdkFfi::
         size_t count) {
   auto value =
       uniffi_matrix_sdk_ffi_checksum_constructor_secretsbundlewithuserid_from_str();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_constructor_passwordstrengthestimator_new(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_constructor_passwordstrengthestimator_new();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_constructor_passwordstrengthestimator_with_modern_defaults2025(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_constructor_passwordstrengthestimator_with_modern_defaults2025();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_constructor_passwordstrengthestimator_with_zxcvbn_defaults(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_constructor_passwordstrengthestimator_with_zxcvbn_defaults();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -59459,6 +63358,15 @@ jsi::Value NativeMatrixSdkFfi::
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_profilelistener_on_update(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_profilelistener_on_update();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_checksum_method_progresswatcher_transmission_progress(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
@@ -59518,6 +63426,15 @@ jsi::Value NativeMatrixSdkFfi::
         size_t count) {
   auto value =
       uniffi_matrix_sdk_ffi_checksum_method_backupsteadystatelistener_on_update();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_dehydrateddeviceeventlistener_on_event(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_dehydrateddeviceeventlistener_on_event();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -59696,6 +63613,24 @@ jsi::Value NativeMatrixSdkFfi::
         size_t count) {
   auto value =
       uniffi_matrix_sdk_ffi_checksum_method_roomlistservicesyncindicatorlistener_on_update();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_searchservicepaginationstatelistener_on_update(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_searchservicepaginationstatelistener_on_update();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_searchserviceresultslistener_on_update(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_searchserviceresultslistener_on_update();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }

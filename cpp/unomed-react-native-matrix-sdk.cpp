@@ -3,9 +3,11 @@
 #include "generated/matrix_sdk.hpp"
 #include "generated/matrix_sdk_base.hpp"
 #include "generated/matrix_sdk_common.hpp"
+#include "generated/matrix_sdk_contentscanner.hpp"
 #include "generated/matrix_sdk_crypto.hpp"
 #include "generated/matrix_sdk_ffi.hpp"
 #include "generated/matrix_sdk_ui.hpp"
+#include "generated/ruma_events.hpp"
 
 namespace unomed_reactnativematrixsdk {
 	using namespace facebook;
@@ -14,9 +16,11 @@ namespace unomed_reactnativematrixsdk {
 		NativeMatrixSdk::registerModule(runtime, callInvoker);
 		NativeMatrixSdkBase::registerModule(runtime, callInvoker);
 		NativeMatrixSdkCommon::registerModule(runtime, callInvoker);
+		NativeMatrixSdkContentscanner::registerModule(runtime, callInvoker);
 		NativeMatrixSdkCrypto::registerModule(runtime, callInvoker);
 		NativeMatrixSdkFfi::registerModule(runtime, callInvoker);
 		NativeMatrixSdkUi::registerModule(runtime, callInvoker);
+		NativeRumaEvents::registerModule(runtime, callInvoker);
 		return true;
 	}
 

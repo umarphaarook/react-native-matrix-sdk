@@ -181,6 +181,82 @@ const FfiConverterTypeLatestEventValueLocalState = (() => {
 })();
 
 /**
+ * The membership states that should be included/excluded from the timeline
+ * item filters.
+ */
+export enum MembershipChangeFilter {
+  /**
+   * Include/exclude all membership state events.
+   */
+  Any,
+  /**
+   * Include/exclude only `join` membership state events.
+   */
+  Join,
+  /**
+   * Include/exclude only `leave` membership state events.
+   */
+  Leave,
+  /**
+   * Include/exclude only `invite` membership state events.
+   */
+  Invite,
+  /**
+   * Include/exclude only `ban` membership state events.
+   */
+  Ban,
+  /**
+   * Include/exclude only `knock` membership state events.
+   */
+  Knock,
+}
+
+const FfiConverterTypeMembershipChangeFilter = (() => {
+  const ordinalConverter = FfiConverterInt32;
+  type TypeName = MembershipChangeFilter;
+  class FFIConverter extends AbstractFfiConverterByteArray<TypeName> {
+    read(from: RustBuffer): TypeName {
+      switch (ordinalConverter.read(from)) {
+        case 1:
+          return MembershipChangeFilter.Any;
+        case 2:
+          return MembershipChangeFilter.Join;
+        case 3:
+          return MembershipChangeFilter.Leave;
+        case 4:
+          return MembershipChangeFilter.Invite;
+        case 5:
+          return MembershipChangeFilter.Ban;
+        case 6:
+          return MembershipChangeFilter.Knock;
+        default:
+          throw new UniffiInternalError.UnexpectedEnumCase();
+      }
+    }
+    write(value: TypeName, into: RustBuffer): void {
+      switch (value) {
+        case MembershipChangeFilter.Any:
+          return ordinalConverter.write(1, into);
+        case MembershipChangeFilter.Join:
+          return ordinalConverter.write(2, into);
+        case MembershipChangeFilter.Leave:
+          return ordinalConverter.write(3, into);
+        case MembershipChangeFilter.Invite:
+          return ordinalConverter.write(4, into);
+        case MembershipChangeFilter.Ban:
+          return ordinalConverter.write(5, into);
+        case MembershipChangeFilter.Knock:
+          return ordinalConverter.write(6, into);
+      }
+    }
+    allocationSize(value: TypeName): number {
+      return ordinalConverter.allocationSize(0);
+    }
+  }
+  return new FFIConverter();
+})();
+
+/**
  * The type of change between the previous and current pinned events.
  */
 export enum RoomPinnedEventsChange {
@@ -226,6 +302,148 @@ const FfiConverterTypeRoomPinnedEventsChange = (() => {
     }
     allocationSize(value: TypeName): number {
       return ordinalConverter.allocationSize(0);
+    }
+  }
+  return new FFIConverter();
+})();
+
+// Enum: SearchServicePaginationState
+export enum SearchServicePaginationState_Tags {
+  Idle = 'Idle',
+  Loading = 'Loading',
+}
+/**
+ * Whether the search service is currently loading a page of results.
+ */
+export const SearchServicePaginationState = (() => {
+  type Idle__interface = {
+    tag: SearchServicePaginationState_Tags.Idle;
+    inner: Readonly<{ endReached: boolean }>;
+  };
+
+  /**
+   * Not currently paginating. `end_reached` is `true` once every source has
+   * been exhausted for the current query.
+   */
+  class Idle_ extends UniffiEnum implements Idle__interface {
+    /**
+     * @private
+     * This field is private and should not be used, use `tag` instead.
+     */
+    readonly [uniffiTypeNameSymbol] = 'SearchServicePaginationState';
+    readonly tag = SearchServicePaginationState_Tags.Idle;
+    readonly inner: Readonly<{ endReached: boolean }>;
+    constructor(inner: { endReached: boolean }) {
+      super('SearchServicePaginationState', 'Idle');
+      this.inner = Object.freeze(inner);
+    }
+
+    static new(inner: { endReached: boolean }): Idle_ {
+      return new Idle_(inner);
+    }
+
+    static instanceOf(obj: any): obj is Idle_ {
+      return obj.tag === SearchServicePaginationState_Tags.Idle;
+    }
+  }
+
+  type Loading__interface = {
+    tag: SearchServicePaginationState_Tags.Loading;
+  };
+
+  /**
+   * A page of results is currently being loaded.
+   */
+  class Loading_ extends UniffiEnum implements Loading__interface {
+    /**
+     * @private
+     * This field is private and should not be used, use `tag` instead.
+     */
+    readonly [uniffiTypeNameSymbol] = 'SearchServicePaginationState';
+    readonly tag = SearchServicePaginationState_Tags.Loading;
+    constructor() {
+      super('SearchServicePaginationState', 'Loading');
+    }
+
+    static new(): Loading_ {
+      return new Loading_();
+    }
+
+    static instanceOf(obj: any): obj is Loading_ {
+      return obj.tag === SearchServicePaginationState_Tags.Loading;
+    }
+  }
+
+  function instanceOf(obj: any): obj is SearchServicePaginationState {
+    return obj[uniffiTypeNameSymbol] === 'SearchServicePaginationState';
+  }
+
+  return Object.freeze({
+    instanceOf,
+    Idle: Idle_,
+    Loading: Loading_,
+  });
+})();
+
+/**
+ * Whether the search service is currently loading a page of results.
+ */
+
+export type SearchServicePaginationState = InstanceType<
+  (typeof SearchServicePaginationState)[keyof Omit<
+    typeof SearchServicePaginationState,
+    'instanceOf'
+  >]
+>;
+
+// FfiConverter for enum SearchServicePaginationState
+const FfiConverterTypeSearchServicePaginationState = (() => {
+  const ordinalConverter = FfiConverterInt32;
+  type TypeName = SearchServicePaginationState;
+  class FFIConverter extends AbstractFfiConverterByteArray<TypeName> {
+    read(from: RustBuffer): TypeName {
+      switch (ordinalConverter.read(from)) {
+        case 1:
+          return new SearchServicePaginationState.Idle({
+            endReached: FfiConverterBool.read(from),
+          });
+        case 2:
+          return new SearchServicePaginationState.Loading();
+        default:
+          throw new UniffiInternalError.UnexpectedEnumCase();
+      }
+    }
+    write(value: TypeName, into: RustBuffer): void {
+      switch (value.tag) {
+        case SearchServicePaginationState_Tags.Idle: {
+          ordinalConverter.write(1, into);
+          const inner = value.inner;
+          FfiConverterBool.write(inner.endReached, into);
+          return;
+        }
+        case SearchServicePaginationState_Tags.Loading: {
+          ordinalConverter.write(2, into);
+          return;
+        }
+        default:
+          // Throwing from here means that SearchServicePaginationState_Tags hasn't matched an ordinal.
+          throw new UniffiInternalError.UnexpectedEnumCase();
+      }
+    }
+    allocationSize(value: TypeName): number {
+      switch (value.tag) {
+        case SearchServicePaginationState_Tags.Idle: {
+          const inner = value.inner;
+          let size = ordinalConverter.allocationSize(1);
+          size += FfiConverterBool.allocationSize(inner.endReached);
+          return size;
+        }
+        case SearchServicePaginationState_Tags.Loading: {
+          return ordinalConverter.allocationSize(2);
+        }
+        default:
+          throw new UniffiInternalError.UnexpectedEnumCase();
+      }
     }
   }
   return new FFIConverter();
@@ -847,7 +1065,9 @@ export default Object.freeze({
   converters: {
     FfiConverterTypeEventItemOrigin,
     FfiConverterTypeLatestEventValueLocalState,
+    FfiConverterTypeMembershipChangeFilter,
     FfiConverterTypeRoomPinnedEventsChange,
+    FfiConverterTypeSearchServicePaginationState,
     FfiConverterTypeSpaceRoomListPaginationState,
     FfiConverterTypeThreadListPaginationState,
     FfiConverterTypeTimelineEventFocusThreadMode,

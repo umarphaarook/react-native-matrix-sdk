@@ -14,9 +14,11 @@ if (!rustInstalled) {
 export * from './generated/matrix_sdk';
 export * from './generated/matrix_sdk_base';
 export * from './generated/matrix_sdk_common';
+export * from './generated/matrix_sdk_contentscanner';
 export * from './generated/matrix_sdk_crypto';
 export * from './generated/matrix_sdk_ffi';
 export * from './generated/matrix_sdk_ui';
+export * from './generated/ruma_events';
 
 // Now import the bindings so we can:
 // - intialize them
@@ -24,9 +26,11 @@ export * from './generated/matrix_sdk_ui';
 import * as matrix_sdk from './generated/matrix_sdk';
 import * as matrix_sdk_base from './generated/matrix_sdk_base';
 import * as matrix_sdk_common from './generated/matrix_sdk_common';
+import * as matrix_sdk_contentscanner from './generated/matrix_sdk_contentscanner';
 import * as matrix_sdk_crypto from './generated/matrix_sdk_crypto';
 import * as matrix_sdk_ffi from './generated/matrix_sdk_ffi';
 import * as matrix_sdk_ui from './generated/matrix_sdk_ui';
+import * as ruma_events from './generated/ruma_events';
 
 // Initialize the generated bindings: mostly checksums, but also callbacks.
 // - the boolean flag ensures this loads exactly once, even if the JS code
@@ -36,9 +40,11 @@ if (!initialized) {
   matrix_sdk.default.initialize();
   matrix_sdk_base.default.initialize();
   matrix_sdk_common.default.initialize();
+  matrix_sdk_contentscanner.default.initialize();
   matrix_sdk_crypto.default.initialize();
   matrix_sdk_ffi.default.initialize();
   matrix_sdk_ui.default.initialize();
+  ruma_events.default.initialize();
   initialized = true;
 }
 
@@ -54,8 +60,10 @@ export default {
   matrix_sdk,
   matrix_sdk_base,
   matrix_sdk_common,
+  matrix_sdk_contentscanner,
   matrix_sdk_crypto,
   matrix_sdk_ffi,
   matrix_sdk_ui,
+  ruma_events,
 };
 
