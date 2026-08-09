@@ -8,11 +8,16 @@ require Pod::Executable.execute_command('node', ['-p',
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
 
-linkage = ENV['USE_FRAMEWORKS']
-if linkage != nil
-  Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
-  use_frameworks! :linkage => linkage.to_sym
-end
+# Default to statically linked frameworks rather than plain static libraries,
+# because that is what Expo apps consuming this package get: `expo-build-properties`
+# with `ios.useFrameworks: "static"` is the common setup, and it is what the app
+# this example is meant to predict uses. Leaving the example on the CocoaPods
+# default meant its iOS linkage was the one thing here nobody was testing.
+#
+# Set USE_FRAMEWORKS=dynamic (or anything else) to override.
+linkage = ENV['USE_FRAMEWORKS'] || 'static'
+Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
+use_frameworks! :linkage => linkage.to_sym
 
 target 'ReactNativeMatrixSdkExample' do
   config = use_native_modules!
