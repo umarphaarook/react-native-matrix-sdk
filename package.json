@@ -43,7 +43,7 @@
     "ubrn:android:build:release": "yarn ubrn:android:build --release",
     "ubrn:ios:build": "CARGO_FEATURE_NO_NEON=1 ubrn build ios --config ${UBRN_CONFIG:-ubrn.yaml} --native-bindings --and-generate",
     "ubrn:ios:build:release": "yarn ubrn:ios:build --release",
-    "ubrn:ios:post-process": "del-cli swift && mv ios/swift swift && yarn example prebuild --platform ios --no-install && (cd example/ios && pod install) && rm -rf src/index.web.ts",
+    "ubrn:ios:post-process": "del-cli swift && mv ios/swift swift && (cd example/ios && pod install) && rm -rf src/index.web.ts",
     "ubrn:checkout": "( test -d rust_modules/matrix-rust-sdk && git -C rust_modules/matrix-rust-sdk reset --hard HEAD ); ubrn checkout --config ${UBRN_CONFIG:-ubrn.yaml}",
     "ubrn:clean": "del-cli -v cpp android/src/main/java ios \"src/Native*\" src/generated \"src/index.ts*\"",
     "ubrn:clean:android": "del-cli -v android/src/main/java \"src/Native*\" src/generated \"src/index.ts*\"",
@@ -59,9 +59,10 @@
     "vendor:rustls-verifier": "node scripts/vendor-rustls-verifier.js",
     "format": "prettier -w '**/*.{ts,tsx}'",
     "example": "yarn workspace @unomed/react-native-matrix-sdk-example",
+    "example-expo": "yarn workspace @unomed/react-native-matrix-sdk-example-expo",
     "typecheck": "tsc",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
-    "clean": "del-cli -v android/build example/android/build example/android/app/build example/ios/build lib **/.cxx",
+    "clean": "del-cli -v android/build example/android/build example/android/app/build example/ios/build example-expo/android/build example-expo/android/app/build example-expo/ios/build lib **/.cxx",
     "prepare": "bob build",
     "release": "release-it",
     "postinstall": "patch-package && node scripts/fix-bin-permissions.js && node scripts/download-binaries.js"
@@ -115,7 +116,8 @@
     "react-native": "*"
   },
   "workspaces": [
-    "example"
+    "example",
+    "example-expo"
   ],
   "packageManager": "yarn@3.6.1",
   "jest": {
@@ -146,7 +148,8 @@
       ]
     },
     "hooks": {
-      "before:release": "yarn generate:release && node scripts/package-binaries.js"
+      "before:release": "yarn generate:release && node scripts/package-binaries.js",
+      "after:bump": "git add example/ios/Podfile.lock"
     },
     "plugins": {
       "@release-it/conventional-changelog": {

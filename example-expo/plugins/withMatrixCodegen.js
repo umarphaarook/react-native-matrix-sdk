@@ -28,7 +28,7 @@ const { withSettingsGradle, withPodfile } = require('@expo/config-plugins');
 
 // Bare text, so each file can wrap it in its own comment syntax - Gradle is
 // Groovy and takes `//`, the Podfile is Ruby and takes `#`.
-const MARKER = 'Added by example/plugins/withMatrixCodegen.js';
+const MARKER = 'Added by example-expo/plugins/withMatrixCodegen.js';
 
 const GRADLE_BLOCK = `
 // ${MARKER}

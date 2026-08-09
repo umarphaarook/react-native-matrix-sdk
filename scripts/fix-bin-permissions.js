@@ -20,10 +20,14 @@
 const fs = require('fs');
 const path = require('path');
 
-const BIN_DIRS = [
-  path.join(__dirname, '..', 'node_modules', '.bin'),
-  path.join(__dirname, '..', 'example', 'node_modules', '.bin'),
-];
+const ROOT = path.join(__dirname, '..');
+
+// Derived from `workspaces` rather than listed, so adding a workspace does not
+// silently leave its bin stubs broken. Only plain directory entries are handled;
+// this repository does not use glob workspaces.
+const BIN_DIRS = ['.', ...require('../package.json').workspaces].map(
+  (workspace) => path.join(ROOT, workspace, 'node_modules', '.bin')
+);
 
 function hasShebang(file) {
   let fd;

@@ -1,6 +1,5 @@
-import { registerRootComponent } from 'expo';
+import { AppRegistry } from 'react-native';
 import App from './src/App';
+import { name as appName } from './app.json';
 
-// registerRootComponent registers the component as "main", which is the module
-// name `expo prebuild` writes into MainActivity.kt and the iOS AppDelegate.
-registerRootComponent(App);
+AppRegistry.registerComponent(appName, () => App);

@@ -32,9 +32,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-turborepo-android-
 
+      # --filter scopes this to the bare example. Both examples define a
+      # `build:android` script, and turbo matches tasks by script name across
+      # every workspace, so without it the Expo example would be built here too -
+      # before its native project has been prebuilt.
       - name: Check turborepo cache for Android
         run: |
-          TURBO_CACHE_STATUS=$(node -p "($(yarn turbo run build:android --cache-dir="${{ env.TURBO_CACHE_DIR }}" --dry=json)).tasks.find(t => t.task === 'build:android').cache.status")
+          TURBO_CACHE_STATUS=$(node -p "($(yarn turbo run build:android --filter=@unomed/react-native-matrix-sdk-example --cache-dir="${{ env.TURBO_CACHE_DIR }}" --dry=json)).tasks.find(t => t.task === 'build:android').cache.status")
 
           if [[ $TURBO_CACHE_STATUS == "HIT" ]]; then
             echo "turbo_cache_hit=1" >> $GITHUB_ENV
@@ -67,23 +71,31 @@ jobs:
         env:
           JAVA_OPTS: "-XX:MaxHeapSize=6g"
         run: |
-          yarn turbo run build:android --cache-dir="${{ env.TURBO_CACHE_DIR }}"
+          yarn turbo run build:android --filter=@unomed/react-native-matrix-sdk-example --cache-dir="${{ env.TURBO_CACHE_DIR }}"
 
-      # Both of these need an APK on disk, which a turbo cache hit does not
-      # produce.
+      # This needs an APK on disk, which a turbo cache hit does not produce. It
+      # matters most here rather than on the Expo example: this one's
+      # gradle.properties is hand-maintained, so `android.useLegacyPackaging` can
+      # be lost in an edit. The Expo example generates it from app.json.
       - name: Check 16 KB page size readiness
         if: env.turbo_cache_hit != 1
         run: yarn example check:alignment
 
+      # Everything below is the Expo example, which is what predicts whether a
+      # real consuming app works: CNG-generated native config, and
+      # expo-modules-autolinking rather than the community CLI. It reuses the
+      # bindings the shared Generate step already produced, so it costs Gradle
+      # time and no Rust time.
+      #
       # A release build is the only thing that runs R8 over this package's
       # consumerProguardFiles. It costs a few minutes, and it earns them: the
       # rules shipped for `rustls-platform-verifier` exist because R8 deleted
       # those classes outright, which turned every HTTPS request into a
       # ClassNotFoundException at runtime while the build stayed green.
-      - name: Build example for Android (release, R8)
+      - name: Build Expo example for Android (release, R8)
         if: env.turbo_cache_hit != 1
         env:
           JAVA_OPTS: "-XX:MaxHeapSize=6g"
         run: |
-          yarn example build:android:release
-          yarn example check:alignment:release
+          yarn example-expo build:android:release
+          yarn example-expo check:alignment:release

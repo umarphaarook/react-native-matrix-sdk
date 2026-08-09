@@ -2,27 +2,16 @@
   "name": "@unomed/react-native-matrix-sdk-example",
   "version": "0.0.1",
   "private": true,
-  "main": "index.js",
   "scripts": {
-    "android": "expo run:android",
-    "ios": "expo run:ios",
-    "start": "expo start",
-    "prebuild": "expo prebuild",
-    "prebuild:clean": "expo prebuild --clean",
-    "build:android": "cd android && ./gradlew assembleDebug --no-daemon --console=plain -PreactNativeArchitectures=arm64-v8a",
-    "build:android:release": "cd android && ./gradlew assembleRelease --no-daemon --console=plain -PreactNativeArchitectures=arm64-v8a",
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "start": "react-native start",
+    "build:android": "react-native build-android --tasks assembleDebug --extra-params \"--no-daemon --console=plain -PreactNativeArchitectures=arm64-v8a\"",
+    "build:ios": "react-native build-ios --scheme ReactNativeMatrixSdkExample --mode Debug --extra-params \"-sdk iphonesimulator -derivedDataPath ios/build CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ GCC_OPTIMIZATION_LEVEL=0 GCC_PRECOMPILE_PREFIX_HEADER=YES ASSETCATALOG_COMPILER_OPTIMIZATION=time DEBUG_INFORMATION_FORMAT=dwarf COMPILER_INDEX_STORE_ENABLE=NO\"",
     "check:alignment": "node ../scripts/check-apk-alignment.js android/app/build/outputs/apk/debug/app-debug.apk",
-    "check:alignment:release": "node ../scripts/check-apk-alignment.js android/app/build/outputs/apk/release/app-release.apk",
-    "build:ios": "xcodebuild -workspace ios/ReactNativeMatrixSdkExample.xcworkspace -scheme ReactNativeMatrixSdkExample -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath ios/build build",
-    "build:ios:release": "xcodebuild -workspace ios/ReactNativeMatrixSdkExample.xcworkspace -scheme ReactNativeMatrixSdkExample -configuration Release -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath ios/build build",
-    "build:ios:device": "xcodebuild -workspace ios/ReactNativeMatrixSdkExample.xcworkspace -scheme ReactNativeMatrixSdkExample -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath ios/build CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO build",
-    "check:ios": "node ../scripts/check-ios-app.js ios/build/Build/Products/Debug-iphonesimulator/ReactNativeMatrixSdkExample.app",
-    "check:ios:release": "node ../scripts/check-ios-app.js ios/build/Build/Products/Release-iphonesimulator/ReactNativeMatrixSdkExample.app",
-    "check:ios:device": "node ../scripts/check-ios-app.js ios/build/Build/Products/Release-iphoneos/ReactNativeMatrixSdkExample.app"
+    "check:ios": "node ../scripts/check-ios-app.js ios/build/Build/Products/Debug-iphonesimulator/ReactNativeMatrixSdkExample.app"
   },
   "dependencies": {
-    "expo": "^57.0.0",
-    "expo-build-properties": "~57.0.3",
     "react": "19.2.3",
     "react-native": "0.86.0"
   },
@@ -33,8 +22,9 @@
     "@react-native-community/cli": "20.1.0",
     "@react-native-community/cli-platform-android": "20.1.0",
     "@react-native-community/cli-platform-ios": "20.1.0",
+    "@react-native/babel-preset": "0.86.0",
+    "@react-native/metro-config": "0.86.0",
     "@react-native/typescript-config": "0.86.0",
-    "babel-preset-expo": "~57.0.0",
     "react-native-builder-bob": "^0.31.0"
   },
   "engines": {

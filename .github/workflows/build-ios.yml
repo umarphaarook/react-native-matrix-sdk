@@ -32,9 +32,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-turborepo-ios-
 
+      # --filter scopes this to the bare example. Both examples define a
+      # `build:ios` script, and turbo matches tasks by script name across every
+      # workspace, so without it the Expo example would be built here too.
       - name: Check turborepo cache for iOS
         run: |
-          TURBO_CACHE_STATUS=$(node -p "($(yarn turbo run build:ios --cache-dir="${{ env.TURBO_CACHE_DIR }}" --dry=json)).tasks.find(t => t.task === 'build:ios').cache.status")
+          TURBO_CACHE_STATUS=$(node -p "($(yarn turbo run build:ios --filter=@unomed/react-native-matrix-sdk-example --cache-dir="${{ env.TURBO_CACHE_DIR }}" --dry=json)).tasks.find(t => t.task === 'build:ios').cache.status")
 
           if [[ $TURBO_CACHE_STATUS == "HIT" ]]; then
             echo "turbo_cache_hit=1" >> $GITHUB_ENV
@@ -53,33 +56,38 @@ jobs:
 
       - name: Install cocoapods
         if: env.turbo_cache_hit != 1 && steps.cocoapods-cache.outputs.cache-hit != 'true'
-        run: |
-          cd example/ios
-
-          # Work around '[!] CocoaPods could not find compatible versions for pod "hermes-engine"'
-          pod update hermes-engine --no-repo-update
-
-          pod install
         env:
           NO_FLIPPER: 1
+        run: |
+          for dir in example example-expo; do
+            pushd $dir/ios
+
+            # Work around '[!] CocoaPods could not find compatible versions for pod "hermes-engine"'
+            pod update hermes-engine --no-repo-update
+
+            pod install
+            popd
+          done
 
       - name: Build example for iOS
         run: |
-          yarn turbo run build:ios --cache-dir="${{ env.TURBO_CACHE_DIR }}"
+          yarn turbo run build:ios --filter=@unomed/react-native-matrix-sdk-example --cache-dir="${{ env.TURBO_CACHE_DIR }}"
 
-      # Both of these need a built .app on disk, which a turbo cache hit does
-      # not produce.
+      # Needs a built .app on disk, which a turbo cache hit does not produce.
+      # This is the dynamic-framework link path; the Expo example below is the
+      # static one.
       - name: Check the iOS app is shippable
         if: env.turbo_cache_hit != 1
         run: yarn example check:ios
 
-      # The simulator is the only thing the debug build above proves. This is
-      # the other half: a Release configuration, so the optimiser and the
-      # linker's dead stripping actually run, and the xcframework's device slice
-      # rather than its simulator slice. Unsigned, because linking is what is
-      # being tested here, not provisioning.
-      - name: Build example for iOS (release, device slice)
+      # The Expo example is the one that predicts a real consuming app: pods
+      # linked as static frameworks, React Native built from source. This build
+      # adds the two things no ordinary development ever does - a Release
+      # configuration, so the optimiser and the linker's dead stripping actually
+      # run, and the xcframework's device slice rather than its simulator slice.
+      # Unsigned, because linking is what is being tested, not provisioning.
+      - name: Build Expo example for iOS (release, device slice)
         if: env.turbo_cache_hit != 1
         run: |
-          yarn example build:ios:device
-          yarn example check:ios:device
+          yarn example-expo build:ios:device
+          yarn example-expo check:ios:device

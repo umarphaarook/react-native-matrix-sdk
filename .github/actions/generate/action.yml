@@ -37,20 +37,23 @@ runs:
         shell: bash
         run: brew install clang-format
 
-      # The example's android/ and ios/ are `expo prebuild` output and are not
+      # example-expo's android/ and ios/ are `expo prebuild` output and are not
       # checked in, so they have to be generated before anything can write into
-      # them, cache a file from them, or build them.
-      - name: Prebuild the example's native project
+      # them, cache a file from them, or build them. The bare example's are
+      # checked in and need no such step.
+      - name: Prebuild the Expo example's native project
         shell: bash
-        run: yarn example prebuild --platform ${{ inputs.platform }} --no-install
+        run: yarn example-expo prebuild --platform ${{ inputs.platform }} --no-install
 
       - name: Write .xcode.env.local
         if: ${{ inputs.platform == 'ios' }}
         shell: bash
         run: |
           # Work around for https://github.com/facebook/react-native/issues/35657
-          echo "export NODE_BINARY=$(which node)" >> example/ios/.xcode.env.local
-          cat example/ios/.xcode.env.local
+          for dir in example example-expo; do
+            echo "export NODE_BINARY=$(which node)" >> $dir/ios/.xcode.env.local
+            cat $dir/ios/.xcode.env.local
+          done
 
       - name: Generate
         shell: bash
@@ -69,7 +72,10 @@ runs:
         env:
           EXCLUDE: ${{ inputs.platform == 'android' && 'ios' || 'android' }}
         run: |
-          if [[ -n "$(git status --porcelain | grep -v ". $EXCLUDE" | grep -v swift)" ]]; then
+          # The bare example's Podfile.lock is checked in and `pod install` during
+          # generation legitimately rewrites it, so it is not evidence of a
+          # generator that is not reproducible.
+          if [[ -n "$(git status --porcelain | grep -v ". $EXCLUDE" | grep -v swift | grep -v example/ios/Podfile.lock)" ]]; then
             >&2 echo "Found unexpected changes in repository after generating"
             git status --short
             git diff
