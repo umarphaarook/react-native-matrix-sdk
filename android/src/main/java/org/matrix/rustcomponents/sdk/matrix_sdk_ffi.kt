@@ -47,6 +47,7 @@ import uniffi.matrix_sdk.FfiConverterTypePaginationStatus
 import uniffi.matrix_sdk.FfiConverterTypeRoomMemberRole
 import uniffi.matrix_sdk.FfiConverterTypeRoomPowerLevelChanges
 import uniffi.matrix_sdk.FfiConverterTypeServerVendorInfo
+import uniffi.matrix_sdk.FfiConverterTypeTileServerInfo
 import uniffi.matrix_sdk.FfiConverterTypeVirtualElementCallWidgetConfig
 import uniffi.matrix_sdk.FfiConverterTypeVirtualElementCallWidgetProperties
 import uniffi.matrix_sdk.OAuthAuthorizationData
@@ -54,6 +55,7 @@ import uniffi.matrix_sdk.PaginationStatus
 import uniffi.matrix_sdk.RoomMemberRole
 import uniffi.matrix_sdk.RoomPowerLevelChanges
 import uniffi.matrix_sdk.ServerVendorInfo
+import uniffi.matrix_sdk.TileServerInfo
 import uniffi.matrix_sdk.VirtualElementCallWidgetConfig
 import uniffi.matrix_sdk.VirtualElementCallWidgetProperties
 import uniffi.matrix_sdk_base.DmRoomDefinition
@@ -64,6 +66,10 @@ import uniffi.matrix_sdk_base.FfiConverterTypeMediaRetentionPolicy
 import uniffi.matrix_sdk_base.MediaRetentionPolicy
 import uniffi.matrix_sdk_common.BackgroundTaskFailureReason
 import uniffi.matrix_sdk_common.FfiConverterTypeBackgroundTaskFailureReason
+import uniffi.matrix_sdk_contentscanner.ErrorReason
+import uniffi.matrix_sdk_contentscanner.FfiConverterTypeErrorReason
+import uniffi.matrix_sdk_contentscanner.FfiConverterTypeMediaScanResponse
+import uniffi.matrix_sdk_contentscanner.MediaScanResponse
 import uniffi.matrix_sdk_crypto.CollectStrategy
 import uniffi.matrix_sdk_crypto.DecryptionSettings
 import uniffi.matrix_sdk_crypto.FfiConverterTypeCollectStrategy
@@ -77,31 +83,44 @@ import uniffi.matrix_sdk_crypto.UtdCause
 import uniffi.matrix_sdk_ui.EventItemOrigin
 import uniffi.matrix_sdk_ui.FfiConverterTypeEventItemOrigin
 import uniffi.matrix_sdk_ui.FfiConverterTypeLatestEventValueLocalState
+import uniffi.matrix_sdk_ui.FfiConverterTypeMembershipChangeFilter
 import uniffi.matrix_sdk_ui.FfiConverterTypeRoomPinnedEventsChange
+import uniffi.matrix_sdk_ui.FfiConverterTypeSearchServicePaginationState
 import uniffi.matrix_sdk_ui.FfiConverterTypeSpaceRoomListPaginationState
 import uniffi.matrix_sdk_ui.FfiConverterTypeThreadListPaginationState
 import uniffi.matrix_sdk_ui.FfiConverterTypeTimelineEventFocusThreadMode
 import uniffi.matrix_sdk_ui.FfiConverterTypeTimelineEventShieldStateCode
 import uniffi.matrix_sdk_ui.FfiConverterTypeTimelineReadReceiptTracking
 import uniffi.matrix_sdk_ui.LatestEventValueLocalState
+import uniffi.matrix_sdk_ui.MembershipChangeFilter
 import uniffi.matrix_sdk_ui.RoomPinnedEventsChange
+import uniffi.matrix_sdk_ui.SearchServicePaginationState
 import uniffi.matrix_sdk_ui.SpaceRoomListPaginationState
 import uniffi.matrix_sdk_ui.ThreadListPaginationState
 import uniffi.matrix_sdk_ui.TimelineEventFocusThreadMode
 import uniffi.matrix_sdk_ui.TimelineEventShieldStateCode
 import uniffi.matrix_sdk_ui.TimelineReadReceiptTracking
+import uniffi.ruma_events.FfiConverterTypeMessageLikeEventType
+import uniffi.ruma_events.FfiConverterTypeRoomAccountDataEventType
+import uniffi.ruma_events.FfiConverterTypeStateEventType
+import uniffi.ruma_events.MessageLikeEventType
+import uniffi.ruma_events.RoomAccountDataEventType
+import uniffi.ruma_events.StateEventType
 import uniffi.matrix_sdk.RustBuffer as RustBufferBackupDownloadStrategy
 import uniffi.matrix_sdk.RustBuffer as RustBufferOAuthAuthorizationData
 import uniffi.matrix_sdk.RustBuffer as RustBufferPaginationStatus
 import uniffi.matrix_sdk.RustBuffer as RustBufferRoomMemberRole
 import uniffi.matrix_sdk.RustBuffer as RustBufferRoomPowerLevelChanges
 import uniffi.matrix_sdk.RustBuffer as RustBufferServerVendorInfo
+import uniffi.matrix_sdk.RustBuffer as RustBufferTileServerInfo
 import uniffi.matrix_sdk.RustBuffer as RustBufferVirtualElementCallWidgetConfig
 import uniffi.matrix_sdk.RustBuffer as RustBufferVirtualElementCallWidgetProperties
 import uniffi.matrix_sdk_base.RustBuffer as RustBufferDmRoomDefinition
 import uniffi.matrix_sdk_base.RustBuffer as RustBufferEncryptionState
 import uniffi.matrix_sdk_base.RustBuffer as RustBufferMediaRetentionPolicy
 import uniffi.matrix_sdk_common.RustBuffer as RustBufferBackgroundTaskFailureReason
+import uniffi.matrix_sdk_contentscanner.RustBuffer as RustBufferErrorReason
+import uniffi.matrix_sdk_contentscanner.RustBuffer as RustBufferMediaScanResponse
 import uniffi.matrix_sdk_crypto.RustBuffer as RustBufferCollectStrategy
 import uniffi.matrix_sdk_crypto.RustBuffer as RustBufferDecryptionSettings
 import uniffi.matrix_sdk_crypto.RustBuffer as RustBufferIdentityState
@@ -109,12 +128,17 @@ import uniffi.matrix_sdk_crypto.RustBuffer as RustBufferQrCodeIntent
 import uniffi.matrix_sdk_crypto.RustBuffer as RustBufferUtdCause
 import uniffi.matrix_sdk_ui.RustBuffer as RustBufferEventItemOrigin
 import uniffi.matrix_sdk_ui.RustBuffer as RustBufferLatestEventValueLocalState
+import uniffi.matrix_sdk_ui.RustBuffer as RustBufferMembershipChangeFilter
 import uniffi.matrix_sdk_ui.RustBuffer as RustBufferRoomPinnedEventsChange
+import uniffi.matrix_sdk_ui.RustBuffer as RustBufferSearchServicePaginationState
 import uniffi.matrix_sdk_ui.RustBuffer as RustBufferSpaceRoomListPaginationState
 import uniffi.matrix_sdk_ui.RustBuffer as RustBufferThreadListPaginationState
 import uniffi.matrix_sdk_ui.RustBuffer as RustBufferTimelineEventFocusThreadMode
 import uniffi.matrix_sdk_ui.RustBuffer as RustBufferTimelineEventShieldStateCode
 import uniffi.matrix_sdk_ui.RustBuffer as RustBufferTimelineReadReceiptTracking
+import uniffi.ruma_events.RustBuffer as RustBufferMessageLikeEventType
+import uniffi.ruma_events.RustBuffer as RustBufferRoomAccountDataEventType
+import uniffi.ruma_events.RustBuffer as RustBufferStateEventType
 
 // This is a helper for safely working with byte buffers returned from the Rust code.
 // A rust-owned buffer is represented by its capacity, its current length, and a
@@ -724,6 +748,9 @@ internal interface UniffiCallbackInterfaceIgnoredUsersListenerMethod0 : com.sun.
 internal interface UniffiCallbackInterfaceMediaPreviewConfigListenerMethod0 : com.sun.jna.Callback {
     fun callback(`uniffiHandle`: Long,`mediaPreviewConfig`: RustBuffer.ByValue,`uniffiOutReturn`: Pointer,uniffiCallStatus: UniffiRustCallStatus,)
 }
+internal interface UniffiCallbackInterfaceProfileListenerMethod0 : com.sun.jna.Callback {
+    fun callback(`uniffiHandle`: Long,`profile`: RustBuffer.ByValue,`uniffiOutReturn`: Pointer,uniffiCallStatus: UniffiRustCallStatus,)
+}
 internal interface UniffiCallbackInterfaceProgressWatcherMethod0 : com.sun.jna.Callback {
     fun callback(`uniffiHandle`: Long,`progress`: RustBuffer.ByValue,`uniffiOutReturn`: Pointer,uniffiCallStatus: UniffiRustCallStatus,)
 }
@@ -744,6 +771,9 @@ internal interface UniffiCallbackInterfaceBackupStateListenerMethod0 : com.sun.j
 }
 internal interface UniffiCallbackInterfaceBackupSteadyStateListenerMethod0 : com.sun.jna.Callback {
     fun callback(`uniffiHandle`: Long,`status`: RustBuffer.ByValue,`uniffiOutReturn`: Pointer,uniffiCallStatus: UniffiRustCallStatus,)
+}
+internal interface UniffiCallbackInterfaceDehydratedDeviceEventListenerMethod0 : com.sun.jna.Callback {
+    fun callback(`uniffiHandle`: Long,`event`: RustBuffer.ByValue,`uniffiOutReturn`: Pointer,uniffiCallStatus: UniffiRustCallStatus,)
 }
 internal interface UniffiCallbackInterfaceEnableRecoveryProgressListenerMethod0 : com.sun.jna.Callback {
     fun callback(`uniffiHandle`: Long,`status`: RustBuffer.ByValue,`uniffiOutReturn`: Pointer,uniffiCallStatus: UniffiRustCallStatus,)
@@ -804,6 +834,12 @@ internal interface UniffiCallbackInterfaceRoomListServiceStateListenerMethod0 : 
 }
 internal interface UniffiCallbackInterfaceRoomListServiceSyncIndicatorListenerMethod0 : com.sun.jna.Callback {
     fun callback(`uniffiHandle`: Long,`syncIndicator`: RustBuffer.ByValue,`uniffiOutReturn`: Pointer,uniffiCallStatus: UniffiRustCallStatus,)
+}
+internal interface UniffiCallbackInterfaceSearchServicePaginationStateListenerMethod0 : com.sun.jna.Callback {
+    fun callback(`uniffiHandle`: Long,`paginationState`: RustBufferSearchServicePaginationState.ByValue,`uniffiOutReturn`: Pointer,uniffiCallStatus: UniffiRustCallStatus,)
+}
+internal interface UniffiCallbackInterfaceSearchServiceResultsListenerMethod0 : com.sun.jna.Callback {
+    fun callback(`uniffiHandle`: Long,`updates`: RustBuffer.ByValue,`uniffiOutReturn`: Pointer,uniffiCallStatus: UniffiRustCallStatus,)
 }
 internal interface UniffiCallbackInterfaceSessionVerificationControllerDelegateMethod0 : com.sun.jna.Callback {
     fun callback(`uniffiHandle`: Long,`details`: RustBuffer.ByValue,`uniffiOutReturn`: Pointer,uniffiCallStatus: UniffiRustCallStatus,)
@@ -1004,6 +1040,25 @@ internal open class UniffiVTableCallbackInterfaceMediaPreviewConfigListener(
     }
 
 }
+@Structure.FieldOrder("uniffiFree", "uniffiClone", "onUpdate")
+internal open class UniffiVTableCallbackInterfaceProfileListener(
+    @JvmField internal var `uniffiFree`: UniffiCallbackInterfaceFree? = null,
+    @JvmField internal var `uniffiClone`: UniffiCallbackInterfaceClone? = null,
+    @JvmField internal var `onUpdate`: UniffiCallbackInterfaceProfileListenerMethod0? = null,
+) : Structure() {
+    class UniffiByValue(
+        `uniffiFree`: UniffiCallbackInterfaceFree? = null,
+        `uniffiClone`: UniffiCallbackInterfaceClone? = null,
+        `onUpdate`: UniffiCallbackInterfaceProfileListenerMethod0? = null,
+    ): UniffiVTableCallbackInterfaceProfileListener(`uniffiFree`,`uniffiClone`,`onUpdate`,), Structure.ByValue
+
+   internal fun uniffiSetValue(other: UniffiVTableCallbackInterfaceProfileListener) {
+        `uniffiFree` = other.`uniffiFree`
+        `uniffiClone` = other.`uniffiClone`
+        `onUpdate` = other.`onUpdate`
+    }
+
+}
 @Structure.FieldOrder("uniffiFree", "uniffiClone", "transmissionProgress")
 internal open class UniffiVTableCallbackInterfaceProgressWatcher(
     @JvmField internal var `uniffiFree`: UniffiCallbackInterfaceFree? = null,
@@ -1134,6 +1189,25 @@ internal open class UniffiVTableCallbackInterfaceBackupSteadyStateListener(
         `uniffiFree` = other.`uniffiFree`
         `uniffiClone` = other.`uniffiClone`
         `onUpdate` = other.`onUpdate`
+    }
+
+}
+@Structure.FieldOrder("uniffiFree", "uniffiClone", "onEvent")
+internal open class UniffiVTableCallbackInterfaceDehydratedDeviceEventListener(
+    @JvmField internal var `uniffiFree`: UniffiCallbackInterfaceFree? = null,
+    @JvmField internal var `uniffiClone`: UniffiCallbackInterfaceClone? = null,
+    @JvmField internal var `onEvent`: UniffiCallbackInterfaceDehydratedDeviceEventListenerMethod0? = null,
+) : Structure() {
+    class UniffiByValue(
+        `uniffiFree`: UniffiCallbackInterfaceFree? = null,
+        `uniffiClone`: UniffiCallbackInterfaceClone? = null,
+        `onEvent`: UniffiCallbackInterfaceDehydratedDeviceEventListenerMethod0? = null,
+    ): UniffiVTableCallbackInterfaceDehydratedDeviceEventListener(`uniffiFree`,`uniffiClone`,`onEvent`,), Structure.ByValue
+
+   internal fun uniffiSetValue(other: UniffiVTableCallbackInterfaceDehydratedDeviceEventListener) {
+        `uniffiFree` = other.`uniffiFree`
+        `uniffiClone` = other.`uniffiClone`
+        `onEvent` = other.`onEvent`
     }
 
 }
@@ -1511,6 +1585,44 @@ internal open class UniffiVTableCallbackInterfaceRoomListServiceSyncIndicatorLis
     ): UniffiVTableCallbackInterfaceRoomListServiceSyncIndicatorListener(`uniffiFree`,`uniffiClone`,`onUpdate`,), Structure.ByValue
 
    internal fun uniffiSetValue(other: UniffiVTableCallbackInterfaceRoomListServiceSyncIndicatorListener) {
+        `uniffiFree` = other.`uniffiFree`
+        `uniffiClone` = other.`uniffiClone`
+        `onUpdate` = other.`onUpdate`
+    }
+
+}
+@Structure.FieldOrder("uniffiFree", "uniffiClone", "onUpdate")
+internal open class UniffiVTableCallbackInterfaceSearchServicePaginationStateListener(
+    @JvmField internal var `uniffiFree`: UniffiCallbackInterfaceFree? = null,
+    @JvmField internal var `uniffiClone`: UniffiCallbackInterfaceClone? = null,
+    @JvmField internal var `onUpdate`: UniffiCallbackInterfaceSearchServicePaginationStateListenerMethod0? = null,
+) : Structure() {
+    class UniffiByValue(
+        `uniffiFree`: UniffiCallbackInterfaceFree? = null,
+        `uniffiClone`: UniffiCallbackInterfaceClone? = null,
+        `onUpdate`: UniffiCallbackInterfaceSearchServicePaginationStateListenerMethod0? = null,
+    ): UniffiVTableCallbackInterfaceSearchServicePaginationStateListener(`uniffiFree`,`uniffiClone`,`onUpdate`,), Structure.ByValue
+
+   internal fun uniffiSetValue(other: UniffiVTableCallbackInterfaceSearchServicePaginationStateListener) {
+        `uniffiFree` = other.`uniffiFree`
+        `uniffiClone` = other.`uniffiClone`
+        `onUpdate` = other.`onUpdate`
+    }
+
+}
+@Structure.FieldOrder("uniffiFree", "uniffiClone", "onUpdate")
+internal open class UniffiVTableCallbackInterfaceSearchServiceResultsListener(
+    @JvmField internal var `uniffiFree`: UniffiCallbackInterfaceFree? = null,
+    @JvmField internal var `uniffiClone`: UniffiCallbackInterfaceClone? = null,
+    @JvmField internal var `onUpdate`: UniffiCallbackInterfaceSearchServiceResultsListenerMethod0? = null,
+) : Structure() {
+    class UniffiByValue(
+        `uniffiFree`: UniffiCallbackInterfaceFree? = null,
+        `uniffiClone`: UniffiCallbackInterfaceClone? = null,
+        `onUpdate`: UniffiCallbackInterfaceSearchServiceResultsListenerMethod0? = null,
+    ): UniffiVTableCallbackInterfaceSearchServiceResultsListener(`uniffiFree`,`uniffiClone`,`onUpdate`,), Structure.ByValue
+
+   internal fun uniffiSetValue(other: UniffiVTableCallbackInterfaceSearchServiceResultsListener) {
         `uniffiFree` = other.`uniffiFree`
         `uniffiClone` = other.`uniffiClone`
         `onUpdate` = other.`onUpdate`
@@ -1909,6 +2021,10 @@ external fun uniffi_matrix_sdk_ffi_checksum_method_client_can_deactivate_account
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_client_clear_caches(
 ): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_client_clear_user_status(
+): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_client_content_scanner(
+): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_client_create_room(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_client_custom_login_with_jwt(
@@ -1924,6 +2040,8 @@ external fun uniffi_matrix_sdk_ffi_checksum_method_client_display_name(
 external fun uniffi_matrix_sdk_ffi_checksum_method_client_enable_all_send_queues(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_client_enable_automatic_backpagination(
+): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_client_enable_automatic_call_status(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_client_enable_send_queue_upload_progress(
 ): Short
@@ -1983,6 +2101,8 @@ external fun uniffi_matrix_sdk_ffi_checksum_method_client_is_report_room_api_sup
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_client_is_room_alias_available(
 ): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_client_is_user_status_supported(
+): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_client_join_room_by_id(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_client_join_room_by_id_or_alias(
@@ -1997,6 +2117,8 @@ external fun uniffi_matrix_sdk_ffi_checksum_method_client_login_with_oauth_callb
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_client_logout(
 ): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_client_mark_all_rooms_as_read(
+): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_client_new_grant_login_with_qr_code_handler(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_client_new_login_with_qr_code_handler(
@@ -2008,6 +2130,8 @@ external fun uniffi_matrix_sdk_ffi_checksum_method_client_observe_account_data_e
 external fun uniffi_matrix_sdk_ffi_checksum_method_client_observe_room_account_data_event(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_client_optimize_stores(
+): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_client_pause(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_client_register_notification_handler(
 ): Short
@@ -2024,6 +2148,8 @@ external fun uniffi_matrix_sdk_ffi_checksum_method_client_resolve_room_alias(
 external fun uniffi_matrix_sdk_ffi_checksum_method_client_restore_session(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_client_restore_session_with(
+): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_client_resume(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_client_room_alias_exists(
 ): Short
@@ -2043,6 +2169,8 @@ external fun uniffi_matrix_sdk_ffi_checksum_method_client_set_account_data(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_client_set_avatar_url(
 ): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_client_set_content_scanner(
+): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_client_set_delegate(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_client_set_display_name(
@@ -2053,7 +2181,11 @@ external fun uniffi_matrix_sdk_ffi_checksum_method_client_set_media_preview_disp
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_client_set_media_retention_policy(
 ): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_client_set_presence(
+): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_client_set_pusher(
+): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_client_set_user_status(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_client_set_utd_delegate(
 ): Short
@@ -2071,6 +2203,8 @@ external fun uniffi_matrix_sdk_ffi_checksum_method_client_subscribe_to_media_pre
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_client_subscribe_to_own_beacon_info_updates(
 ): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_client_subscribe_to_own_profile(
+): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_client_subscribe_to_room_info(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_client_subscribe_to_send_queue_status(
@@ -2082,6 +2216,8 @@ external fun uniffi_matrix_sdk_ffi_checksum_method_client_sync_once_v2(
 external fun uniffi_matrix_sdk_ffi_checksum_method_client_sync_service(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_client_sync_v2(
+): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_client_tile_server(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_client_track_recently_visited_room(
 ): Short
@@ -2101,7 +2237,7 @@ external fun uniffi_matrix_sdk_ffi_checksum_method_client_add_recent_emoji(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_client_get_recent_emojis(
 ): Short
-external fun uniffi_matrix_sdk_ffi_checksum_method_client_search_messages(
+external fun uniffi_matrix_sdk_ffi_checksum_method_client_search_service(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_homeservercapabilities_can_change_avatar(
 ): Short
@@ -2179,13 +2315,21 @@ external fun uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_username(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_with_search_index_store(
 ): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_contentscanner_scan(
+): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_encryption_backup_exists_on_server(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_encryption_backup_state(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_encryption_backup_state_listener(
 ): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_encryption_create_dehydrated_device(
+): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_encryption_curve25519_key(
+): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_encryption_dehydrated_device_event_listener(
+): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_encryption_delete_dehydrated_device(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_encryption_disable_recovery(
 ): Short
@@ -2199,6 +2343,8 @@ external fun uniffi_matrix_sdk_ffi_checksum_method_encryption_has_devices_to_ver
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_encryption_import_secrets_bundle(
 ): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_encryption_is_dehydrated_device_supported(
+): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_encryption_is_last_device(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_encryption_recover(
@@ -2211,9 +2357,15 @@ external fun uniffi_matrix_sdk_ffi_checksum_method_encryption_recovery_state(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_encryption_recovery_state_listener(
 ): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_encryption_rehydrate_dehydrated_device(
+): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_encryption_reset_identity(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_encryption_reset_recovery_key(
+): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_encryption_start_dehydrated_devices(
+): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_encryption_stop_dehydrated_devices(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_encryption_user_identity(
 ): Short
@@ -2307,6 +2459,10 @@ external fun uniffi_matrix_sdk_ffi_checksum_method_notificationsettings_set_user
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_notificationsettings_unmute_room(
 ): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_passwordstrengthestimator_estimate(
+): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_passwordstrengthestimator_thresholds(
+): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_span_enter(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_span_exit(
@@ -2314,6 +2470,10 @@ external fun uniffi_matrix_sdk_ffi_checksum_method_span_exit(
 external fun uniffi_matrix_sdk_ffi_checksum_method_span_is_none(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_checkcodesender_send(
+): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_continuationmessagesender_cancel(
+): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_continuationmessagesender_confirm(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_grantloginwithqrcodehandler_generate(
 ): Short
@@ -2354,8 +2514,6 @@ external fun uniffi_matrix_sdk_ffi_checksum_method_room_ban_user(
 external fun uniffi_matrix_sdk_ffi_checksum_method_room_canonical_alias(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_room_clear_composer_draft(
-): Short
-external fun uniffi_matrix_sdk_ffi_checksum_method_room_clear_event_cache_storage(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_room_decline_call(
 ): Short
@@ -2423,6 +2581,8 @@ external fun uniffi_matrix_sdk_ffi_checksum_method_room_load_composer_draft(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_room_load_or_fetch_event(
 ): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_room_load_user_receipt(
+): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_room_mark_as_fully_read_unchecked(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_room_mark_as_read(
@@ -2476,6 +2636,8 @@ external fun uniffi_matrix_sdk_ffi_checksum_method_room_save_composer_draft(
 external fun uniffi_matrix_sdk_ffi_checksum_method_room_send_live_location(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_room_send_raw(
+): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_room_send_single_receipt(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_room_send_state_event_raw(
 ): Short
@@ -2538,8 +2700,6 @@ external fun uniffi_matrix_sdk_ffi_checksum_method_room_update_room_visibility(
 external fun uniffi_matrix_sdk_ffi_checksum_method_room_upload_avatar(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_room_withdraw_verification_and_resend(
-): Short
-external fun uniffi_matrix_sdk_ffi_checksum_method_room_search_messages(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_roommembersiterator_len(
 ): Short
@@ -2643,9 +2803,15 @@ external fun uniffi_matrix_sdk_ffi_checksum_method_mediasource_to_json(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_mediasource_url(
 ): Short
-external fun uniffi_matrix_sdk_ffi_checksum_method_globalsearchiterator_next_events(
+external fun uniffi_matrix_sdk_ffi_checksum_method_searchservice_paginate(
 ): Short
-external fun uniffi_matrix_sdk_ffi_checksum_method_roomsearchiterator_next_events(
+external fun uniffi_matrix_sdk_ffi_checksum_method_searchservice_pagination_state(
+): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_searchservice_set_query(
+): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_searchservice_subscribe_to_pagination_state_updates(
+): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_searchservice_subscribe_to_results(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_sessionverificationcontroller_accept_verification_request(
 ): Short
@@ -2715,6 +2881,8 @@ external fun uniffi_matrix_sdk_ffi_checksum_method_sqlitestorebuilder_cache_size
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_sqlitestorebuilder_journal_size_limit(
 ): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_sqlitestorebuilder_key(
+): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_sqlitestorebuilder_passphrase(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_sqlitestorebuilder_pool_max_size(
@@ -2734,6 +2902,10 @@ external fun uniffi_matrix_sdk_ffi_checksum_method_syncservice_stop(
 external fun uniffi_matrix_sdk_ffi_checksum_method_syncservicebuilder_finish(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_syncservicebuilder_with_offline_mode(
+): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_syncservicebuilder_with_parent_span(
+): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_syncservicebuilder_with_profiles_extension(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_syncservicebuilder_with_room_list_connection_id(
 ): Short
@@ -2815,6 +2987,8 @@ external fun uniffi_matrix_sdk_ffi_checksum_method_timeline_send_video(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_timeline_send_voice_message(
 ): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_timeline_send_with_extra_content(
+): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_timeline_subscribe_to_back_pagination_status(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_timeline_toggle_reaction(
@@ -2863,9 +3037,17 @@ external fun uniffi_matrix_sdk_ffi_checksum_method_widgetdriverhandle_send(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_constructor_clientbuilder_new(
 ): Short
+external fun uniffi_matrix_sdk_ffi_checksum_constructor_contentscanner_new(
+): Short
 external fun uniffi_matrix_sdk_ffi_checksum_constructor_secretsbundlewithuserid_from_database(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_constructor_secretsbundlewithuserid_from_str(
+): Short
+external fun uniffi_matrix_sdk_ffi_checksum_constructor_passwordstrengthestimator_new(
+): Short
+external fun uniffi_matrix_sdk_ffi_checksum_constructor_passwordstrengthestimator_with_modern_defaults2025(
+): Short
+external fun uniffi_matrix_sdk_ffi_checksum_constructor_passwordstrengthestimator_with_zxcvbn_defaults(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_constructor_span_current(
 ): Short
@@ -2907,6 +3089,8 @@ external fun uniffi_matrix_sdk_ffi_checksum_method_ignoreduserslistener_call(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_mediapreviewconfiglistener_on_change(
 ): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_profilelistener_on_update(
+): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_progresswatcher_transmission_progress(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_roomaccountdatalistener_on_change(
@@ -2920,6 +3104,8 @@ external fun uniffi_matrix_sdk_ffi_checksum_method_syncnotificationlistener_on_n
 external fun uniffi_matrix_sdk_ffi_checksum_method_backupstatelistener_on_update(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_backupsteadystatelistener_on_update(
+): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_dehydrateddeviceeventlistener_on_event(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_enablerecoveryprogresslistener_on_update(
 ): Short
@@ -2960,6 +3146,10 @@ external fun uniffi_matrix_sdk_ffi_checksum_method_roomlistloadingstatelistener_
 external fun uniffi_matrix_sdk_ffi_checksum_method_roomlistservicestatelistener_on_update(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_roomlistservicesyncindicatorlistener_on_update(
+): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_searchservicepaginationstatelistener_on_update(
+): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_searchserviceresultslistener_on_update(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_sessionverificationcontrollerdelegate_did_receive_verification_request(
 ): Short
@@ -3024,6 +3214,7 @@ internal object UniffiLib {
         uniffiCallbackInterfaceCallDeclineListener.register(this)
         uniffiCallbackInterfaceClientDelegate.register(this)
         uniffiCallbackInterfaceClientSessionDelegate.register(this)
+        uniffiCallbackInterfaceDehydratedDeviceEventListener.register(this)
         uniffiCallbackInterfaceDuplicateKeyUploadErrorListener.register(this)
         uniffiCallbackInterfaceEnableRecoveryProgressListener.register(this)
         uniffiCallbackInterfaceGeneratedQrLoginProgressListener.register(this)
@@ -3036,6 +3227,7 @@ internal object UniffiLib {
         uniffiCallbackInterfaceMediaPreviewConfigListener.register(this)
         uniffiCallbackInterfaceNotificationSettingsDelegate.register(this)
         uniffiCallbackInterfacePaginationStatusListener.register(this)
+        uniffiCallbackInterfaceProfileListener.register(this)
         uniffiCallbackInterfaceProgressWatcher.register(this)
         uniffiCallbackInterfaceQrLoginProgressListener.register(this)
         uniffiCallbackInterfaceRecoveryStateListener.register(this)
@@ -3046,6 +3238,8 @@ internal object UniffiLib {
         uniffiCallbackInterfaceRoomListLoadingStateListener.register(this)
         uniffiCallbackInterfaceRoomListServiceStateListener.register(this)
         uniffiCallbackInterfaceRoomListServiceSyncIndicatorListener.register(this)
+        uniffiCallbackInterfaceSearchServicePaginationStateListener.register(this)
+        uniffiCallbackInterfaceSearchServiceResultsListener.register(this)
         uniffiCallbackInterfaceSendQueueListener.register(this)
         uniffiCallbackInterfaceSendQueueRoomErrorListener.register(this)
         uniffiCallbackInterfaceSendQueueRoomUpdateListener.register(this)
@@ -3068,8 +3262,10 @@ internal object UniffiLib {
         uniffi.matrix_sdk.uniffiEnsureInitialized()
         uniffi.matrix_sdk_base.uniffiEnsureInitialized()
         uniffi.matrix_sdk_common.uniffiEnsureInitialized()
+        uniffi.matrix_sdk_contentscanner.uniffiEnsureInitialized()
         uniffi.matrix_sdk_crypto.uniffiEnsureInitialized()
         uniffi.matrix_sdk_ui.uniffiEnsureInitialized()
+        uniffi.ruma_events.uniffiEnsureInitialized()
         
     }
     external fun uniffi_matrix_sdk_ffi_fn_clone_roommessageeventcontentwithoutrelation(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
@@ -3124,6 +3320,10 @@ external fun uniffi_matrix_sdk_ffi_fn_method_client_can_deactivate_account(`ptr`
 ): Byte
 external fun uniffi_matrix_sdk_ffi_fn_method_client_clear_caches(`ptr`: Long,`syncService`: RustBuffer.ByValue,
 ): Long
+external fun uniffi_matrix_sdk_ffi_fn_method_client_clear_user_status(`ptr`: Long,
+): Long
+external fun uniffi_matrix_sdk_ffi_fn_method_client_content_scanner(`ptr`: Long,
+): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_client_create_room(`ptr`: Long,`request`: RustBuffer.ByValue,
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_client_custom_login_with_jwt(`ptr`: Long,`jwt`: RustBuffer.ByValue,`initialDeviceName`: RustBuffer.ByValue,`deviceId`: RustBuffer.ByValue,
@@ -3139,6 +3339,8 @@ external fun uniffi_matrix_sdk_ffi_fn_method_client_display_name(`ptr`: Long,
 external fun uniffi_matrix_sdk_ffi_fn_method_client_enable_all_send_queues(`ptr`: Long,`enable`: Byte,
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_client_enable_automatic_backpagination(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): Unit
+external fun uniffi_matrix_sdk_ffi_fn_method_client_enable_automatic_call_status(`ptr`: Long,`enabled`: Byte,uniffi_out_err: UniffiRustCallStatus, 
 ): Unit
 external fun uniffi_matrix_sdk_ffi_fn_method_client_enable_send_queue_upload_progress(`ptr`: Long,`enable`: Byte,uniffi_out_err: UniffiRustCallStatus, 
 ): Unit
@@ -3190,13 +3392,15 @@ external fun uniffi_matrix_sdk_ffi_fn_method_client_ignore_user(`ptr`: Long,`use
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_client_ignored_users(`ptr`: Long,
 ): Long
-external fun uniffi_matrix_sdk_ffi_fn_method_client_is_livekit_rtc_supported(`ptr`: Long,
+external fun uniffi_matrix_sdk_ffi_fn_method_client_is_livekit_rtc_supported(`ptr`: Long,`fallbackToWellKnown`: Byte,
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_client_is_login_with_qr_code_supported(`ptr`: Long,
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_client_is_report_room_api_supported(`ptr`: Long,
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_client_is_room_alias_available(`ptr`: Long,`alias`: RustBuffer.ByValue,
+): Long
+external fun uniffi_matrix_sdk_ffi_fn_method_client_is_user_status_supported(`ptr`: Long,
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_client_join_room_by_id(`ptr`: Long,`roomId`: RustBuffer.ByValue,
 ): Long
@@ -3212,6 +3416,8 @@ external fun uniffi_matrix_sdk_ffi_fn_method_client_login_with_oauth_callback(`p
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_client_logout(`ptr`: Long,
 ): Long
+external fun uniffi_matrix_sdk_ffi_fn_method_client_mark_all_rooms_as_read(`ptr`: Long,
+): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_client_new_grant_login_with_qr_code_handler(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_client_new_login_with_qr_code_handler(`ptr`: Long,`oauthConfiguration`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
@@ -3220,9 +3426,11 @@ external fun uniffi_matrix_sdk_ffi_fn_method_client_notification_client(`ptr`: L
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_client_observe_account_data_event(`ptr`: Long,`eventType`: RustBuffer.ByValue,`listener`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
-external fun uniffi_matrix_sdk_ffi_fn_method_client_observe_room_account_data_event(`ptr`: Long,`roomId`: RustBuffer.ByValue,`eventType`: RustBuffer.ByValue,`listener`: Long,uniffi_out_err: UniffiRustCallStatus, 
+external fun uniffi_matrix_sdk_ffi_fn_method_client_observe_room_account_data_event(`ptr`: Long,`roomId`: RustBuffer.ByValue,`eventType`: RustBufferRoomAccountDataEventType.ByValue,`listener`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_client_optimize_stores(`ptr`: Long,
+): Long
+external fun uniffi_matrix_sdk_ffi_fn_method_client_pause(`ptr`: Long,
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_client_register_notification_handler(`ptr`: Long,`listener`: Long,
 ): Long
@@ -3239,6 +3447,8 @@ external fun uniffi_matrix_sdk_ffi_fn_method_client_resolve_room_alias(`ptr`: Lo
 external fun uniffi_matrix_sdk_ffi_fn_method_client_restore_session(`ptr`: Long,`session`: RustBuffer.ByValue,
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_client_restore_session_with(`ptr`: Long,`session`: RustBuffer.ByValue,`roomLoadSettings`: RustBuffer.ByValue,
+): Long
+external fun uniffi_matrix_sdk_ffi_fn_method_client_resume(`ptr`: Long,
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_client_room_alias_exists(`ptr`: Long,`roomAlias`: RustBuffer.ByValue,
 ): Long
@@ -3258,6 +3468,8 @@ external fun uniffi_matrix_sdk_ffi_fn_method_client_set_account_data(`ptr`: Long
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_client_set_avatar_url(`ptr`: Long,`url`: RustBuffer.ByValue,
 ): Long
+external fun uniffi_matrix_sdk_ffi_fn_method_client_set_content_scanner(`ptr`: Long,`contentScanner`: RustBuffer.ByValue,
+): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_client_set_delegate(`ptr`: Long,`delegate`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
 external fun uniffi_matrix_sdk_ffi_fn_method_client_set_display_name(`ptr`: Long,`name`: RustBuffer.ByValue,
@@ -3268,7 +3480,11 @@ external fun uniffi_matrix_sdk_ffi_fn_method_client_set_media_preview_display_po
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_client_set_media_retention_policy(`ptr`: Long,`policy`: RustBufferMediaRetentionPolicy.ByValue,
 ): Long
-external fun uniffi_matrix_sdk_ffi_fn_method_client_set_pusher(`ptr`: Long,`identifiers`: RustBuffer.ByValue,`kind`: RustBuffer.ByValue,`appDisplayName`: RustBuffer.ByValue,`deviceDisplayName`: RustBuffer.ByValue,`profileTag`: RustBuffer.ByValue,`lang`: RustBuffer.ByValue,
+external fun uniffi_matrix_sdk_ffi_fn_method_client_set_presence(`ptr`: Long,`presence`: RustBuffer.ByValue,`immediate`: Byte,
+): Long
+external fun uniffi_matrix_sdk_ffi_fn_method_client_set_pusher(`ptr`: Long,`identifiers`: RustBuffer.ByValue,`kind`: RustBuffer.ByValue,`appDisplayName`: RustBuffer.ByValue,`deviceDisplayName`: RustBuffer.ByValue,`profileTag`: RustBuffer.ByValue,`lang`: RustBuffer.ByValue,`append`: Byte,
+): Long
+external fun uniffi_matrix_sdk_ffi_fn_method_client_set_user_status(`ptr`: Long,`status`: RustBuffer.ByValue,
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_client_set_utd_delegate(`ptr`: Long,`utdDelegate`: Long,
 ): Long
@@ -3286,6 +3502,8 @@ external fun uniffi_matrix_sdk_ffi_fn_method_client_subscribe_to_media_preview_c
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_client_subscribe_to_own_beacon_info_updates(`ptr`: Long,`listener`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
+external fun uniffi_matrix_sdk_ffi_fn_method_client_subscribe_to_own_profile(`ptr`: Long,`listener`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_client_subscribe_to_room_info(`ptr`: Long,`roomId`: RustBuffer.ByValue,`listener`: Long,
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_client_subscribe_to_send_queue_status(`ptr`: Long,`listener`: Long,uniffi_out_err: UniffiRustCallStatus, 
@@ -3297,6 +3515,8 @@ external fun uniffi_matrix_sdk_ffi_fn_method_client_sync_once_v2(`ptr`: Long,`se
 external fun uniffi_matrix_sdk_ffi_fn_method_client_sync_service(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_client_sync_v2(`ptr`: Long,`settings`: RustBuffer.ByValue,`listener`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): Long
+external fun uniffi_matrix_sdk_ffi_fn_method_client_tile_server(`ptr`: Long,
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_client_track_recently_visited_room(`ptr`: Long,`room`: RustBuffer.ByValue,
 ): Long
@@ -3316,7 +3536,7 @@ external fun uniffi_matrix_sdk_ffi_fn_method_client_add_recent_emoji(`ptr`: Long
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_client_get_recent_emojis(`ptr`: Long,
 ): Long
-external fun uniffi_matrix_sdk_ffi_fn_method_client_search_messages(`ptr`: Long,`query`: RustBuffer.ByValue,`filter`: RustBuffer.ByValue,`numResultsPerBatch`: Int,
+external fun uniffi_matrix_sdk_ffi_fn_method_client_search_service(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_clone_homeservercapabilities(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
@@ -3408,6 +3628,14 @@ external fun uniffi_matrix_sdk_ffi_fn_method_clientbuilder_username(`ptr`: Long,
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_clientbuilder_with_search_index_store(`ptr`: Long,`path`: RustBuffer.ByValue,`password`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
+external fun uniffi_matrix_sdk_ffi_fn_clone_contentscanner(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): Long
+external fun uniffi_matrix_sdk_ffi_fn_free_contentscanner(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): Unit
+external fun uniffi_matrix_sdk_ffi_fn_constructor_contentscanner_new(`scannerUrl`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): Long
+external fun uniffi_matrix_sdk_ffi_fn_method_contentscanner_scan(`ptr`: Long,`client`: Long,`mediaSource`: Long,
+): Long
 external fun uniffi_matrix_sdk_ffi_fn_clone_encryption(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_free_encryption(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
@@ -3418,7 +3646,13 @@ external fun uniffi_matrix_sdk_ffi_fn_method_encryption_backup_state(`ptr`: Long
 ): RustBuffer.ByValue
 external fun uniffi_matrix_sdk_ffi_fn_method_encryption_backup_state_listener(`ptr`: Long,`listener`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
+external fun uniffi_matrix_sdk_ffi_fn_method_encryption_create_dehydrated_device(`ptr`: Long,`displayName`: RustBuffer.ByValue,`pickleKey`: RustBuffer.ByValue,
+): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_encryption_curve25519_key(`ptr`: Long,
+): Long
+external fun uniffi_matrix_sdk_ffi_fn_method_encryption_dehydrated_device_event_listener(`ptr`: Long,`listener`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): Long
+external fun uniffi_matrix_sdk_ffi_fn_method_encryption_delete_dehydrated_device(`ptr`: Long,
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_encryption_disable_recovery(`ptr`: Long,
 ): Long
@@ -3432,6 +3666,8 @@ external fun uniffi_matrix_sdk_ffi_fn_method_encryption_has_devices_to_verify_ag
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_encryption_import_secrets_bundle(`ptr`: Long,`secretsBundle`: Long,
 ): Long
+external fun uniffi_matrix_sdk_ffi_fn_method_encryption_is_dehydrated_device_supported(`ptr`: Long,
+): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_encryption_is_last_device(`ptr`: Long,
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_encryption_recover(`ptr`: Long,`recoveryKey`: RustBuffer.ByValue,
@@ -3444,10 +3680,16 @@ external fun uniffi_matrix_sdk_ffi_fn_method_encryption_recovery_state(`ptr`: Lo
 ): RustBuffer.ByValue
 external fun uniffi_matrix_sdk_ffi_fn_method_encryption_recovery_state_listener(`ptr`: Long,`listener`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
+external fun uniffi_matrix_sdk_ffi_fn_method_encryption_rehydrate_dehydrated_device(`ptr`: Long,`pickleKey`: RustBuffer.ByValue,
+): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_encryption_reset_identity(`ptr`: Long,
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_encryption_reset_recovery_key(`ptr`: Long,
 ): Long
+external fun uniffi_matrix_sdk_ffi_fn_method_encryption_start_dehydrated_devices(`ptr`: Long,`recoveryKey`: RustBuffer.ByValue,`settings`: RustBuffer.ByValue,
+): Long
+external fun uniffi_matrix_sdk_ffi_fn_method_encryption_stop_dehydrated_devices(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): Unit
 external fun uniffi_matrix_sdk_ffi_fn_method_encryption_user_identity(`ptr`: Long,`userId`: RustBuffer.ByValue,`fallbackToServer`: Byte,
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_encryption_verification_state(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
@@ -3572,6 +3814,20 @@ external fun uniffi_matrix_sdk_ffi_fn_method_notificationsettings_set_user_menti
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_notificationsettings_unmute_room(`ptr`: Long,`roomId`: RustBuffer.ByValue,`isEncrypted`: Byte,`isOneToOne`: Byte,
 ): Long
+external fun uniffi_matrix_sdk_ffi_fn_clone_passwordstrengthestimator(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): Long
+external fun uniffi_matrix_sdk_ffi_fn_free_passwordstrengthestimator(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): Unit
+external fun uniffi_matrix_sdk_ffi_fn_constructor_passwordstrengthestimator_new(`thresholds`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): Long
+external fun uniffi_matrix_sdk_ffi_fn_constructor_passwordstrengthestimator_with_modern_defaults2025(uniffi_out_err: UniffiRustCallStatus, 
+): Long
+external fun uniffi_matrix_sdk_ffi_fn_constructor_passwordstrengthestimator_with_zxcvbn_defaults(uniffi_out_err: UniffiRustCallStatus, 
+): Long
+external fun uniffi_matrix_sdk_ffi_fn_method_passwordstrengthestimator_estimate(`ptr`: Long,`password`: RustBuffer.ByValue,`userInputs`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
+external fun uniffi_matrix_sdk_ffi_fn_method_passwordstrengthestimator_thresholds(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): RustBuffer.ByValue
 external fun uniffi_matrix_sdk_ffi_fn_clone_span(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_free_span(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
@@ -3593,6 +3849,14 @@ external fun uniffi_matrix_sdk_ffi_fn_clone_checkcodesender(`handle`: Long,uniff
 external fun uniffi_matrix_sdk_ffi_fn_free_checkcodesender(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Unit
 external fun uniffi_matrix_sdk_ffi_fn_method_checkcodesender_send(`ptr`: Long,`code`: Byte,
+): Long
+external fun uniffi_matrix_sdk_ffi_fn_clone_continuationmessagesender(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): Long
+external fun uniffi_matrix_sdk_ffi_fn_free_continuationmessagesender(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): Unit
+external fun uniffi_matrix_sdk_ffi_fn_method_continuationmessagesender_cancel(`ptr`: Long,
+): Long
+external fun uniffi_matrix_sdk_ffi_fn_method_continuationmessagesender_confirm(`ptr`: Long,
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_clone_grantloginwithqrcodehandler(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
@@ -3656,8 +3920,6 @@ external fun uniffi_matrix_sdk_ffi_fn_method_room_canonical_alias(`ptr`: Long,un
 ): RustBuffer.ByValue
 external fun uniffi_matrix_sdk_ffi_fn_method_room_clear_composer_draft(`ptr`: Long,`threadRoot`: RustBuffer.ByValue,
 ): Long
-external fun uniffi_matrix_sdk_ffi_fn_method_room_clear_event_cache_storage(`ptr`: Long,
-): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_room_decline_call(`ptr`: Long,`rtcNotificationEventId`: RustBuffer.ByValue,
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_room_discard_room_key(`ptr`: Long,
@@ -3682,8 +3944,8 @@ external fun uniffi_matrix_sdk_ffi_fn_method_room_get_room_visibility(`ptr`: Lon
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_room_has_active_room_call(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Byte
-external fun uniffi_matrix_sdk_ffi_fn_method_room_heroes(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
+external fun uniffi_matrix_sdk_ffi_fn_method_room_heroes(`ptr`: Long,
+): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_room_id(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
 external fun uniffi_matrix_sdk_ffi_fn_method_room_ignore_device_trust_and_resend(`ptr`: Long,`devices`: RustBuffer.ByValue,`sendHandle`: Long,
@@ -3723,6 +3985,8 @@ external fun uniffi_matrix_sdk_ffi_fn_method_room_live_locations_observer(`ptr`:
 external fun uniffi_matrix_sdk_ffi_fn_method_room_load_composer_draft(`ptr`: Long,`threadRoot`: RustBuffer.ByValue,
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_room_load_or_fetch_event(`ptr`: Long,`eventId`: RustBuffer.ByValue,
+): Long
+external fun uniffi_matrix_sdk_ffi_fn_method_room_load_user_receipt(`ptr`: Long,`receiptType`: RustBuffer.ByValue,`thread`: RustBuffer.ByValue,`userId`: RustBuffer.ByValue,
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_room_mark_as_fully_read_unchecked(`ptr`: Long,`eventId`: RustBuffer.ByValue,
 ): Long
@@ -3777,6 +4041,8 @@ external fun uniffi_matrix_sdk_ffi_fn_method_room_save_composer_draft(`ptr`: Lon
 external fun uniffi_matrix_sdk_ffi_fn_method_room_send_live_location(`ptr`: Long,`geoUri`: RustBuffer.ByValue,
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_room_send_raw(`ptr`: Long,`eventType`: RustBuffer.ByValue,`content`: RustBuffer.ByValue,
+): Long
+external fun uniffi_matrix_sdk_ffi_fn_method_room_send_single_receipt(`ptr`: Long,`receiptType`: RustBuffer.ByValue,`thread`: RustBuffer.ByValue,`eventId`: RustBuffer.ByValue,
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_room_send_state_event_raw(`ptr`: Long,`eventType`: RustBuffer.ByValue,`stateKey`: RustBuffer.ByValue,`content`: RustBuffer.ByValue,
 ): Long
@@ -3840,8 +4106,6 @@ external fun uniffi_matrix_sdk_ffi_fn_method_room_upload_avatar(`ptr`: Long,`mim
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_room_withdraw_verification_and_resend(`ptr`: Long,`userIds`: RustBuffer.ByValue,`sendHandle`: Long,
 ): Long
-external fun uniffi_matrix_sdk_ffi_fn_method_room_search_messages(`ptr`: Long,`query`: RustBuffer.ByValue,`numResultsPerBatch`: Int,uniffi_out_err: UniffiRustCallStatus, 
-): Long
 external fun uniffi_matrix_sdk_ffi_fn_clone_roommembersiterator(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_free_roommembersiterator(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
@@ -3866,9 +4130,9 @@ external fun uniffi_matrix_sdk_ffi_fn_method_roompowerlevels_can_own_user_redact
 ): Byte
 external fun uniffi_matrix_sdk_ffi_fn_method_roompowerlevels_can_own_user_redact_own(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Byte
-external fun uniffi_matrix_sdk_ffi_fn_method_roompowerlevels_can_own_user_send_message(`ptr`: Long,`message`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+external fun uniffi_matrix_sdk_ffi_fn_method_roompowerlevels_can_own_user_send_message(`ptr`: Long,`message`: RustBufferMessageLikeEventType.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): Byte
-external fun uniffi_matrix_sdk_ffi_fn_method_roompowerlevels_can_own_user_send_state(`ptr`: Long,`stateEvent`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+external fun uniffi_matrix_sdk_ffi_fn_method_roompowerlevels_can_own_user_send_state(`ptr`: Long,`stateEvent`: RustBufferStateEventType.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): Byte
 external fun uniffi_matrix_sdk_ffi_fn_method_roompowerlevels_can_own_user_trigger_room_notification(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Byte
@@ -3884,9 +4148,9 @@ external fun uniffi_matrix_sdk_ffi_fn_method_roompowerlevels_can_user_redact_oth
 ): Byte
 external fun uniffi_matrix_sdk_ffi_fn_method_roompowerlevels_can_user_redact_own(`ptr`: Long,`userId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): Byte
-external fun uniffi_matrix_sdk_ffi_fn_method_roompowerlevels_can_user_send_message(`ptr`: Long,`userId`: RustBuffer.ByValue,`message`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+external fun uniffi_matrix_sdk_ffi_fn_method_roompowerlevels_can_user_send_message(`ptr`: Long,`userId`: RustBuffer.ByValue,`message`: RustBufferMessageLikeEventType.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): Byte
-external fun uniffi_matrix_sdk_ffi_fn_method_roompowerlevels_can_user_send_state(`ptr`: Long,`userId`: RustBuffer.ByValue,`stateEvent`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+external fun uniffi_matrix_sdk_ffi_fn_method_roompowerlevels_can_user_send_state(`ptr`: Long,`userId`: RustBuffer.ByValue,`stateEvent`: RustBufferStateEventType.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): Byte
 external fun uniffi_matrix_sdk_ffi_fn_method_roompowerlevels_can_user_trigger_room_notification(`ptr`: Long,`userId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): Byte
@@ -3988,17 +4252,19 @@ external fun uniffi_matrix_sdk_ffi_fn_method_mediasource_to_json(`ptr`: Long,uni
 ): RustBuffer.ByValue
 external fun uniffi_matrix_sdk_ffi_fn_method_mediasource_url(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
-external fun uniffi_matrix_sdk_ffi_fn_clone_globalsearchiterator(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+external fun uniffi_matrix_sdk_ffi_fn_clone_searchservice(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
-external fun uniffi_matrix_sdk_ffi_fn_free_globalsearchiterator(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+external fun uniffi_matrix_sdk_ffi_fn_free_searchservice(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Unit
-external fun uniffi_matrix_sdk_ffi_fn_method_globalsearchiterator_next_events(`ptr`: Long,
+external fun uniffi_matrix_sdk_ffi_fn_method_searchservice_paginate(`ptr`: Long,
 ): Long
-external fun uniffi_matrix_sdk_ffi_fn_clone_roomsearchiterator(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
+external fun uniffi_matrix_sdk_ffi_fn_method_searchservice_pagination_state(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): RustBufferSearchServicePaginationState.ByValue
+external fun uniffi_matrix_sdk_ffi_fn_method_searchservice_set_query(`ptr`: Long,`query`: RustBuffer.ByValue,
 ): Long
-external fun uniffi_matrix_sdk_ffi_fn_free_roomsearchiterator(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): Unit
-external fun uniffi_matrix_sdk_ffi_fn_method_roomsearchiterator_next_events(`ptr`: Long,
+external fun uniffi_matrix_sdk_ffi_fn_method_searchservice_subscribe_to_pagination_state_updates(`ptr`: Long,`listener`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): Long
+external fun uniffi_matrix_sdk_ffi_fn_method_searchservice_subscribe_to_results(`ptr`: Long,`listener`: Long,
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_clone_sessionverificationcontroller(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
@@ -4048,13 +4314,13 @@ external fun uniffi_matrix_sdk_ffi_fn_method_spaceroomlist_pagination_state(`ptr
 ): RustBufferSpaceRoomListPaginationState.ByValue
 external fun uniffi_matrix_sdk_ffi_fn_method_spaceroomlist_reset(`ptr`: Long,
 ): Long
-external fun uniffi_matrix_sdk_ffi_fn_method_spaceroomlist_rooms(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
-): RustBuffer.ByValue
+external fun uniffi_matrix_sdk_ffi_fn_method_spaceroomlist_rooms(`ptr`: Long,
+): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_spaceroomlist_space(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): RustBuffer.ByValue
 external fun uniffi_matrix_sdk_ffi_fn_method_spaceroomlist_subscribe_to_pagination_state_updates(`ptr`: Long,`listener`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
-external fun uniffi_matrix_sdk_ffi_fn_method_spaceroomlist_subscribe_to_room_update(`ptr`: Long,`listener`: Long,uniffi_out_err: UniffiRustCallStatus, 
+external fun uniffi_matrix_sdk_ffi_fn_method_spaceroomlist_subscribe_to_room_update(`ptr`: Long,`listener`: Long,
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_spaceroomlist_subscribe_to_space_updates(`ptr`: Long,`listener`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
@@ -4094,6 +4360,8 @@ external fun uniffi_matrix_sdk_ffi_fn_method_sqlitestorebuilder_cache_size(`ptr`
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_sqlitestorebuilder_journal_size_limit(`ptr`: Long,`limit`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
+external fun uniffi_matrix_sdk_ffi_fn_method_sqlitestorebuilder_key(`ptr`: Long,`key`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_sqlitestorebuilder_passphrase(`ptr`: Long,`passphrase`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_sqlitestorebuilder_pool_max_size(`ptr`: Long,`poolMaxSize`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
@@ -4121,6 +4389,10 @@ external fun uniffi_matrix_sdk_ffi_fn_free_syncservicebuilder(`handle`: Long,uni
 external fun uniffi_matrix_sdk_ffi_fn_method_syncservicebuilder_finish(`ptr`: Long,
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_syncservicebuilder_with_offline_mode(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): Long
+external fun uniffi_matrix_sdk_ffi_fn_method_syncservicebuilder_with_parent_span(`ptr`: Long,`span`: Long,uniffi_out_err: UniffiRustCallStatus, 
+): Long
+external fun uniffi_matrix_sdk_ffi_fn_method_syncservicebuilder_with_profiles_extension(`ptr`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_syncservicebuilder_with_room_list_connection_id(`ptr`: Long,`connectionId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
@@ -4206,7 +4478,7 @@ external fun uniffi_matrix_sdk_ffi_fn_method_timeline_send(`ptr`: Long,`msg`: Lo
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_timeline_send_audio(`ptr`: Long,`params`: RustBuffer.ByValue,`audioInfo`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
-external fun uniffi_matrix_sdk_ffi_fn_method_timeline_send_file(`ptr`: Long,`params`: RustBuffer.ByValue,`fileInfo`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+external fun uniffi_matrix_sdk_ffi_fn_method_timeline_send_file(`ptr`: Long,`params`: RustBuffer.ByValue,`fileInfo`: RustBuffer.ByValue,`thumbnailSource`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_timeline_send_image(`ptr`: Long,`params`: RustBuffer.ByValue,`thumbnailSource`: RustBuffer.ByValue,`imageInfo`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
@@ -4221,6 +4493,8 @@ external fun uniffi_matrix_sdk_ffi_fn_method_timeline_send_reply(`ptr`: Long,`ms
 external fun uniffi_matrix_sdk_ffi_fn_method_timeline_send_video(`ptr`: Long,`params`: RustBuffer.ByValue,`thumbnailSource`: RustBuffer.ByValue,`videoInfo`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_timeline_send_voice_message(`ptr`: Long,`params`: RustBuffer.ByValue,`audioInfo`: RustBuffer.ByValue,`waveform`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+): Long
+external fun uniffi_matrix_sdk_ffi_fn_method_timeline_send_with_extra_content(`ptr`: Long,`msg`: Long,`extraContentJson`: RustBuffer.ByValue,
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_timeline_subscribe_to_back_pagination_status(`ptr`: Long,`listener`: Long,
 ): Long
@@ -4322,6 +4596,8 @@ external fun uniffi_matrix_sdk_ffi_fn_init_callback_vtable_ignoreduserslistener(
 ): Unit
 external fun uniffi_matrix_sdk_ffi_fn_init_callback_vtable_mediapreviewconfiglistener(`vtable`: UniffiVTableCallbackInterfaceMediaPreviewConfigListener,
 ): Unit
+external fun uniffi_matrix_sdk_ffi_fn_init_callback_vtable_profilelistener(`vtable`: UniffiVTableCallbackInterfaceProfileListener,
+): Unit
 external fun uniffi_matrix_sdk_ffi_fn_init_callback_vtable_progresswatcher(`vtable`: UniffiVTableCallbackInterfaceProgressWatcher,
 ): Unit
 external fun uniffi_matrix_sdk_ffi_fn_init_callback_vtable_roomaccountdatalistener(`vtable`: UniffiVTableCallbackInterfaceRoomAccountDataListener,
@@ -4335,6 +4611,8 @@ external fun uniffi_matrix_sdk_ffi_fn_init_callback_vtable_syncnotificationliste
 external fun uniffi_matrix_sdk_ffi_fn_init_callback_vtable_backupstatelistener(`vtable`: UniffiVTableCallbackInterfaceBackupStateListener,
 ): Unit
 external fun uniffi_matrix_sdk_ffi_fn_init_callback_vtable_backupsteadystatelistener(`vtable`: UniffiVTableCallbackInterfaceBackupSteadyStateListener,
+): Unit
+external fun uniffi_matrix_sdk_ffi_fn_init_callback_vtable_dehydrateddeviceeventlistener(`vtable`: UniffiVTableCallbackInterfaceDehydratedDeviceEventListener,
 ): Unit
 external fun uniffi_matrix_sdk_ffi_fn_init_callback_vtable_enablerecoveryprogresslistener(`vtable`: UniffiVTableCallbackInterfaceEnableRecoveryProgressListener,
 ): Unit
@@ -4376,6 +4654,10 @@ external fun uniffi_matrix_sdk_ffi_fn_init_callback_vtable_roomlistservicestatel
 ): Unit
 external fun uniffi_matrix_sdk_ffi_fn_init_callback_vtable_roomlistservicesyncindicatorlistener(`vtable`: UniffiVTableCallbackInterfaceRoomListServiceSyncIndicatorListener,
 ): Unit
+external fun uniffi_matrix_sdk_ffi_fn_init_callback_vtable_searchservicepaginationstatelistener(`vtable`: UniffiVTableCallbackInterfaceSearchServicePaginationStateListener,
+): Unit
+external fun uniffi_matrix_sdk_ffi_fn_init_callback_vtable_searchserviceresultslistener(`vtable`: UniffiVTableCallbackInterfaceSearchServiceResultsListener,
+): Unit
 external fun uniffi_matrix_sdk_ffi_fn_init_callback_vtable_sessionverificationcontrollerdelegate(`vtable`: UniffiVTableCallbackInterfaceSessionVerificationControllerDelegate,
 ): Unit
 external fun uniffi_matrix_sdk_ffi_fn_init_callback_vtable_spaceroomlistentrieslistener(`vtable`: UniffiVTableCallbackInterfaceSpaceRoomListEntriesListener,
@@ -4404,11 +4686,11 @@ external fun uniffi_matrix_sdk_ffi_fn_init_callback_vtable_unabletodecryptdelega
 ): Unit
 external fun uniffi_matrix_sdk_ffi_fn_init_callback_vtable_widgetcapabilitiesprovider(`vtable`: UniffiVTableCallbackInterfaceWidgetCapabilitiesProvider,
 ): Unit
-external fun uniffi_matrix_sdk_ffi_fn_method_timelineeventtype_uniffi_trait_eq_eq(`ptr`: RustBuffer.ByValue,`other`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+external fun uniffi_matrix_sdk_ffi_fn_method_ffitimelineeventtype_uniffi_trait_eq_eq(`ptr`: RustBuffer.ByValue,`other`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): Byte
-external fun uniffi_matrix_sdk_ffi_fn_method_timelineeventtype_uniffi_trait_eq_ne(`ptr`: RustBuffer.ByValue,`other`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+external fun uniffi_matrix_sdk_ffi_fn_method_ffitimelineeventtype_uniffi_trait_eq_ne(`ptr`: RustBuffer.ByValue,`other`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): Byte
-external fun uniffi_matrix_sdk_ffi_fn_method_timelineeventtype_uniffi_trait_hash(`ptr`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+external fun uniffi_matrix_sdk_ffi_fn_method_ffitimelineeventtype_uniffi_trait_hash(`ptr`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_tagname_uniffi_trait_eq_eq(`ptr`: RustBuffer.ByValue,`other`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): Byte
@@ -5596,6 +5878,20 @@ public interface ClientInterface {
      */
     suspend fun `clearCaches`(`syncService`: SyncService?)
     
+    /**
+     * Clear the current user's status (MSC4426).
+     *
+     * Deletes both `m.status` and `m.call` concurrently. Clearing `m.status`
+     * alone would let `m.call` immediately reappear if the user were in a
+     * call.
+     */
+    suspend fun `clearUserStatus`()
+    
+    /**
+     * Returns the currently used [`ContentScanner`] instance, if any.
+     */
+    suspend fun `contentScanner`(): ContentScanner?
+    
     suspend fun `createRoom`(`request`: CreateRoomParameters): kotlin.String
     
     /**
@@ -5650,6 +5946,12 @@ public interface ClientInterface {
      * the event cache (so, before spawning a sync service or a timeline).
      */
     fun `enableAutomaticBackpagination`()
+    
+    /**
+     * Enable or disable automatic mirroring of this device's MatrixRTC
+     * participation into the MSC4426 `m.call` profile field.
+     */
+    fun `enableAutomaticCallStatus`(`enabled`: kotlin.Boolean)
     
     /**
      * Enables or disables progress reporting for media uploads in the send
@@ -5775,8 +6077,13 @@ public interface ClientInterface {
     
     /**
      * Checks if the server supports the LiveKit RTC focus for placing calls.
+     *
+     * Transports are discovered through the authenticated
+     * `GET /_matrix/client/v1/rtc/transports` endpoint (MSC4143). If the
+     * homeserver doesn't implement it and `fallback_to_well_known` is `true`,
+     * then the well-known will be queried.
      */
-    suspend fun `isLivekitRtcSupported`(): kotlin.Boolean
+    suspend fun `isLivekitRtcSupported`(`fallbackToWellKnown`: kotlin.Boolean = false): kotlin.Boolean
     
     /**
      * Checks if the server supports login using a QR code.
@@ -5798,6 +6105,11 @@ public interface ClientInterface {
      * - An `Err` otherwise.
      */
     suspend fun `isRoomAliasAvailable`(`alias`: kotlin.String): kotlin.Boolean
+    
+    /**
+     * Checks if the server supports user status.
+     */
+    suspend fun `isUserStatusSupported`(): kotlin.Boolean
     
     /**
      * Join a room by its ID.
@@ -5844,6 +6156,19 @@ public interface ClientInterface {
     suspend fun `logout`()
     
     /**
+     * Mark all joined rooms as read by sending public, private and fully-read
+     * receipts on each room's latest event.
+     *
+     * This is a best-effort operation — per-room errors are logged and
+     * skipped. Receipts are sent unthreaded, which per the Matrix spec
+     * covers all events in a room including those inside threads.
+     *
+     * This is useful to mitigate backend led wrong iOS app badges and work
+     * around https://github.com/element-hq/element-x-ios/issues/3151
+     */
+    suspend fun `markAllRoomsAsRead`()
+    
+    /**
      * Create a handler for granting login from this device to a new device by
      * way of a QR code.
      */
@@ -5885,6 +6210,26 @@ public interface ClientInterface {
      * SQLite.
      */
     suspend fun `optimizeStores`()
+    
+    /**
+     * Pause the client for background suspension.
+     *
+     * This method:
+     * 1. Disables all send queues (prevents new message sends).
+     * 2. Pauses all database stores, waiting for in-flight operations and
+     * releasing all connections and file locks.
+     *
+     * Call [`Client::resume()`] when the app returns to the foreground.
+     *
+     * # iOS
+     *
+     * Call this before the app is suspended to avoid `0xdead10cc` kills.
+     * Typically called from
+     * [`applicationDidEnterBackground`](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/applicationdidenterbackground(_:))
+     * or an equivalent SwiftUI lifecycle event, *after* stopping the
+     * `matrix_sdk_ui::sync_service::SyncService`.
+     */
+    suspend fun `pause`()
     
     /**
      * Register a handler for notifications generated from sync responses.
@@ -5947,6 +6292,17 @@ public interface ClientInterface {
     suspend fun `restoreSessionWith`(`session`: Session, `roomLoadSettings`: RoomLoadSettings)
     
     /**
+     * Resume the client after a [`Client::pause()`].
+     *
+     * Re-acquires store resources and re-enables send queues.
+     *
+     * If your app stopped the `matrix_sdk_ui::sync_service::SyncService`
+     * before pausing, restart it separately as appropriate for your app
+     * lifecycle.
+     */
+    suspend fun `resume`()
+    
+    /**
      * Checks if a room alias exists in the current homeserver.
      */
     suspend fun `roomAliasExists`(`roomAlias`: kotlin.String): kotlin.Boolean
@@ -5995,6 +6351,12 @@ public interface ClientInterface {
     suspend fun `setAvatarUrl`(`url`: kotlin.String)
     
     /**
+     * Enables or disables the content scanner feature using the provided
+     * [`ContentScanner`] instance.
+     */
+    suspend fun `setContentScanner`(`contentScanner`: ContentScanner?)
+    
+    /**
      * Sets the [ClientDelegate] which will inform about authentication errors.
      * Returns an error if the delegate was already set.
      */
@@ -6018,9 +6380,27 @@ public interface ClientInterface {
     suspend fun `setMediaRetentionPolicy`(`policy`: MediaRetentionPolicy)
     
     /**
+     * Set the presence state for the current user.
+     *
+     * This updates the presence state used by future generated sync requests,
+     * regardless of `immediate`. The initial default is `Unavailable`. If
+     * `immediate` is `true`, it also sends an immediate presence update to the
+     * homeserver.
+     */
+    suspend fun `setPresence`(`presence`: PresenceState, `immediate`: kotlin.Boolean)
+    
+    /**
      * Registers a pusher with given parameters
      */
-    suspend fun `setPusher`(`identifiers`: PusherIdentifiers, `kind`: PusherKind, `appDisplayName`: kotlin.String, `deviceDisplayName`: kotlin.String, `profileTag`: kotlin.String?, `lang`: kotlin.String)
+    suspend fun `setPusher`(`identifiers`: PusherIdentifiers, `kind`: PusherKind, `appDisplayName`: kotlin.String, `deviceDisplayName`: kotlin.String, `profileTag`: kotlin.String?, `lang`: kotlin.String, `append`: kotlin.Boolean)
+    
+    /**
+     * Set the current user's status (MSC4426 `m.status` profile field).
+     *
+     * Replaces any existing status. Use [`Self::clear_user_status`] to
+     * remove it.
+     */
+    suspend fun `setUserStatus`(`status`: UserStatus)
     
     /**
      * Sets the [`UnableToDecryptDelegate`] which will inform about UTDs.
@@ -6060,6 +6440,17 @@ public interface ClientInterface {
      * initial replay.
      */
     fun `subscribeToOwnBeaconInfoUpdates`(`listener`: BeaconInfoListener): TaskHandle
+    
+    /**
+     * Subscribe to the current user's profile.
+     *
+     * Emits the current value immediately, if present, then again whenever the
+     * user's profile changes during sync.
+     *
+     * **Note:** Without the Profiles sliding sync extension enabled only an
+     * empty profile will be emitted and no updates will be published.
+     */
+    fun `subscribeToOwnProfile`(`listener`: ProfileListener): TaskHandle
     
     /**
      * Subscribe to [`RoomInfo`] updates given a provided [`RoomId`].
@@ -6115,6 +6506,16 @@ public interface ClientInterface {
      * The listener is called after each successful sync response.
      */
     fun `syncV2`(`settings`: SyncSettingsV2, `listener`: SyncListenerV2): TaskHandle
+    
+    /**
+     * Get information about the homeserver's advertised map tile server, if
+     * any.
+     *
+     * Reads the `tile_server` field of the matrix client well-known (MSC3488).
+     * Uses the cached well-known when available, otherwise fetches it from the
+     * homeserver.
+     */
+    suspend fun `tileServer`(): TileServerInfo?
     
     suspend fun `trackRecentlyVisitedRoom`(`room`: kotlin.String)
     
@@ -6180,10 +6581,14 @@ public interface ClientInterface {
     suspend fun `getRecentEmojis`(): List<RecentEmoji>
     
     /**
-     * Search across all all rooms for the given query, returning an iterator
-     * over the results.
+     * Create a search service.
+     *
+     * The search service aggregates results of different kinds (currently only
+     * messages) into a single reactive, paginated list of typed
+     * [`SearchResult`]s. Call [`SearchService::set_query`] to start or update
+     * the search, then [`SearchService::paginate`] to load more results.
      */
-    suspend fun `searchMessages`(`query`: kotlin.String, `filter`: SearchRoomFilter, `numResultsPerBatch`: kotlin.UInt): GlobalSearchIterator
+    fun `searchService`(): SearchService
     
     companion object
 }
@@ -6527,6 +6932,58 @@ open class Client: Disposable, AutoCloseable, ClientInterface
     }
 
     
+    /**
+     * Clear the current user's status (MSC4426).
+     *
+     * Deletes both `m.status` and `m.call` concurrently. Clearing `m.status`
+     * alone would let `m.call` immediately reappear if the user were in a
+     * call.
+     */
+    @Throws(ClientException::class)
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `clearUserStatus`() {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_matrix_sdk_ffi_fn_method_client_clear_user_status(
+                uniffiHandle,
+                
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_void(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_complete_void(future, continuation) },
+        { future -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_free_void(future) },
+        // lift function
+        { Unit },
+        
+        // Error FFI converter
+        ClientException.ErrorHandler,
+    )
+    }
+
+    
+    /**
+     * Returns the currently used [`ContentScanner`] instance, if any.
+     */
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `contentScanner`() : ContentScanner? {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_matrix_sdk_ffi_fn_method_client_content_scanner(
+                uniffiHandle,
+                
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_rust_buffer(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_complete_rust_buffer(future, continuation) },
+        { future -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_free_rust_buffer(future) },
+        // lift function
+        { FfiConverterOptionalTypeContentScanner.lift(it) },
+        // Error FFI converter
+        UniffiNullRustCallStatusErrorHandler,
+    )
+    }
+
+    
     @Throws(ClientException::class)
     @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
     override suspend fun `createRoom`(`request`: CreateRoomParameters) : kotlin.String {
@@ -6715,6 +7172,22 @@ open class Client: Disposable, AutoCloseable, ClientInterface
     UniffiLib.uniffi_matrix_sdk_ffi_fn_method_client_enable_automatic_backpagination(
         it,
         _status)
+}
+    }
+    
+    
+
+    
+    /**
+     * Enable or disable automatic mirroring of this device's MatrixRTC
+     * participation into the MSC4426 `m.call` profile field.
+     */override fun `enableAutomaticCallStatus`(`enabled`: kotlin.Boolean)
+        = 
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_matrix_sdk_ffi_fn_method_client_enable_automatic_call_status(
+        it,
+        FfiConverterBoolean.lower(`enabled`),_status)
 }
     }
     
@@ -7265,15 +7738,20 @@ open class Client: Disposable, AutoCloseable, ClientInterface
     
     /**
      * Checks if the server supports the LiveKit RTC focus for placing calls.
+     *
+     * Transports are discovered through the authenticated
+     * `GET /_matrix/client/v1/rtc/transports` endpoint (MSC4143). If the
+     * homeserver doesn't implement it and `fallback_to_well_known` is `true`,
+     * then the well-known will be queried.
      */
     @Throws(ClientException::class)
     @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
-    override suspend fun `isLivekitRtcSupported`() : kotlin.Boolean {
+    override suspend fun `isLivekitRtcSupported`(`fallbackToWellKnown`: kotlin.Boolean) : kotlin.Boolean {
         return uniffiRustCallAsync(
         callWithHandle { uniffiHandle ->
             UniffiLib.uniffi_matrix_sdk_ffi_fn_method_client_is_livekit_rtc_supported(
                 uniffiHandle,
-                
+                FfiConverterBoolean.lower(`fallbackToWellKnown`),
             )
         },
         { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_i8(future, callback, continuation) },
@@ -7352,6 +7830,30 @@ open class Client: Disposable, AutoCloseable, ClientInterface
             UniffiLib.uniffi_matrix_sdk_ffi_fn_method_client_is_room_alias_available(
                 uniffiHandle,
                 FfiConverterString.lower(`alias`),
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_i8(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_complete_i8(future, continuation) },
+        { future -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_free_i8(future) },
+        // lift function
+        { FfiConverterBoolean.lift(it) },
+        // Error FFI converter
+        ClientException.ErrorHandler,
+    )
+    }
+
+    
+    /**
+     * Checks if the server supports user status.
+     */
+    @Throws(ClientException::class)
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `isUserStatusSupported`() : kotlin.Boolean {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_matrix_sdk_ffi_fn_method_client_is_user_status_supported(
+                uniffiHandle,
+                
             )
         },
         { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_i8(future, callback, continuation) },
@@ -7547,6 +8049,39 @@ open class Client: Disposable, AutoCloseable, ClientInterface
 
     
     /**
+     * Mark all joined rooms as read by sending public, private and fully-read
+     * receipts on each room's latest event.
+     *
+     * This is a best-effort operation — per-room errors are logged and
+     * skipped. Receipts are sent unthreaded, which per the Matrix spec
+     * covers all events in a room including those inside threads.
+     *
+     * This is useful to mitigate backend led wrong iOS app badges and work
+     * around https://github.com/element-hq/element-x-ios/issues/3151
+     */
+    @Throws(ClientException::class)
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `markAllRoomsAsRead`() {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_matrix_sdk_ffi_fn_method_client_mark_all_rooms_as_read(
+                uniffiHandle,
+                
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_void(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_complete_void(future, continuation) },
+        { future -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_free_void(future) },
+        // lift function
+        { Unit },
+        
+        // Error FFI converter
+        ClientException.ErrorHandler,
+    )
+    }
+
+    
+    /**
      * Create a handler for granting login from this device to a new device by
      * way of a QR code.
      */override fun `newGrantLoginWithQrCodeHandler`(): GrantLoginWithQrCodeHandler {
@@ -7657,6 +8192,46 @@ open class Client: Disposable, AutoCloseable, ClientInterface
         return uniffiRustCallAsync(
         callWithHandle { uniffiHandle ->
             UniffiLib.uniffi_matrix_sdk_ffi_fn_method_client_optimize_stores(
+                uniffiHandle,
+                
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_void(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_complete_void(future, continuation) },
+        { future -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_free_void(future) },
+        // lift function
+        { Unit },
+        
+        // Error FFI converter
+        ClientException.ErrorHandler,
+    )
+    }
+
+    
+    /**
+     * Pause the client for background suspension.
+     *
+     * This method:
+     * 1. Disables all send queues (prevents new message sends).
+     * 2. Pauses all database stores, waiting for in-flight operations and
+     * releasing all connections and file locks.
+     *
+     * Call [`Client::resume()`] when the app returns to the foreground.
+     *
+     * # iOS
+     *
+     * Call this before the app is suspended to avoid `0xdead10cc` kills.
+     * Typically called from
+     * [`applicationDidEnterBackground`](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/applicationdidenterbackground(_:))
+     * or an equivalent SwiftUI lifecycle event, *after* stopping the
+     * `matrix_sdk_ui::sync_service::SyncService`.
+     */
+    @Throws(ClientException::class)
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `pause`() {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_matrix_sdk_ffi_fn_method_client_pause(
                 uniffiHandle,
                 
             )
@@ -7891,6 +8466,37 @@ open class Client: Disposable, AutoCloseable, ClientInterface
 
     
     /**
+     * Resume the client after a [`Client::pause()`].
+     *
+     * Re-acquires store resources and re-enables send queues.
+     *
+     * If your app stopped the `matrix_sdk_ui::sync_service::SyncService`
+     * before pausing, restart it separately as appropriate for your app
+     * lifecycle.
+     */
+    @Throws(ClientException::class)
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `resume`() {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_matrix_sdk_ffi_fn_method_client_resume(
+                uniffiHandle,
+                
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_void(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_complete_void(future, continuation) },
+        { future -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_free_void(future) },
+        // lift function
+        { Unit },
+        
+        // Error FFI converter
+        ClientException.ErrorHandler,
+    )
+    }
+
+    
+    /**
      * Checks if a room alias exists in the current homeserver.
      */
     @Throws(ClientException::class)
@@ -8081,6 +8687,31 @@ open class Client: Disposable, AutoCloseable, ClientInterface
 
     
     /**
+     * Enables or disables the content scanner feature using the provided
+     * [`ContentScanner`] instance.
+     */
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `setContentScanner`(`contentScanner`: ContentScanner?) {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_matrix_sdk_ffi_fn_method_client_set_content_scanner(
+                uniffiHandle,
+                FfiConverterOptionalTypeContentScanner.lower(`contentScanner`),
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_void(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_complete_void(future, continuation) },
+        { future -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_free_void(future) },
+        // lift function
+        { Unit },
+        
+        // Error FFI converter
+        UniffiNullRustCallStatusErrorHandler,
+    )
+    }
+
+    
+    /**
      * Sets the [ClientDelegate] which will inform about authentication errors.
      * Returns an error if the delegate was already set.
      */
@@ -8196,16 +8827,74 @@ open class Client: Disposable, AutoCloseable, ClientInterface
 
     
     /**
+     * Set the presence state for the current user.
+     *
+     * This updates the presence state used by future generated sync requests,
+     * regardless of `immediate`. The initial default is `Unavailable`. If
+     * `immediate` is `true`, it also sends an immediate presence update to the
+     * homeserver.
+     */
+    @Throws(ClientException::class)
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `setPresence`(`presence`: PresenceState, `immediate`: kotlin.Boolean) {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_matrix_sdk_ffi_fn_method_client_set_presence(
+                uniffiHandle,
+                FfiConverterTypePresenceState.lower(`presence`),FfiConverterBoolean.lower(`immediate`),
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_void(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_complete_void(future, continuation) },
+        { future -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_free_void(future) },
+        // lift function
+        { Unit },
+        
+        // Error FFI converter
+        ClientException.ErrorHandler,
+    )
+    }
+
+    
+    /**
      * Registers a pusher with given parameters
      */
     @Throws(ClientException::class)
     @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
-    override suspend fun `setPusher`(`identifiers`: PusherIdentifiers, `kind`: PusherKind, `appDisplayName`: kotlin.String, `deviceDisplayName`: kotlin.String, `profileTag`: kotlin.String?, `lang`: kotlin.String) {
+    override suspend fun `setPusher`(`identifiers`: PusherIdentifiers, `kind`: PusherKind, `appDisplayName`: kotlin.String, `deviceDisplayName`: kotlin.String, `profileTag`: kotlin.String?, `lang`: kotlin.String, `append`: kotlin.Boolean) {
         return uniffiRustCallAsync(
         callWithHandle { uniffiHandle ->
             UniffiLib.uniffi_matrix_sdk_ffi_fn_method_client_set_pusher(
                 uniffiHandle,
-                FfiConverterTypePusherIdentifiers.lower(`identifiers`),FfiConverterTypePusherKind.lower(`kind`),FfiConverterString.lower(`appDisplayName`),FfiConverterString.lower(`deviceDisplayName`),FfiConverterOptionalString.lower(`profileTag`),FfiConverterString.lower(`lang`),
+                FfiConverterTypePusherIdentifiers.lower(`identifiers`),FfiConverterTypePusherKind.lower(`kind`),FfiConverterString.lower(`appDisplayName`),FfiConverterString.lower(`deviceDisplayName`),FfiConverterOptionalString.lower(`profileTag`),FfiConverterString.lower(`lang`),FfiConverterBoolean.lower(`append`),
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_void(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_complete_void(future, continuation) },
+        { future -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_free_void(future) },
+        // lift function
+        { Unit },
+        
+        // Error FFI converter
+        ClientException.ErrorHandler,
+    )
+    }
+
+    
+    /**
+     * Set the current user's status (MSC4426 `m.status` profile field).
+     *
+     * Replaces any existing status. Use [`Self::clear_user_status`] to
+     * remove it.
+     */
+    @Throws(ClientException::class)
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `setUserStatus`(`status`: UserStatus) {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_matrix_sdk_ffi_fn_method_client_set_user_status(
+                uniffiHandle,
+                FfiConverterTypeUserStatus.lower(`status`),
             )
         },
         { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_void(future, callback, continuation) },
@@ -8381,6 +9070,29 @@ open class Client: Disposable, AutoCloseable, ClientInterface
 
     
     /**
+     * Subscribe to the current user's profile.
+     *
+     * Emits the current value immediately, if present, then again whenever the
+     * user's profile changes during sync.
+     *
+     * **Note:** Without the Profiles sliding sync extension enabled only an
+     * empty profile will be emitted and no updates will be published.
+     */
+    @Throws(ClientException::class)override fun `subscribeToOwnProfile`(`listener`: ProfileListener): TaskHandle {
+            return FfiConverterTypeTaskHandle.lift(
+    callWithHandle {
+    uniffiRustCallWithError(ClientException) { _status ->
+    UniffiLib.uniffi_matrix_sdk_ffi_fn_method_client_subscribe_to_own_profile(
+        it,
+        FfiConverterTypeProfileListener.lower(`listener`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    /**
      * Subscribe to [`RoomInfo`] updates given a provided [`RoomId`].
      *
      * This works even for rooms we haven't received yet, so we can subscribe
@@ -8523,6 +9235,34 @@ open class Client: Disposable, AutoCloseable, ClientInterface
     )
     }
     
+
+    
+    /**
+     * Get information about the homeserver's advertised map tile server, if
+     * any.
+     *
+     * Reads the `tile_server` field of the matrix client well-known (MSC3488).
+     * Uses the cached well-known when available, otherwise fetches it from the
+     * homeserver.
+     */
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `tileServer`() : TileServerInfo? {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_matrix_sdk_ffi_fn_method_client_tile_server(
+                uniffiHandle,
+                
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_rust_buffer(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_complete_rust_buffer(future, continuation) },
+        { future -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_free_rust_buffer(future) },
+        // lift function
+        { FfiConverterOptionalTypeTileServerInfo.lift(it) },
+        // Error FFI converter
+        UniffiNullRustCallStatusErrorHandler,
+    )
+    }
 
     
     @Throws(ClientException::class)
@@ -8750,28 +9490,24 @@ open class Client: Disposable, AutoCloseable, ClientInterface
 
     
     /**
-     * Search across all all rooms for the given query, returning an iterator
-     * over the results.
-     */
-    @Throws(ClientException::class)
-    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
-    override suspend fun `searchMessages`(`query`: kotlin.String, `filter`: SearchRoomFilter, `numResultsPerBatch`: kotlin.UInt) : GlobalSearchIterator {
-        return uniffiRustCallAsync(
-        callWithHandle { uniffiHandle ->
-            UniffiLib.uniffi_matrix_sdk_ffi_fn_method_client_search_messages(
-                uniffiHandle,
-                FfiConverterString.lower(`query`),FfiConverterTypeSearchRoomFilter.lower(`filter`),FfiConverterUInt.lower(`numResultsPerBatch`),
-            )
-        },
-        { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_u64(future, callback, continuation) },
-        { future, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_complete_u64(future, continuation) },
-        { future -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_free_u64(future) },
-        // lift function
-        { FfiConverterTypeGlobalSearchIterator.lift(it) },
-        // Error FFI converter
-        ClientException.ErrorHandler,
+     * Create a search service.
+     *
+     * The search service aggregates results of different kinds (currently only
+     * messages) into a single reactive, paginated list of typed
+     * [`SearchResult`]s. Call [`SearchService::set_query`] to start or update
+     * the search, then [`SearchService::paginate`] to load more results.
+     */override fun `searchService`(): SearchService {
+            return FfiConverterTypeSearchService.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_matrix_sdk_ffi_fn_method_client_search_service(
+        it,
+        _status)
+}
+    }
     )
     }
+    
 
     
 
@@ -9718,6 +10454,588 @@ public object FfiConverterTypeClientBuilder: FfiConverter<ClientBuilder, Long> {
 //
 
 
+public interface ContentScannerInterface {
+    
+    /**
+     * Scan a media source, returning a [`MediaScanResponse`] with the scan
+     * result, or an error if something failed when trying to scan the media.
+     */
+    suspend fun `scan`(`client`: Client, `mediaSource`: MediaSource): MediaScanResponse
+    
+    companion object
+}
+
+open class ContentScanner: Disposable, AutoCloseable, ContentScannerInterface
+{
+
+    @Suppress("UNUSED_PARAMETER")
+    /**
+     * @suppress
+     */
+    constructor(withHandle: UniffiWithHandle, handle: Long) {
+        this.handle = handle
+        this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(handle))
+    }
+
+    /**
+     * @suppress
+     *
+     * This constructor can be used to instantiate a fake object. Only used for tests. Any
+     * attempt to actually use an object constructed this way will fail as there is no
+     * connected Rust object.
+     */
+    @Suppress("UNUSED_PARAMETER")
+    constructor(noHandle: NoHandle) {
+        this.handle = 0
+        this.cleanable = null
+    }
+    /**
+     * Instantiate a new [`ContentScanner`] using the `scanner_url`.
+     */
+    constructor(`scannerUrl`: kotlin.String) :
+        this(UniffiWithHandle, 
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_matrix_sdk_ffi_fn_constructor_contentscanner_new(
+    
+        FfiConverterString.lower(`scannerUrl`),_status)
+}
+    )
+
+    protected val handle: Long
+    protected val cleanable: UniffiCleaner.Cleanable?
+
+    private val wasDestroyed = AtomicBoolean(false)
+    private val callCounter = AtomicLong(1)
+
+    override fun destroy() {
+        // Only allow a single call to this method.
+        // TODO: maybe we should log a warning if called more than once?
+        if (this.wasDestroyed.compareAndSet(false, true)) {
+            // This decrement always matches the initial count of 1 given at creation time.
+            if (this.callCounter.decrementAndGet() == 0L) {
+                cleanable?.clean()
+            }
+        }
+    }
+
+    @Synchronized
+    override fun close() {
+        this.destroy()
+    }
+
+    internal inline fun <R> callWithHandle(block: (handle: Long) -> R): R {
+        // Check and increment the call counter, to keep the object alive.
+        // This needs a compare-and-set retry loop in case of concurrent updates.
+        do {
+            val c = this.callCounter.get()
+            if (c == 0L) {
+                throw IllegalStateException("${this.javaClass.simpleName} object has already been destroyed")
+            }
+            if (c == Long.MAX_VALUE) {
+                throw IllegalStateException("${this.javaClass.simpleName} call counter would overflow")
+            }
+        } while (! this.callCounter.compareAndSet(c, c + 1L))
+        // Now we can safely do the method call without the handle being freed concurrently.
+        try {
+            return block(this.uniffiCloneHandle())
+        } finally {
+            // This decrement always matches the increment we performed above.
+            if (this.callCounter.decrementAndGet() == 0L) {
+                cleanable?.clean()
+            }
+        }
+    }
+
+    // Use a static inner class instead of a closure so as not to accidentally
+    // capture `this` as part of the cleanable's action.
+    private class UniffiCleanAction(private val handle: Long) : Runnable {
+        override fun run() {
+            if (handle == 0.toLong()) {
+                // Fake object created with `NoHandle`, don't try to free.
+                return;
+            }
+            uniffiRustCall { status ->
+                UniffiLib.uniffi_matrix_sdk_ffi_fn_free_contentscanner(handle, status)
+            }
+        }
+    }
+
+    /**
+     * @suppress
+     */
+    fun uniffiCloneHandle(): Long {
+        if (handle == 0.toLong()) {
+            throw InternalException("uniffiCloneHandle() called on NoHandle object");
+        }
+        return uniffiRustCall() { status ->
+            UniffiLib.uniffi_matrix_sdk_ffi_fn_clone_contentscanner(handle, status)
+        }
+    }
+
+    
+    /**
+     * Scan a media source, returning a [`MediaScanResponse`] with the scan
+     * result, or an error if something failed when trying to scan the media.
+     */
+    @Throws(ClientException::class)
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `scan`(`client`: Client, `mediaSource`: MediaSource) : MediaScanResponse {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_matrix_sdk_ffi_fn_method_contentscanner_scan(
+                uniffiHandle,
+                FfiConverterTypeClient.lower(`client`),FfiConverterTypeMediaSource.lower(`mediaSource`),
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_rust_buffer(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_complete_rust_buffer(future, continuation).let { RustBufferMediaScanResponse.create(it.capacity.toULong(), it.len.toULong(), it.data) } },
+        { future -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_free_rust_buffer(future) },
+        // lift function
+        { FfiConverterTypeMediaScanResponse.lift(it) },
+        // Error FFI converter
+        ClientException.ErrorHandler,
+    )
+    }
+
+    
+
+    
+
+
+    
+    
+    /**
+     * @suppress
+     */
+    companion object
+    
+}
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeContentScanner: FfiConverter<ContentScanner, Long> {
+    override fun lower(value: ContentScanner): Long {
+        return value.uniffiCloneHandle()
+    }
+
+    override fun lift(value: Long): ContentScanner {
+        return ContentScanner(UniffiWithHandle, value)
+    }
+
+    override fun read(buf: ByteBuffer): ContentScanner {
+        return lift(buf.getLong())
+    }
+
+    override fun allocationSize(value: ContentScanner) = 8UL
+
+    override fun write(value: ContentScanner, buf: ByteBuffer) {
+        buf.putLong(lower(value))
+    }
+}
+
+
+// This template implements a class for working with a Rust struct via a handle
+// to the live Rust struct on the other side of the FFI.
+//
+// There's some subtlety here, because we have to be careful not to operate on a Rust
+// struct after it has been dropped, and because we must expose a public API for freeing
+// theq Kotlin wrapper object in lieu of reliable finalizers. The core requirements are:
+//
+//   * Each instance holds an opaque handle to the underlying Rust struct.
+//     Method calls need to read this handle from the object's state and pass it in to
+//     the Rust FFI.
+//
+//   * When an instance is no longer needed, its handle should be passed to a
+//     special destructor function provided by the Rust FFI, which will drop the
+//     underlying Rust struct.
+//
+//   * Given an instance, calling code is expected to call the special
+//     `destroy` method in order to free it after use, either by calling it explicitly
+//     or by using a higher-level helper like the `use` method. Failing to do so risks
+//     leaking the underlying Rust struct.
+//
+//   * We can't assume that calling code will do the right thing, and must be prepared
+//     to handle Kotlin method calls executing concurrently with or even after a call to
+//     `destroy`, and to handle multiple (possibly concurrent!) calls to `destroy`.
+//
+//   * We must never allow Rust code to operate on the underlying Rust struct after
+//     the destructor has been called, and must never call the destructor more than once.
+//     Doing so may trigger memory unsafety.
+//
+//   * To mitigate many of the risks of leaking memory and use-after-free unsafety, a `Cleaner`
+//     is implemented to call the destructor when the Kotlin object becomes unreachable.
+//     This is done in a background thread. This is not a panacea, and client code should be aware that
+//      1. the thread may starve if some there are objects that have poorly performing
+//     `drop` methods or do significant work in their `drop` methods.
+//      2. the thread is shared across the whole library. This can be tuned by using `android_cleaner = true`,
+//         or `android = true` in the [`kotlin` section of the `uniffi.toml` file](https://mozilla.github.io/uniffi-rs/kotlin/configuration.html).
+//
+// If we try to implement this with mutual exclusion on access to the handle, there is the
+// possibility of a race between a method call and a concurrent call to `destroy`:
+//
+//    * Thread A starts a method call, reads the value of the handle, but is interrupted
+//      before it can pass the handle over the FFI to Rust.
+//    * Thread B calls `destroy` and frees the underlying Rust struct.
+//    * Thread A resumes, passing the already-read handle value to Rust and triggering
+//      a use-after-free.
+//
+// One possible solution would be to use a `ReadWriteLock`, with each method call taking
+// a read lock (and thus allowed to run concurrently) and the special `destroy` method
+// taking a write lock (and thus blocking on live method calls). However, we aim not to
+// generate methods with any hidden blocking semantics, and a `destroy` method that might
+// block if called incorrectly seems to meet that bar.
+//
+// So, we achieve our goals by giving each instance an associated `AtomicLong` counter to track
+// the number of in-flight method calls, and an `AtomicBoolean` flag to indicate whether `destroy`
+// has been called. These are updated according to the following rules:
+//
+//    * The initial value of the counter is 1, indicating a live object with no in-flight calls.
+//      The initial value for the flag is false.
+//
+//    * At the start of each method call, we atomically check the counter.
+//      If it is 0 then the underlying Rust struct has already been destroyed and the call is aborted.
+//      If it is nonzero them we atomically increment it by 1 and proceed with the method call.
+//
+//    * At the end of each method call, we atomically decrement and check the counter.
+//      If it has reached zero then we destroy the underlying Rust struct.
+//
+//    * When `destroy` is called, we atomically flip the flag from false to true.
+//      If the flag was already true we silently fail.
+//      Otherwise we atomically decrement and check the counter.
+//      If it has reached zero then we destroy the underlying Rust struct.
+//
+// Astute readers may observe that this all sounds very similar to the way that Rust's `Arc<T>` works,
+// and indeed it is, with the addition of a flag to guard against multiple calls to `destroy`.
+//
+// The overall effect is that the underlying Rust struct is destroyed only when `destroy` has been
+// called *and* all in-flight method calls have completed, avoiding violating any of the expectations
+// of the underlying Rust code.
+//
+// This makes a cleaner a better alternative to _not_ calling `destroy()` as
+// and when the object is finished with, but the abstraction is not perfect: if the Rust object's `drop`
+// method is slow, and/or there are many objects to cleanup, and it's on a low end Android device, then the cleaner
+// thread may be starved, and the app will leak memory.
+//
+// In this case, `destroy`ing manually may be a better solution.
+//
+// The cleaner can live side by side with the manual calling of `destroy`. In the order of responsiveness, uniffi objects
+// with Rust peers are reclaimed:
+//
+// 1. By calling the `destroy` method of the object, which calls `rustObject.free()`. If that doesn't happen:
+// 2. When the object becomes unreachable, AND the Cleaner thread gets to call `rustObject.free()`. If the thread is starved then:
+// 3. The memory is reclaimed when the process terminates.
+//
+// [1] https://stackoverflow.com/questions/24376768/can-java-finalize-an-object-when-it-is-still-in-scope/24380219
+//
+
+
+/**
+ * Struct used to let the QR code granting logic know that it can continue with
+ * the process since applications might suspend things while the verification
+ * URI is open.
+ */
+public interface ContinuationMessageSenderInterface {
+    
+    /**
+     * Cancel the login granting process.
+     */
+    suspend fun `cancel`()
+    
+    /**
+     * Confirm the continuation of the login granting process.
+     */
+    suspend fun `confirm`()
+    
+    companion object
+}
+
+/**
+ * Struct used to let the QR code granting logic know that it can continue with
+ * the process since applications might suspend things while the verification
+ * URI is open.
+ */
+open class ContinuationMessageSender: Disposable, AutoCloseable, ContinuationMessageSenderInterface
+{
+
+    @Suppress("UNUSED_PARAMETER")
+    /**
+     * @suppress
+     */
+    constructor(withHandle: UniffiWithHandle, handle: Long) {
+        this.handle = handle
+        this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(handle))
+    }
+
+    /**
+     * @suppress
+     *
+     * This constructor can be used to instantiate a fake object. Only used for tests. Any
+     * attempt to actually use an object constructed this way will fail as there is no
+     * connected Rust object.
+     */
+    @Suppress("UNUSED_PARAMETER")
+    constructor(noHandle: NoHandle) {
+        this.handle = 0
+        this.cleanable = null
+    }
+
+    protected val handle: Long
+    protected val cleanable: UniffiCleaner.Cleanable?
+
+    private val wasDestroyed = AtomicBoolean(false)
+    private val callCounter = AtomicLong(1)
+
+    override fun destroy() {
+        // Only allow a single call to this method.
+        // TODO: maybe we should log a warning if called more than once?
+        if (this.wasDestroyed.compareAndSet(false, true)) {
+            // This decrement always matches the initial count of 1 given at creation time.
+            if (this.callCounter.decrementAndGet() == 0L) {
+                cleanable?.clean()
+            }
+        }
+    }
+
+    @Synchronized
+    override fun close() {
+        this.destroy()
+    }
+
+    internal inline fun <R> callWithHandle(block: (handle: Long) -> R): R {
+        // Check and increment the call counter, to keep the object alive.
+        // This needs a compare-and-set retry loop in case of concurrent updates.
+        do {
+            val c = this.callCounter.get()
+            if (c == 0L) {
+                throw IllegalStateException("${this.javaClass.simpleName} object has already been destroyed")
+            }
+            if (c == Long.MAX_VALUE) {
+                throw IllegalStateException("${this.javaClass.simpleName} call counter would overflow")
+            }
+        } while (! this.callCounter.compareAndSet(c, c + 1L))
+        // Now we can safely do the method call without the handle being freed concurrently.
+        try {
+            return block(this.uniffiCloneHandle())
+        } finally {
+            // This decrement always matches the increment we performed above.
+            if (this.callCounter.decrementAndGet() == 0L) {
+                cleanable?.clean()
+            }
+        }
+    }
+
+    // Use a static inner class instead of a closure so as not to accidentally
+    // capture `this` as part of the cleanable's action.
+    private class UniffiCleanAction(private val handle: Long) : Runnable {
+        override fun run() {
+            if (handle == 0.toLong()) {
+                // Fake object created with `NoHandle`, don't try to free.
+                return;
+            }
+            uniffiRustCall { status ->
+                UniffiLib.uniffi_matrix_sdk_ffi_fn_free_continuationmessagesender(handle, status)
+            }
+        }
+    }
+
+    /**
+     * @suppress
+     */
+    fun uniffiCloneHandle(): Long {
+        if (handle == 0.toLong()) {
+            throw InternalException("uniffiCloneHandle() called on NoHandle object");
+        }
+        return uniffiRustCall() { status ->
+            UniffiLib.uniffi_matrix_sdk_ffi_fn_clone_continuationmessagesender(handle, status)
+        }
+    }
+
+    
+    /**
+     * Cancel the login granting process.
+     */
+    @Throws(HumanQrLoginException::class)
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `cancel`() {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_matrix_sdk_ffi_fn_method_continuationmessagesender_cancel(
+                uniffiHandle,
+                
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_void(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_complete_void(future, continuation) },
+        { future -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_free_void(future) },
+        // lift function
+        { Unit },
+        
+        // Error FFI converter
+        HumanQrLoginException.ErrorHandler,
+    )
+    }
+
+    
+    /**
+     * Confirm the continuation of the login granting process.
+     */
+    @Throws(HumanQrLoginException::class)
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `confirm`() {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_matrix_sdk_ffi_fn_method_continuationmessagesender_confirm(
+                uniffiHandle,
+                
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_void(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_complete_void(future, continuation) },
+        { future -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_free_void(future) },
+        // lift function
+        { Unit },
+        
+        // Error FFI converter
+        HumanQrLoginException.ErrorHandler,
+    )
+    }
+
+    
+
+    
+
+
+    
+    
+    /**
+     * @suppress
+     */
+    companion object
+    
+}
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeContinuationMessageSender: FfiConverter<ContinuationMessageSender, Long> {
+    override fun lower(value: ContinuationMessageSender): Long {
+        return value.uniffiCloneHandle()
+    }
+
+    override fun lift(value: Long): ContinuationMessageSender {
+        return ContinuationMessageSender(UniffiWithHandle, value)
+    }
+
+    override fun read(buf: ByteBuffer): ContinuationMessageSender {
+        return lift(buf.getLong())
+    }
+
+    override fun allocationSize(value: ContinuationMessageSender) = 8UL
+
+    override fun write(value: ContinuationMessageSender, buf: ByteBuffer) {
+        buf.putLong(lower(value))
+    }
+}
+
+
+// This template implements a class for working with a Rust struct via a handle
+// to the live Rust struct on the other side of the FFI.
+//
+// There's some subtlety here, because we have to be careful not to operate on a Rust
+// struct after it has been dropped, and because we must expose a public API for freeing
+// theq Kotlin wrapper object in lieu of reliable finalizers. The core requirements are:
+//
+//   * Each instance holds an opaque handle to the underlying Rust struct.
+//     Method calls need to read this handle from the object's state and pass it in to
+//     the Rust FFI.
+//
+//   * When an instance is no longer needed, its handle should be passed to a
+//     special destructor function provided by the Rust FFI, which will drop the
+//     underlying Rust struct.
+//
+//   * Given an instance, calling code is expected to call the special
+//     `destroy` method in order to free it after use, either by calling it explicitly
+//     or by using a higher-level helper like the `use` method. Failing to do so risks
+//     leaking the underlying Rust struct.
+//
+//   * We can't assume that calling code will do the right thing, and must be prepared
+//     to handle Kotlin method calls executing concurrently with or even after a call to
+//     `destroy`, and to handle multiple (possibly concurrent!) calls to `destroy`.
+//
+//   * We must never allow Rust code to operate on the underlying Rust struct after
+//     the destructor has been called, and must never call the destructor more than once.
+//     Doing so may trigger memory unsafety.
+//
+//   * To mitigate many of the risks of leaking memory and use-after-free unsafety, a `Cleaner`
+//     is implemented to call the destructor when the Kotlin object becomes unreachable.
+//     This is done in a background thread. This is not a panacea, and client code should be aware that
+//      1. the thread may starve if some there are objects that have poorly performing
+//     `drop` methods or do significant work in their `drop` methods.
+//      2. the thread is shared across the whole library. This can be tuned by using `android_cleaner = true`,
+//         or `android = true` in the [`kotlin` section of the `uniffi.toml` file](https://mozilla.github.io/uniffi-rs/kotlin/configuration.html).
+//
+// If we try to implement this with mutual exclusion on access to the handle, there is the
+// possibility of a race between a method call and a concurrent call to `destroy`:
+//
+//    * Thread A starts a method call, reads the value of the handle, but is interrupted
+//      before it can pass the handle over the FFI to Rust.
+//    * Thread B calls `destroy` and frees the underlying Rust struct.
+//    * Thread A resumes, passing the already-read handle value to Rust and triggering
+//      a use-after-free.
+//
+// One possible solution would be to use a `ReadWriteLock`, with each method call taking
+// a read lock (and thus allowed to run concurrently) and the special `destroy` method
+// taking a write lock (and thus blocking on live method calls). However, we aim not to
+// generate methods with any hidden blocking semantics, and a `destroy` method that might
+// block if called incorrectly seems to meet that bar.
+//
+// So, we achieve our goals by giving each instance an associated `AtomicLong` counter to track
+// the number of in-flight method calls, and an `AtomicBoolean` flag to indicate whether `destroy`
+// has been called. These are updated according to the following rules:
+//
+//    * The initial value of the counter is 1, indicating a live object with no in-flight calls.
+//      The initial value for the flag is false.
+//
+//    * At the start of each method call, we atomically check the counter.
+//      If it is 0 then the underlying Rust struct has already been destroyed and the call is aborted.
+//      If it is nonzero them we atomically increment it by 1 and proceed with the method call.
+//
+//    * At the end of each method call, we atomically decrement and check the counter.
+//      If it has reached zero then we destroy the underlying Rust struct.
+//
+//    * When `destroy` is called, we atomically flip the flag from false to true.
+//      If the flag was already true we silently fail.
+//      Otherwise we atomically decrement and check the counter.
+//      If it has reached zero then we destroy the underlying Rust struct.
+//
+// Astute readers may observe that this all sounds very similar to the way that Rust's `Arc<T>` works,
+// and indeed it is, with the addition of a flag to guard against multiple calls to `destroy`.
+//
+// The overall effect is that the underlying Rust struct is destroyed only when `destroy` has been
+// called *and* all in-flight method calls have completed, avoiding violating any of the expectations
+// of the underlying Rust code.
+//
+// This makes a cleaner a better alternative to _not_ calling `destroy()` as
+// and when the object is finished with, but the abstraction is not perfect: if the Rust object's `drop`
+// method is slow, and/or there are many objects to cleanup, and it's on a low end Android device, then the cleaner
+// thread may be starved, and the app will leak memory.
+//
+// In this case, `destroy`ing manually may be a better solution.
+//
+// The cleaner can live side by side with the manual calling of `destroy`. In the order of responsiveness, uniffi objects
+// with Rust peers are reclaimed:
+//
+// 1. By calling the `destroy` method of the object, which calls `rustObject.free()`. If that doesn't happen:
+// 2. When the object becomes unreachable, AND the Cleaner thread gets to call `rustObject.free()`. If the thread is starved then:
+// 3. The memory is reclaimed when the process terminates.
+//
+// [1] https://stackoverflow.com/questions/24376768/can-java-finalize-an-object-when-it-is-still-in-scope/24380219
+//
+
+
 public interface EncryptionInterface {
     
     /**
@@ -9738,10 +11056,33 @@ public interface EncryptionInterface {
     fun `backupStateListener`(`listener`: BackupStateListener): TaskHandle
     
     /**
+     * Build a fresh dehydrated device, encrypt it with the supplied pickle
+     * key, and upload it to the homeserver. Returns the new device ID.
+     *
+     * The pickle key is a 32-byte secret, base64 encoded. Callers are
+     * responsible for storing the pickle key safely (typically in Secret
+     * Storage via [`Encryption::start_dehydrated_devices`]).
+     */
+    suspend fun `createDehydratedDevice`(`displayName`: kotlin.String?, `pickleKey`: kotlin.String): kotlin.String
+    
+    /**
      * Get the public curve25519 key of our own device in base64. This is
      * usually what is called the identity key of the device.
      */
     suspend fun `curve25519Key`(): kotlin.String?
+    
+    /**
+     * Subscribe to lifecycle events emitted by the dehydrated-device
+     * manager. The returned [`TaskHandle`] keeps the listener alive; drop
+     * it to unsubscribe.
+     */
+    fun `dehydratedDeviceEventListener`(`listener`: DehydratedDeviceEventListener): TaskHandle
+    
+    /**
+     * Delete the current dehydrated device, if one exists. Silent if no
+     * device is on the server or the server does not implement MSC3814.
+     */
+    suspend fun `deleteDehydratedDevice`()
     
     suspend fun `disableRecovery`()
     
@@ -9780,6 +11121,12 @@ public interface EncryptionInterface {
      */
     suspend fun `importSecretsBundle`(`secretsBundle`: SecretsBundleWithUserId)
     
+    /**
+     * Return whether the homeserver advertises support for MSC3814
+     * dehydrated devices.
+     */
+    suspend fun `isDehydratedDeviceSupported`(): kotlin.Boolean
+    
     suspend fun `isLastDevice`(): kotlin.Boolean
     
     /**
@@ -9807,12 +11154,39 @@ public interface EncryptionInterface {
     fun `recoveryStateListener`(`listener`: RecoveryStateListener): TaskHandle
     
     /**
+     * Rehydrate the dehydrated device currently on the server, if any.
+     *
+     * Returns `true` if a device was rehydrated end to end, `false` if the
+     * server reports no dehydrated device or does not implement the endpoint.
+     */
+    suspend fun `rehydrateDehydratedDevice`(`pickleKey`: kotlin.String): kotlin.Boolean
+    
+    /**
      * Completely reset the current user's crypto identity: reset the cross
      * signing keys, delete the existing backup and recovery key.
      */
     suspend fun `resetIdentity`(): IdentityResetHandle?
     
     suspend fun `resetRecoveryKey`(): kotlin.String
+    
+    /**
+     * Start using dehydrated devices for this client, resolving the pickle
+     * key through Secret Storage and scheduling weekly rotation.
+     *
+     * The Rust-side copy of the recovery key is zeroized after Secret
+     * Storage has been unlocked; the caller keeps responsibility for the
+     * string it passed in.
+     */
+    suspend fun `startDehydratedDevices`(`recoveryKey`: kotlin.String, `settings`: StartDehydratedDevicesSettings)
+    
+    /**
+     * Stop the scheduled dehydrated-device rotation.
+     *
+     * Has no effect when no rotation is scheduled. Existing dehydrated
+     * devices on the server are left in place; pair with
+     * [`Encryption::delete_dehydrated_device`] to remove them.
+     */
+    fun `stopDehydratedDevices`()
     
     /**
      * Get the E2EE identity of a user.
@@ -10007,6 +11381,35 @@ open class Encryption: Disposable, AutoCloseable, EncryptionInterface
 
     
     /**
+     * Build a fresh dehydrated device, encrypt it with the supplied pickle
+     * key, and upload it to the homeserver. Returns the new device ID.
+     *
+     * The pickle key is a 32-byte secret, base64 encoded. Callers are
+     * responsible for storing the pickle key safely (typically in Secret
+     * Storage via [`Encryption::start_dehydrated_devices`]).
+     */
+    @Throws(DehydratedDeviceException::class)
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `createDehydratedDevice`(`displayName`: kotlin.String?, `pickleKey`: kotlin.String) : kotlin.String {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_matrix_sdk_ffi_fn_method_encryption_create_dehydrated_device(
+                uniffiHandle,
+                FfiConverterOptionalString.lower(`displayName`),FfiConverterString.lower(`pickleKey`),
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_rust_buffer(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_complete_rust_buffer(future, continuation) },
+        { future -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_free_rust_buffer(future) },
+        // lift function
+        { FfiConverterString.lift(it) },
+        // Error FFI converter
+        DehydratedDeviceException.ErrorHandler,
+    )
+    }
+
+    
+    /**
      * Get the public curve25519 key of our own device in base64. This is
      * usually what is called the identity key of the device.
      */
@@ -10026,6 +11429,50 @@ open class Encryption: Disposable, AutoCloseable, EncryptionInterface
         { FfiConverterOptionalString.lift(it) },
         // Error FFI converter
         UniffiNullRustCallStatusErrorHandler,
+    )
+    }
+
+    
+    /**
+     * Subscribe to lifecycle events emitted by the dehydrated-device
+     * manager. The returned [`TaskHandle`] keeps the listener alive; drop
+     * it to unsubscribe.
+     */override fun `dehydratedDeviceEventListener`(`listener`: DehydratedDeviceEventListener): TaskHandle {
+            return FfiConverterTypeTaskHandle.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_matrix_sdk_ffi_fn_method_encryption_dehydrated_device_event_listener(
+        it,
+        FfiConverterTypeDehydratedDeviceEventListener.lower(`listener`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    /**
+     * Delete the current dehydrated device, if one exists. Silent if no
+     * device is on the server or the server does not implement MSC3814.
+     */
+    @Throws(DehydratedDeviceException::class)
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `deleteDehydratedDevice`() {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_matrix_sdk_ffi_fn_method_encryption_delete_dehydrated_device(
+                uniffiHandle,
+                
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_void(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_complete_void(future, continuation) },
+        { future -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_free_void(future) },
+        // lift function
+        { Unit },
+        
+        // Error FFI converter
+        DehydratedDeviceException.ErrorHandler,
     )
     }
 
@@ -10183,6 +11630,31 @@ open class Encryption: Disposable, AutoCloseable, EncryptionInterface
     }
 
     
+    /**
+     * Return whether the homeserver advertises support for MSC3814
+     * dehydrated devices.
+     */
+    @Throws(DehydratedDeviceException::class)
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `isDehydratedDeviceSupported`() : kotlin.Boolean {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_matrix_sdk_ffi_fn_method_encryption_is_dehydrated_device_supported(
+                uniffiHandle,
+                
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_i8(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_complete_i8(future, continuation) },
+        { future -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_free_i8(future) },
+        // lift function
+        { FfiConverterBoolean.lift(it) },
+        // Error FFI converter
+        DehydratedDeviceException.ErrorHandler,
+    )
+    }
+
+    
     @Throws(RecoveryException::class)
     @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
     override suspend fun `isLastDevice`() : kotlin.Boolean {
@@ -10310,6 +11782,33 @@ open class Encryption: Disposable, AutoCloseable, EncryptionInterface
 
     
     /**
+     * Rehydrate the dehydrated device currently on the server, if any.
+     *
+     * Returns `true` if a device was rehydrated end to end, `false` if the
+     * server reports no dehydrated device or does not implement the endpoint.
+     */
+    @Throws(DehydratedDeviceException::class)
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `rehydrateDehydratedDevice`(`pickleKey`: kotlin.String) : kotlin.Boolean {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_matrix_sdk_ffi_fn_method_encryption_rehydrate_dehydrated_device(
+                uniffiHandle,
+                FfiConverterString.lower(`pickleKey`),
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_i8(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_complete_i8(future, continuation) },
+        { future -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_free_i8(future) },
+        // lift function
+        { FfiConverterBoolean.lift(it) },
+        // Error FFI converter
+        DehydratedDeviceException.ErrorHandler,
+    )
+    }
+
+    
+    /**
      * Completely reset the current user's crypto identity: reset the cross
      * signing keys, delete the existing backup and recovery key.
      */
@@ -10353,6 +11852,55 @@ open class Encryption: Disposable, AutoCloseable, EncryptionInterface
         RecoveryException.ErrorHandler,
     )
     }
+
+    
+    /**
+     * Start using dehydrated devices for this client, resolving the pickle
+     * key through Secret Storage and scheduling weekly rotation.
+     *
+     * The Rust-side copy of the recovery key is zeroized after Secret
+     * Storage has been unlocked; the caller keeps responsibility for the
+     * string it passed in.
+     */
+    @Throws(DehydratedDeviceException::class)
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `startDehydratedDevices`(`recoveryKey`: kotlin.String, `settings`: StartDehydratedDevicesSettings) {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_matrix_sdk_ffi_fn_method_encryption_start_dehydrated_devices(
+                uniffiHandle,
+                FfiConverterString.lower(`recoveryKey`),FfiConverterTypeStartDehydratedDevicesSettings.lower(`settings`),
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_void(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_complete_void(future, continuation) },
+        { future -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_free_void(future) },
+        // lift function
+        { Unit },
+        
+        // Error FFI converter
+        DehydratedDeviceException.ErrorHandler,
+    )
+    }
+
+    
+    /**
+     * Stop the scheduled dehydrated-device rotation.
+     *
+     * Has no effect when no rotation is scheduled. Existing dehydrated
+     * devices on the server are left in place; pair with
+     * [`Encryption::delete_dehydrated_device`] to remove them.
+     */override fun `stopDehydratedDevices`()
+        = 
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_matrix_sdk_ffi_fn_method_encryption_stop_dehydrated_devices(
+        it,
+        _status)
+}
+    }
+    
+    
 
     
     /**
@@ -10502,272 +12050,6 @@ public object FfiConverterTypeEncryption: FfiConverter<Encryption, Long> {
     override fun allocationSize(value: Encryption) = 8UL
 
     override fun write(value: Encryption, buf: ByteBuffer) {
-        buf.putLong(lower(value))
-    }
-}
-
-
-// This template implements a class for working with a Rust struct via a handle
-// to the live Rust struct on the other side of the FFI.
-//
-// There's some subtlety here, because we have to be careful not to operate on a Rust
-// struct after it has been dropped, and because we must expose a public API for freeing
-// theq Kotlin wrapper object in lieu of reliable finalizers. The core requirements are:
-//
-//   * Each instance holds an opaque handle to the underlying Rust struct.
-//     Method calls need to read this handle from the object's state and pass it in to
-//     the Rust FFI.
-//
-//   * When an instance is no longer needed, its handle should be passed to a
-//     special destructor function provided by the Rust FFI, which will drop the
-//     underlying Rust struct.
-//
-//   * Given an instance, calling code is expected to call the special
-//     `destroy` method in order to free it after use, either by calling it explicitly
-//     or by using a higher-level helper like the `use` method. Failing to do so risks
-//     leaking the underlying Rust struct.
-//
-//   * We can't assume that calling code will do the right thing, and must be prepared
-//     to handle Kotlin method calls executing concurrently with or even after a call to
-//     `destroy`, and to handle multiple (possibly concurrent!) calls to `destroy`.
-//
-//   * We must never allow Rust code to operate on the underlying Rust struct after
-//     the destructor has been called, and must never call the destructor more than once.
-//     Doing so may trigger memory unsafety.
-//
-//   * To mitigate many of the risks of leaking memory and use-after-free unsafety, a `Cleaner`
-//     is implemented to call the destructor when the Kotlin object becomes unreachable.
-//     This is done in a background thread. This is not a panacea, and client code should be aware that
-//      1. the thread may starve if some there are objects that have poorly performing
-//     `drop` methods or do significant work in their `drop` methods.
-//      2. the thread is shared across the whole library. This can be tuned by using `android_cleaner = true`,
-//         or `android = true` in the [`kotlin` section of the `uniffi.toml` file](https://mozilla.github.io/uniffi-rs/kotlin/configuration.html).
-//
-// If we try to implement this with mutual exclusion on access to the handle, there is the
-// possibility of a race between a method call and a concurrent call to `destroy`:
-//
-//    * Thread A starts a method call, reads the value of the handle, but is interrupted
-//      before it can pass the handle over the FFI to Rust.
-//    * Thread B calls `destroy` and frees the underlying Rust struct.
-//    * Thread A resumes, passing the already-read handle value to Rust and triggering
-//      a use-after-free.
-//
-// One possible solution would be to use a `ReadWriteLock`, with each method call taking
-// a read lock (and thus allowed to run concurrently) and the special `destroy` method
-// taking a write lock (and thus blocking on live method calls). However, we aim not to
-// generate methods with any hidden blocking semantics, and a `destroy` method that might
-// block if called incorrectly seems to meet that bar.
-//
-// So, we achieve our goals by giving each instance an associated `AtomicLong` counter to track
-// the number of in-flight method calls, and an `AtomicBoolean` flag to indicate whether `destroy`
-// has been called. These are updated according to the following rules:
-//
-//    * The initial value of the counter is 1, indicating a live object with no in-flight calls.
-//      The initial value for the flag is false.
-//
-//    * At the start of each method call, we atomically check the counter.
-//      If it is 0 then the underlying Rust struct has already been destroyed and the call is aborted.
-//      If it is nonzero them we atomically increment it by 1 and proceed with the method call.
-//
-//    * At the end of each method call, we atomically decrement and check the counter.
-//      If it has reached zero then we destroy the underlying Rust struct.
-//
-//    * When `destroy` is called, we atomically flip the flag from false to true.
-//      If the flag was already true we silently fail.
-//      Otherwise we atomically decrement and check the counter.
-//      If it has reached zero then we destroy the underlying Rust struct.
-//
-// Astute readers may observe that this all sounds very similar to the way that Rust's `Arc<T>` works,
-// and indeed it is, with the addition of a flag to guard against multiple calls to `destroy`.
-//
-// The overall effect is that the underlying Rust struct is destroyed only when `destroy` has been
-// called *and* all in-flight method calls have completed, avoiding violating any of the expectations
-// of the underlying Rust code.
-//
-// This makes a cleaner a better alternative to _not_ calling `destroy()` as
-// and when the object is finished with, but the abstraction is not perfect: if the Rust object's `drop`
-// method is slow, and/or there are many objects to cleanup, and it's on a low end Android device, then the cleaner
-// thread may be starved, and the app will leak memory.
-//
-// In this case, `destroy`ing manually may be a better solution.
-//
-// The cleaner can live side by side with the manual calling of `destroy`. In the order of responsiveness, uniffi objects
-// with Rust peers are reclaimed:
-//
-// 1. By calling the `destroy` method of the object, which calls `rustObject.free()`. If that doesn't happen:
-// 2. When the object becomes unreachable, AND the Cleaner thread gets to call `rustObject.free()`. If the thread is starved then:
-// 3. The memory is reclaimed when the process terminates.
-//
-// [1] https://stackoverflow.com/questions/24376768/can-java-finalize-an-object-when-it-is-still-in-scope/24380219
-//
-
-
-public interface GlobalSearchIteratorInterface {
-    
-    /**
-     * Return a list of events for the next batch of search results, or `None`
-     * if there are no more results.
-     */
-    suspend fun `nextEvents`(): List<GlobalSearchResult>?
-    
-    companion object
-}
-
-open class GlobalSearchIterator: Disposable, AutoCloseable, GlobalSearchIteratorInterface
-{
-
-    @Suppress("UNUSED_PARAMETER")
-    /**
-     * @suppress
-     */
-    constructor(withHandle: UniffiWithHandle, handle: Long) {
-        this.handle = handle
-        this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(handle))
-    }
-
-    /**
-     * @suppress
-     *
-     * This constructor can be used to instantiate a fake object. Only used for tests. Any
-     * attempt to actually use an object constructed this way will fail as there is no
-     * connected Rust object.
-     */
-    @Suppress("UNUSED_PARAMETER")
-    constructor(noHandle: NoHandle) {
-        this.handle = 0
-        this.cleanable = null
-    }
-
-    protected val handle: Long
-    protected val cleanable: UniffiCleaner.Cleanable?
-
-    private val wasDestroyed = AtomicBoolean(false)
-    private val callCounter = AtomicLong(1)
-
-    override fun destroy() {
-        // Only allow a single call to this method.
-        // TODO: maybe we should log a warning if called more than once?
-        if (this.wasDestroyed.compareAndSet(false, true)) {
-            // This decrement always matches the initial count of 1 given at creation time.
-            if (this.callCounter.decrementAndGet() == 0L) {
-                cleanable?.clean()
-            }
-        }
-    }
-
-    @Synchronized
-    override fun close() {
-        this.destroy()
-    }
-
-    internal inline fun <R> callWithHandle(block: (handle: Long) -> R): R {
-        // Check and increment the call counter, to keep the object alive.
-        // This needs a compare-and-set retry loop in case of concurrent updates.
-        do {
-            val c = this.callCounter.get()
-            if (c == 0L) {
-                throw IllegalStateException("${this.javaClass.simpleName} object has already been destroyed")
-            }
-            if (c == Long.MAX_VALUE) {
-                throw IllegalStateException("${this.javaClass.simpleName} call counter would overflow")
-            }
-        } while (! this.callCounter.compareAndSet(c, c + 1L))
-        // Now we can safely do the method call without the handle being freed concurrently.
-        try {
-            return block(this.uniffiCloneHandle())
-        } finally {
-            // This decrement always matches the increment we performed above.
-            if (this.callCounter.decrementAndGet() == 0L) {
-                cleanable?.clean()
-            }
-        }
-    }
-
-    // Use a static inner class instead of a closure so as not to accidentally
-    // capture `this` as part of the cleanable's action.
-    private class UniffiCleanAction(private val handle: Long) : Runnable {
-        override fun run() {
-            if (handle == 0.toLong()) {
-                // Fake object created with `NoHandle`, don't try to free.
-                return;
-            }
-            uniffiRustCall { status ->
-                UniffiLib.uniffi_matrix_sdk_ffi_fn_free_globalsearchiterator(handle, status)
-            }
-        }
-    }
-
-    /**
-     * @suppress
-     */
-    fun uniffiCloneHandle(): Long {
-        if (handle == 0.toLong()) {
-            throw InternalException("uniffiCloneHandle() called on NoHandle object");
-        }
-        return uniffiRustCall() { status ->
-            UniffiLib.uniffi_matrix_sdk_ffi_fn_clone_globalsearchiterator(handle, status)
-        }
-    }
-
-    
-    /**
-     * Return a list of events for the next batch of search results, or `None`
-     * if there are no more results.
-     */
-    @Throws(SearchException::class)
-    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
-    override suspend fun `nextEvents`() : List<GlobalSearchResult>? {
-        return uniffiRustCallAsync(
-        callWithHandle { uniffiHandle ->
-            UniffiLib.uniffi_matrix_sdk_ffi_fn_method_globalsearchiterator_next_events(
-                uniffiHandle,
-                
-            )
-        },
-        { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_rust_buffer(future, callback, continuation) },
-        { future, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_complete_rust_buffer(future, continuation) },
-        { future -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_free_rust_buffer(future) },
-        // lift function
-        { FfiConverterOptionalSequenceTypeGlobalSearchResult.lift(it) },
-        // Error FFI converter
-        SearchException.ErrorHandler,
-    )
-    }
-
-    
-
-    
-
-
-    
-    
-    /**
-     * @suppress
-     */
-    companion object
-    
-}
-
-
-/**
- * @suppress
- */
-public object FfiConverterTypeGlobalSearchIterator: FfiConverter<GlobalSearchIterator, Long> {
-    override fun lower(value: GlobalSearchIterator): Long {
-        return value.uniffiCloneHandle()
-    }
-
-    override fun lift(value: Long): GlobalSearchIterator {
-        return GlobalSearchIterator(UniffiWithHandle, value)
-    }
-
-    override fun read(buf: ByteBuffer): GlobalSearchIterator {
-        return lift(buf.getLong())
-    }
-
-    override fun allocationSize(value: GlobalSearchIterator) = 8UL
-
-    override fun write(value: GlobalSearchIterator, buf: ByteBuffer) {
         buf.putLong(lower(value))
     }
 }
@@ -16138,6 +17420,346 @@ public object FfiConverterTypeNotificationSettings: FfiConverter<NotificationSet
 
 
 /**
+ * Estimates password strength using caller-supplied thresholds.
+ *
+ * Construct once with your desired thresholds, then call `estimate` for each
+ * password without having to re-supply the thresholds every time.
+ */
+public interface PasswordStrengthEstimatorInterface {
+    
+    /**
+     * Estimates the strength of `password`.
+     *
+     * Optionally, pass a list of `user_inputs` (e.g. username, email address)
+     * so that the estimator can penalize passwords that contain personal
+     * information.
+     *
+     * The returned ranking is derived from the configured thresholds applied
+     * to the estimated guess count, which already accounts for pattern-based
+     * attacks.
+     */
+    fun `estimate`(`password`: kotlin.String, `userInputs`: List<kotlin.String>): PasswordStrengthEstimate
+    
+    /**
+     * Returns the thresholds this estimator was configured with.
+     */
+    fun `thresholds`(): PasswordStrengthThresholds
+    
+    companion object
+}
+
+/**
+ * Estimates password strength using caller-supplied thresholds.
+ *
+ * Construct once with your desired thresholds, then call `estimate` for each
+ * password without having to re-supply the thresholds every time.
+ */
+open class PasswordStrengthEstimator: Disposable, AutoCloseable, PasswordStrengthEstimatorInterface
+{
+
+    @Suppress("UNUSED_PARAMETER")
+    /**
+     * @suppress
+     */
+    constructor(withHandle: UniffiWithHandle, handle: Long) {
+        this.handle = handle
+        this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(handle))
+    }
+
+    /**
+     * @suppress
+     *
+     * This constructor can be used to instantiate a fake object. Only used for tests. Any
+     * attempt to actually use an object constructed this way will fail as there is no
+     * connected Rust object.
+     */
+    @Suppress("UNUSED_PARAMETER")
+    constructor(noHandle: NoHandle) {
+        this.handle = 0
+        this.cleanable = null
+    }
+    constructor(`thresholds`: PasswordStrengthThresholds) :
+        this(UniffiWithHandle, 
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_matrix_sdk_ffi_fn_constructor_passwordstrengthestimator_new(
+    
+        FfiConverterTypePasswordStrengthThresholds.lower(`thresholds`),_status)
+}
+    )
+
+    protected val handle: Long
+    protected val cleanable: UniffiCleaner.Cleanable?
+
+    private val wasDestroyed = AtomicBoolean(false)
+    private val callCounter = AtomicLong(1)
+
+    override fun destroy() {
+        // Only allow a single call to this method.
+        // TODO: maybe we should log a warning if called more than once?
+        if (this.wasDestroyed.compareAndSet(false, true)) {
+            // This decrement always matches the initial count of 1 given at creation time.
+            if (this.callCounter.decrementAndGet() == 0L) {
+                cleanable?.clean()
+            }
+        }
+    }
+
+    @Synchronized
+    override fun close() {
+        this.destroy()
+    }
+
+    internal inline fun <R> callWithHandle(block: (handle: Long) -> R): R {
+        // Check and increment the call counter, to keep the object alive.
+        // This needs a compare-and-set retry loop in case of concurrent updates.
+        do {
+            val c = this.callCounter.get()
+            if (c == 0L) {
+                throw IllegalStateException("${this.javaClass.simpleName} object has already been destroyed")
+            }
+            if (c == Long.MAX_VALUE) {
+                throw IllegalStateException("${this.javaClass.simpleName} call counter would overflow")
+            }
+        } while (! this.callCounter.compareAndSet(c, c + 1L))
+        // Now we can safely do the method call without the handle being freed concurrently.
+        try {
+            return block(this.uniffiCloneHandle())
+        } finally {
+            // This decrement always matches the increment we performed above.
+            if (this.callCounter.decrementAndGet() == 0L) {
+                cleanable?.clean()
+            }
+        }
+    }
+
+    // Use a static inner class instead of a closure so as not to accidentally
+    // capture `this` as part of the cleanable's action.
+    private class UniffiCleanAction(private val handle: Long) : Runnable {
+        override fun run() {
+            if (handle == 0.toLong()) {
+                // Fake object created with `NoHandle`, don't try to free.
+                return;
+            }
+            uniffiRustCall { status ->
+                UniffiLib.uniffi_matrix_sdk_ffi_fn_free_passwordstrengthestimator(handle, status)
+            }
+        }
+    }
+
+    /**
+     * @suppress
+     */
+    fun uniffiCloneHandle(): Long {
+        if (handle == 0.toLong()) {
+            throw InternalException("uniffiCloneHandle() called on NoHandle object");
+        }
+        return uniffiRustCall() { status ->
+            UniffiLib.uniffi_matrix_sdk_ffi_fn_clone_passwordstrengthestimator(handle, status)
+        }
+    }
+
+    
+    /**
+     * Estimates the strength of `password`.
+     *
+     * Optionally, pass a list of `user_inputs` (e.g. username, email address)
+     * so that the estimator can penalize passwords that contain personal
+     * information.
+     *
+     * The returned ranking is derived from the configured thresholds applied
+     * to the estimated guess count, which already accounts for pattern-based
+     * attacks.
+     */override fun `estimate`(`password`: kotlin.String, `userInputs`: List<kotlin.String>): PasswordStrengthEstimate {
+            return FfiConverterTypePasswordStrengthEstimate.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_matrix_sdk_ffi_fn_method_passwordstrengthestimator_estimate(
+        it,
+        FfiConverterString.lower(`password`),FfiConverterSequenceString.lower(`userInputs`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    /**
+     * Returns the thresholds this estimator was configured with.
+     */override fun `thresholds`(): PasswordStrengthThresholds {
+            return FfiConverterTypePasswordStrengthThresholds.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_matrix_sdk_ffi_fn_method_passwordstrengthestimator_thresholds(
+        it,
+        _status)
+}
+    }
+    )
+    }
+    
+
+    
+
+    
+
+
+    
+    companion object {
+        
+    /**
+     * Creates an estimator using thresholds tuned for modern hardware (2025).
+     * Values derived from determining entropy from the chart at https://www.hivesystems.com/blog/are-your-passwords-in-the-green
+     */ fun `withModernDefaults2025`(): PasswordStrengthEstimator {
+            return FfiConverterTypePasswordStrengthEstimator.lift(
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_matrix_sdk_ffi_fn_constructor_passwordstrengthestimator_with_modern_defaults2025(
+    
+        _status)
+}
+    )
+    }
+    
+
+        
+    /**
+     * Creates an estimator using zxcvbn's original thresholds.
+     */ fun `withZxcvbnDefaults`(): PasswordStrengthEstimator {
+            return FfiConverterTypePasswordStrengthEstimator.lift(
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_matrix_sdk_ffi_fn_constructor_passwordstrengthestimator_with_zxcvbn_defaults(
+    
+        _status)
+}
+    )
+    }
+    
+
+        
+    }
+    
+}
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypePasswordStrengthEstimator: FfiConverter<PasswordStrengthEstimator, Long> {
+    override fun lower(value: PasswordStrengthEstimator): Long {
+        return value.uniffiCloneHandle()
+    }
+
+    override fun lift(value: Long): PasswordStrengthEstimator {
+        return PasswordStrengthEstimator(UniffiWithHandle, value)
+    }
+
+    override fun read(buf: ByteBuffer): PasswordStrengthEstimator {
+        return lift(buf.getLong())
+    }
+
+    override fun allocationSize(value: PasswordStrengthEstimator) = 8UL
+
+    override fun write(value: PasswordStrengthEstimator, buf: ByteBuffer) {
+        buf.putLong(lower(value))
+    }
+}
+
+
+// This template implements a class for working with a Rust struct via a handle
+// to the live Rust struct on the other side of the FFI.
+//
+// There's some subtlety here, because we have to be careful not to operate on a Rust
+// struct after it has been dropped, and because we must expose a public API for freeing
+// theq Kotlin wrapper object in lieu of reliable finalizers. The core requirements are:
+//
+//   * Each instance holds an opaque handle to the underlying Rust struct.
+//     Method calls need to read this handle from the object's state and pass it in to
+//     the Rust FFI.
+//
+//   * When an instance is no longer needed, its handle should be passed to a
+//     special destructor function provided by the Rust FFI, which will drop the
+//     underlying Rust struct.
+//
+//   * Given an instance, calling code is expected to call the special
+//     `destroy` method in order to free it after use, either by calling it explicitly
+//     or by using a higher-level helper like the `use` method. Failing to do so risks
+//     leaking the underlying Rust struct.
+//
+//   * We can't assume that calling code will do the right thing, and must be prepared
+//     to handle Kotlin method calls executing concurrently with or even after a call to
+//     `destroy`, and to handle multiple (possibly concurrent!) calls to `destroy`.
+//
+//   * We must never allow Rust code to operate on the underlying Rust struct after
+//     the destructor has been called, and must never call the destructor more than once.
+//     Doing so may trigger memory unsafety.
+//
+//   * To mitigate many of the risks of leaking memory and use-after-free unsafety, a `Cleaner`
+//     is implemented to call the destructor when the Kotlin object becomes unreachable.
+//     This is done in a background thread. This is not a panacea, and client code should be aware that
+//      1. the thread may starve if some there are objects that have poorly performing
+//     `drop` methods or do significant work in their `drop` methods.
+//      2. the thread is shared across the whole library. This can be tuned by using `android_cleaner = true`,
+//         or `android = true` in the [`kotlin` section of the `uniffi.toml` file](https://mozilla.github.io/uniffi-rs/kotlin/configuration.html).
+//
+// If we try to implement this with mutual exclusion on access to the handle, there is the
+// possibility of a race between a method call and a concurrent call to `destroy`:
+//
+//    * Thread A starts a method call, reads the value of the handle, but is interrupted
+//      before it can pass the handle over the FFI to Rust.
+//    * Thread B calls `destroy` and frees the underlying Rust struct.
+//    * Thread A resumes, passing the already-read handle value to Rust and triggering
+//      a use-after-free.
+//
+// One possible solution would be to use a `ReadWriteLock`, with each method call taking
+// a read lock (and thus allowed to run concurrently) and the special `destroy` method
+// taking a write lock (and thus blocking on live method calls). However, we aim not to
+// generate methods with any hidden blocking semantics, and a `destroy` method that might
+// block if called incorrectly seems to meet that bar.
+//
+// So, we achieve our goals by giving each instance an associated `AtomicLong` counter to track
+// the number of in-flight method calls, and an `AtomicBoolean` flag to indicate whether `destroy`
+// has been called. These are updated according to the following rules:
+//
+//    * The initial value of the counter is 1, indicating a live object with no in-flight calls.
+//      The initial value for the flag is false.
+//
+//    * At the start of each method call, we atomically check the counter.
+//      If it is 0 then the underlying Rust struct has already been destroyed and the call is aborted.
+//      If it is nonzero them we atomically increment it by 1 and proceed with the method call.
+//
+//    * At the end of each method call, we atomically decrement and check the counter.
+//      If it has reached zero then we destroy the underlying Rust struct.
+//
+//    * When `destroy` is called, we atomically flip the flag from false to true.
+//      If the flag was already true we silently fail.
+//      Otherwise we atomically decrement and check the counter.
+//      If it has reached zero then we destroy the underlying Rust struct.
+//
+// Astute readers may observe that this all sounds very similar to the way that Rust's `Arc<T>` works,
+// and indeed it is, with the addition of a flag to guard against multiple calls to `destroy`.
+//
+// The overall effect is that the underlying Rust struct is destroyed only when `destroy` has been
+// called *and* all in-flight method calls have completed, avoiding violating any of the expectations
+// of the underlying Rust code.
+//
+// This makes a cleaner a better alternative to _not_ calling `destroy()` as
+// and when the object is finished with, but the abstraction is not perfect: if the Rust object's `drop`
+// method is slow, and/or there are many objects to cleanup, and it's on a low end Android device, then the cleaner
+// thread may be starved, and the app will leak memory.
+//
+// In this case, `destroy`ing manually may be a better solution.
+//
+// The cleaner can live side by side with the manual calling of `destroy`. In the order of responsiveness, uniffi objects
+// with Rust peers are reclaimed:
+//
+// 1. By calling the `destroy` method of the object, which calls `rustObject.free()`. If that doesn't happen:
+// 2. When the object becomes unreachable, AND the Cleaner thread gets to call `rustObject.free()`. If the thread is starved then:
+// 3. The memory is reclaimed when the process terminates.
+//
+// [1] https://stackoverflow.com/questions/24376768/can-java-finalize-an-object-when-it-is-still-in-scope/24380219
+//
+
+
+/**
  * Data for the QR code login mechanism.
  *
  * The [`QrCodeData`] can be serialized and encoded as a QR code or it can be
@@ -16539,14 +18161,6 @@ public interface RoomInterface {
     suspend fun `clearComposerDraft`(`threadRoot`: kotlin.String?)
     
     /**
-     * Clear the event cache storage for the current room.
-     *
-     * This will remove all the information related to the event cache, in
-     * memory and in the persisted storage, if enabled.
-     */
-    suspend fun `clearEventCacheStorage`()
-    
-    /**
      * Declines a call (and stop ringing).
      *
      * # Arguments
@@ -16632,7 +18246,7 @@ public interface RoomInterface {
     /**
      * Returns the room heroes for this room.
      */
-    fun `heroes`(): List<RoomHero>
+    suspend fun `heroes`(): List<RoomHero>
     
     fun `id`(): kotlin.String
     
@@ -16736,6 +18350,19 @@ public interface RoomInterface {
      * cache or fetches it from the homeserver.
      */
     suspend fun `loadOrFetchEvent`(`eventId`: kotlin.String): TimelineEvent
+    
+    /**
+     * Load the receipt of the given type for the given user in this room,
+     * optionally scoped to a thread.
+     *
+     * The receipt is read from the local store, which is fed by sync, so it
+     * also reflects receipts sent by the user's other devices. Returns
+     * `None` if the user has no matching receipt in this room.
+     *
+     * Note: [`ReceiptType::FullyRead`] is a marker, not an event receipt,
+     * and is rejected.
+     */
+    suspend fun `loadUserReceipt`(`receiptType`: ReceiptType, `thread`: ReceiptThread, `userId`: kotlin.String): UserReceipt?
     
     /**
      * Mark a room as fully read, by attaching a read receipt to the provided
@@ -16914,6 +18541,19 @@ public interface RoomInterface {
      * * `content` - The content of the event to send encoded as JSON string.
      */
     suspend fun `sendRaw`(`eventType`: kotlin.String, `content`: kotlin.String)
+    
+    /**
+     * Send a single receipt of the given type for the given event, optionally
+     * scoped to a thread.
+     *
+     * This allows sending receipts for events without instantiating the
+     * [`Timeline`] they belong to, e.g. marking a thread as read from its
+     * root and latest event ids. Note that this won't check whether sending
+     * the receipt is necessary or valid (i.e. it can move a receipt
+     * backwards); prefer [`Timeline::send_single_receipt`] when a timeline
+     * is available.
+     */
+    suspend fun `sendSingleReceipt`(`receiptType`: ReceiptType, `thread`: ReceiptThread, `eventId`: kotlin.String)
     
     /**
      * Send a raw state event to the room.
@@ -17108,13 +18748,6 @@ public interface RoomInterface {
      * echo the send error applies to
      */
     suspend fun `withdrawVerificationAndResend`(`userIds`: List<kotlin.String>, `sendHandle`: SendHandle)
-    
-    /**
-     * Search for messages in this room matching the given query, returning an
-     * iterator over the results that yields `num_results_per_batch` results at
-     * a time.
-     */
-    fun `searchMessages`(`query`: kotlin.String, `numResultsPerBatch`: kotlin.UInt): RoomSearchIterator
     
     companion object
 }
@@ -17346,34 +18979,6 @@ open class Room: Disposable, AutoCloseable, RoomInterface
             UniffiLib.uniffi_matrix_sdk_ffi_fn_method_room_clear_composer_draft(
                 uniffiHandle,
                 FfiConverterOptionalString.lower(`threadRoot`),
-            )
-        },
-        { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_void(future, callback, continuation) },
-        { future, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_complete_void(future, continuation) },
-        { future -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_free_void(future) },
-        // lift function
-        { Unit },
-        
-        // Error FFI converter
-        ClientException.ErrorHandler,
-    )
-    }
-
-    
-    /**
-     * Clear the event cache storage for the current room.
-     *
-     * This will remove all the information related to the event cache, in
-     * memory and in the persisted storage, if enabled.
-     */
-    @Throws(ClientException::class)
-    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
-    override suspend fun `clearEventCacheStorage`() {
-        return uniffiRustCallAsync(
-        callWithHandle { uniffiHandle ->
-            UniffiLib.uniffi_matrix_sdk_ffi_fn_method_room_clear_event_cache_storage(
-                uniffiHandle,
-                
             )
         },
         { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_void(future, callback, continuation) },
@@ -17673,18 +19278,25 @@ open class Room: Disposable, AutoCloseable, RoomInterface
     
     /**
      * Returns the room heroes for this room.
-     */override fun `heroes`(): List<RoomHero> {
-            return FfiConverterSequenceTypeRoomHero.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_matrix_sdk_ffi_fn_method_room_heroes(
-        it,
-        _status)
-}
-    }
+     */
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `heroes`() : List<RoomHero> {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_matrix_sdk_ffi_fn_method_room_heroes(
+                uniffiHandle,
+                
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_rust_buffer(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_complete_rust_buffer(future, continuation) },
+        { future -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_free_rust_buffer(future) },
+        // lift function
+        { FfiConverterSequenceTypeRoomHero.lift(it) },
+        // Error FFI converter
+        UniffiNullRustCallStatusErrorHandler,
     )
     }
-    
 
     override fun `id`(): kotlin.String {
             return FfiConverterString.lift(
@@ -18118,6 +19730,38 @@ open class Room: Disposable, AutoCloseable, RoomInterface
         { future -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_free_u64(future) },
         // lift function
         { FfiConverterTypeTimelineEvent.lift(it) },
+        // Error FFI converter
+        ClientException.ErrorHandler,
+    )
+    }
+
+    
+    /**
+     * Load the receipt of the given type for the given user in this room,
+     * optionally scoped to a thread.
+     *
+     * The receipt is read from the local store, which is fed by sync, so it
+     * also reflects receipts sent by the user's other devices. Returns
+     * `None` if the user has no matching receipt in this room.
+     *
+     * Note: [`ReceiptType::FullyRead`] is a marker, not an event receipt,
+     * and is rejected.
+     */
+    @Throws(ClientException::class)
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `loadUserReceipt`(`receiptType`: ReceiptType, `thread`: ReceiptThread, `userId`: kotlin.String) : UserReceipt? {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_matrix_sdk_ffi_fn_method_room_load_user_receipt(
+                uniffiHandle,
+                FfiConverterTypeReceiptType.lower(`receiptType`),FfiConverterTypeReceiptThread.lower(`thread`),FfiConverterString.lower(`userId`),
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_rust_buffer(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_complete_rust_buffer(future, continuation) },
+        { future -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_free_rust_buffer(future) },
+        // lift function
+        { FfiConverterOptionalTypeUserReceipt.lift(it) },
         // Error FFI converter
         ClientException.ErrorHandler,
     )
@@ -18778,6 +20422,39 @@ open class Room: Disposable, AutoCloseable, RoomInterface
             UniffiLib.uniffi_matrix_sdk_ffi_fn_method_room_send_raw(
                 uniffiHandle,
                 FfiConverterString.lower(`eventType`),FfiConverterString.lower(`content`),
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_void(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_complete_void(future, continuation) },
+        { future -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_free_void(future) },
+        // lift function
+        { Unit },
+        
+        // Error FFI converter
+        ClientException.ErrorHandler,
+    )
+    }
+
+    
+    /**
+     * Send a single receipt of the given type for the given event, optionally
+     * scoped to a thread.
+     *
+     * This allows sending receipts for events without instantiating the
+     * [`Timeline`] they belong to, e.g. marking a thread as read from its
+     * root and latest event ids. Note that this won't check whether sending
+     * the receipt is necessary or valid (i.e. it can move a receipt
+     * backwards); prefer [`Timeline::send_single_receipt`] when a timeline
+     * is available.
+     */
+    @Throws(ClientException::class)
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `sendSingleReceipt`(`receiptType`: ReceiptType, `thread`: ReceiptThread, `eventId`: kotlin.String) {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_matrix_sdk_ffi_fn_method_room_send_single_receipt(
+                uniffiHandle,
+                FfiConverterTypeReceiptType.lower(`receiptType`),FfiConverterTypeReceiptThread.lower(`thread`),FfiConverterString.lower(`eventId`),
             )
         },
         { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_void(future, callback, continuation) },
@@ -19543,24 +21220,6 @@ open class Room: Disposable, AutoCloseable, RoomInterface
         ClientException.ErrorHandler,
     )
     }
-
-    
-    /**
-     * Search for messages in this room matching the given query, returning an
-     * iterator over the results that yields `num_results_per_batch` results at
-     * a time.
-     */override fun `searchMessages`(`query`: kotlin.String, `numResultsPerBatch`: kotlin.UInt): RoomSearchIterator {
-            return FfiConverterTypeRoomSearchIterator.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_matrix_sdk_ffi_fn_method_room_search_messages(
-        it,
-        FfiConverterString.lower(`query`),FfiConverterUInt.lower(`numResultsPerBatch`),_status)
-}
-    }
-    )
-    }
-    
 
     
 
@@ -21906,7 +23565,7 @@ public interface RoomPowerLevelsInterface {
      */
     fun `canUserTriggerRoomNotification`(`userId`: kotlin.String): kotlin.Boolean
     
-    fun `events`(): Map<TimelineEventType, kotlin.Long>
+    fun `events`(): Map<FfiTimelineEventType, kotlin.Long>
     
     /**
      * Gets a map with the `UserId` of users with power levels other than `0`
@@ -22345,8 +24004,8 @@ open class RoomPowerLevels: Disposable, AutoCloseable, RoomPowerLevelsInterface
     }
     
 
-    override fun `events`(): Map<TimelineEventType, kotlin.Long> {
-            return FfiConverterMapTypeTimelineEventTypeLong.lift(
+    override fun `events`(): Map<FfiTimelineEventType, kotlin.Long> {
+            return FfiConverterMapTypeFfiTimelineEventTypeLong.lift(
     callWithHandle {
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_matrix_sdk_ffi_fn_method_roompowerlevels_events(
@@ -22914,18 +24573,46 @@ public object FfiConverterTypeRoomPreview: FfiConverter<RoomPreview, Long> {
 //
 
 
-public interface RoomSearchIteratorInterface {
+/**
+ * A reactive, paginated search across all the user's data.
+ */
+public interface SearchServiceInterface {
     
     /**
-     * Return a list of events for the next batch of search results, or `None`
-     * if there are no more results.
+     * Load the next page of results if a page isn't already loading and the
+     * end hasn't been reached. Otherwise it no-ops.
      */
-    suspend fun `nextEvents`(): List<RoomSearchResult>?
+    suspend fun `paginate`()
+    
+    /**
+     * Returns the current pagination state.
+     */
+    fun `paginationState`(): SearchServicePaginationState
+    
+    /**
+     * Set (or update) the search query.
+     * Clears the current results, restarts pagination from scratch and loads
+     * the first page. Call [`Self::paginate`] to load any further pages.
+     */
+    suspend fun `setQuery`(`query`: kotlin.String)
+    
+    /**
+     * Subscribe to pagination state updates.
+     */
+    fun `subscribeToPaginationStateUpdates`(`listener`: SearchServicePaginationStateListener): TaskHandle
+    
+    /**
+     * Subscribe to the search results.
+     */
+    suspend fun `subscribeToResults`(`listener`: SearchServiceResultsListener): TaskHandle
     
     companion object
 }
 
-open class RoomSearchIterator: Disposable, AutoCloseable, RoomSearchIteratorInterface
+/**
+ * A reactive, paginated search across all the user's data.
+ */
+open class SearchService: Disposable, AutoCloseable, SearchServiceInterface
 {
 
     @Suppress("UNUSED_PARAMETER")
@@ -23004,7 +24691,7 @@ open class RoomSearchIterator: Disposable, AutoCloseable, RoomSearchIteratorInte
                 return;
             }
             uniffiRustCall { status ->
-                UniffiLib.uniffi_matrix_sdk_ffi_fn_free_roomsearchiterator(handle, status)
+                UniffiLib.uniffi_matrix_sdk_ffi_fn_free_searchservice(handle, status)
             }
         }
     }
@@ -23017,32 +24704,115 @@ open class RoomSearchIterator: Disposable, AutoCloseable, RoomSearchIteratorInte
             throw InternalException("uniffiCloneHandle() called on NoHandle object");
         }
         return uniffiRustCall() { status ->
-            UniffiLib.uniffi_matrix_sdk_ffi_fn_clone_roomsearchiterator(handle, status)
+            UniffiLib.uniffi_matrix_sdk_ffi_fn_clone_searchservice(handle, status)
         }
     }
 
     
     /**
-     * Return a list of events for the next batch of search results, or `None`
-     * if there are no more results.
+     * Load the next page of results if a page isn't already loading and the
+     * end hasn't been reached. Otherwise it no-ops.
      */
-    @Throws(SearchException::class)
+    @Throws(ClientException::class)
     @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
-    override suspend fun `nextEvents`() : List<RoomSearchResult>? {
+    override suspend fun `paginate`() {
         return uniffiRustCallAsync(
         callWithHandle { uniffiHandle ->
-            UniffiLib.uniffi_matrix_sdk_ffi_fn_method_roomsearchiterator_next_events(
+            UniffiLib.uniffi_matrix_sdk_ffi_fn_method_searchservice_paginate(
                 uniffiHandle,
                 
             )
         },
-        { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_rust_buffer(future, callback, continuation) },
-        { future, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_complete_rust_buffer(future, continuation) },
-        { future -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_free_rust_buffer(future) },
+        { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_void(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_complete_void(future, continuation) },
+        { future -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_free_void(future) },
         // lift function
-        { FfiConverterOptionalSequenceTypeRoomSearchResult.lift(it) },
+        { Unit },
+        
         // Error FFI converter
-        SearchException.ErrorHandler,
+        ClientException.ErrorHandler,
+    )
+    }
+
+    
+    /**
+     * Returns the current pagination state.
+     */override fun `paginationState`(): SearchServicePaginationState {
+            return FfiConverterTypeSearchServicePaginationState.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_matrix_sdk_ffi_fn_method_searchservice_pagination_state(
+        it,
+        _status)
+}
+    }
+    )
+    }
+    
+
+    
+    /**
+     * Set (or update) the search query.
+     * Clears the current results, restarts pagination from scratch and loads
+     * the first page. Call [`Self::paginate`] to load any further pages.
+     */
+    @Throws(ClientException::class)
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `setQuery`(`query`: kotlin.String) {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_matrix_sdk_ffi_fn_method_searchservice_set_query(
+                uniffiHandle,
+                FfiConverterString.lower(`query`),
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_void(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_complete_void(future, continuation) },
+        { future -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_free_void(future) },
+        // lift function
+        { Unit },
+        
+        // Error FFI converter
+        ClientException.ErrorHandler,
+    )
+    }
+
+    
+    /**
+     * Subscribe to pagination state updates.
+     */override fun `subscribeToPaginationStateUpdates`(`listener`: SearchServicePaginationStateListener): TaskHandle {
+            return FfiConverterTypeTaskHandle.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_matrix_sdk_ffi_fn_method_searchservice_subscribe_to_pagination_state_updates(
+        it,
+        FfiConverterTypeSearchServicePaginationStateListener.lower(`listener`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    /**
+     * Subscribe to the search results.
+     */
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `subscribeToResults`(`listener`: SearchServiceResultsListener) : TaskHandle {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_matrix_sdk_ffi_fn_method_searchservice_subscribe_to_results(
+                uniffiHandle,
+                FfiConverterTypeSearchServiceResultsListener.lower(`listener`),
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_u64(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_complete_u64(future, continuation) },
+        { future -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_free_u64(future) },
+        // lift function
+        { FfiConverterTypeTaskHandle.lift(it) },
+        // Error FFI converter
+        UniffiNullRustCallStatusErrorHandler,
     )
     }
 
@@ -23064,22 +24834,22 @@ open class RoomSearchIterator: Disposable, AutoCloseable, RoomSearchIteratorInte
 /**
  * @suppress
  */
-public object FfiConverterTypeRoomSearchIterator: FfiConverter<RoomSearchIterator, Long> {
-    override fun lower(value: RoomSearchIterator): Long {
+public object FfiConverterTypeSearchService: FfiConverter<SearchService, Long> {
+    override fun lower(value: SearchService): Long {
         return value.uniffiCloneHandle()
     }
 
-    override fun lift(value: Long): RoomSearchIterator {
-        return RoomSearchIterator(UniffiWithHandle, value)
+    override fun lift(value: Long): SearchService {
+        return SearchService(UniffiWithHandle, value)
     }
 
-    override fun read(buf: ByteBuffer): RoomSearchIterator {
+    override fun read(buf: ByteBuffer): SearchService {
         return lift(buf.getLong())
     }
 
-    override fun allocationSize(value: RoomSearchIterator) = 8UL
+    override fun allocationSize(value: SearchService) = 8UL
 
-    override fun write(value: RoomSearchIterator, buf: ByteBuffer) {
+    override fun write(value: SearchService, buf: ByteBuffer) {
         buf.putLong(lower(value))
     }
 }
@@ -25215,7 +26985,7 @@ public interface SpaceRoomListInterface {
     /**
      * Return the current list of rooms.
      */
-    fun `rooms`(): List<SpaceRoom>
+    suspend fun `rooms`(): List<SpaceRoom>
     
     /**
      * Returns the space of the room list if known.
@@ -25230,7 +27000,7 @@ public interface SpaceRoomListInterface {
     /**
      * Subscribes to room list updates.
      */
-    fun `subscribeToRoomUpdate`(`listener`: SpaceRoomListEntriesListener): TaskHandle
+    suspend fun `subscribeToRoomUpdate`(`listener`: SpaceRoomListEntriesListener): TaskHandle
     
     /**
      * Subscribe to space updates.
@@ -25423,18 +27193,25 @@ open class SpaceRoomList: Disposable, AutoCloseable, SpaceRoomListInterface
     
     /**
      * Return the current list of rooms.
-     */override fun `rooms`(): List<SpaceRoom> {
-            return FfiConverterSequenceTypeSpaceRoom.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_matrix_sdk_ffi_fn_method_spaceroomlist_rooms(
-        it,
-        _status)
-}
-    }
+     */
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `rooms`() : List<SpaceRoom> {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_matrix_sdk_ffi_fn_method_spaceroomlist_rooms(
+                uniffiHandle,
+                
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_rust_buffer(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_complete_rust_buffer(future, continuation) },
+        { future -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_free_rust_buffer(future) },
+        // lift function
+        { FfiConverterSequenceTypeSpaceRoom.lift(it) },
+        // Error FFI converter
+        UniffiNullRustCallStatusErrorHandler,
     )
     }
-    
 
     
     /**
@@ -25471,18 +27248,25 @@ open class SpaceRoomList: Disposable, AutoCloseable, SpaceRoomListInterface
     
     /**
      * Subscribes to room list updates.
-     */override fun `subscribeToRoomUpdate`(`listener`: SpaceRoomListEntriesListener): TaskHandle {
-            return FfiConverterTypeTaskHandle.lift(
-    callWithHandle {
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_matrix_sdk_ffi_fn_method_spaceroomlist_subscribe_to_room_update(
-        it,
-        FfiConverterTypeSpaceRoomListEntriesListener.lower(`listener`),_status)
-}
-    }
+     */
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `subscribeToRoomUpdate`(`listener`: SpaceRoomListEntriesListener) : TaskHandle {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_matrix_sdk_ffi_fn_method_spaceroomlist_subscribe_to_room_update(
+                uniffiHandle,
+                FfiConverterTypeSpaceRoomListEntriesListener.lower(`listener`),
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_u64(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_complete_u64(future, continuation) },
+        { future -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_free_u64(future) },
+        // lift function
+        { FfiConverterTypeTaskHandle.lift(it) },
+        // Error FFI converter
+        UniffiNullRustCallStatusErrorHandler,
     )
     }
-    
 
     
     /**
@@ -26596,7 +28380,14 @@ public interface SqliteStoreBuilderInterface {
     fun `journalSizeLimit`(`limit`: kotlin.UInt?): SqliteStoreBuilder
     
     /**
-     * Set the passphrase for the stores.
+     * Set the raw key for the stores and removes any [`Self::passphrase`]
+     * previously set.
+     */
+    fun `key`(`key`: kotlin.ByteArray?): SqliteStoreBuilder
+    
+    /**
+     * Set the passphrase for the stores and removes any [`Self::key`]
+     * previously set.
      */
     fun `passphrase`(`passphrase`: kotlin.String?): SqliteStoreBuilder
     
@@ -26789,7 +28580,25 @@ open class SqliteStoreBuilder: Disposable, AutoCloseable, SqliteStoreBuilderInte
 
     
     /**
-     * Set the passphrase for the stores.
+     * Set the raw key for the stores and removes any [`Self::passphrase`]
+     * previously set.
+     */override fun `key`(`key`: kotlin.ByteArray?): SqliteStoreBuilder {
+            return FfiConverterTypeSqliteStoreBuilder.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_matrix_sdk_ffi_fn_method_sqlitestorebuilder_key(
+        it,
+        FfiConverterOptionalByteArray.lower(`key`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    /**
+     * Set the passphrase for the stores and removes any [`Self::key`]
+     * previously set.
      */override fun `passphrase`(`passphrase`: kotlin.String?): SqliteStoreBuilder {
             return FfiConverterTypeSqliteStoreBuilder.lift(
     callWithHandle {
@@ -27635,6 +29444,19 @@ public interface SyncServiceBuilderInterface {
     fun `withOfflineMode`(): SyncServiceBuilder
     
     /**
+     * Set a parent tracing Span for the tasks within this sync service.
+     */
+    fun `withParentSpan`(`span`: Span): SyncServiceBuilder
+    
+    /**
+     * Enable the Profiles sliding sync extension for the room list service.
+     *
+     * Required to merge the global `m.status` and `m.call` fields into the
+     * room members and profiles read from the SDK.
+     */
+    fun `withProfilesExtension`(): SyncServiceBuilder
+    
+    /**
      * Set a custom Sliding Sync connection ID for the room list service.
      *
      * By default [`matrix_sdk_ui::room_list_service::DEFAULT_CONNECTION_ID`]
@@ -27782,6 +29604,41 @@ open class SyncServiceBuilder: Disposable, AutoCloseable, SyncServiceBuilderInte
     callWithHandle {
     uniffiRustCall() { _status ->
     UniffiLib.uniffi_matrix_sdk_ffi_fn_method_syncservicebuilder_with_offline_mode(
+        it,
+        _status)
+}
+    }
+    )
+    }
+    
+
+    
+    /**
+     * Set a parent tracing Span for the tasks within this sync service.
+     */override fun `withParentSpan`(`span`: Span): SyncServiceBuilder {
+            return FfiConverterTypeSyncServiceBuilder.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_matrix_sdk_ffi_fn_method_syncservicebuilder_with_parent_span(
+        it,
+        FfiConverterTypeSpan.lower(`span`),_status)
+}
+    }
+    )
+    }
+    
+
+    
+    /**
+     * Enable the Profiles sliding sync extension for the room list service.
+     *
+     * Required to merge the global `m.status` and `m.call` fields into the
+     * room members and profiles read from the SDK.
+     */override fun `withProfilesExtension`(): SyncServiceBuilder {
+            return FfiConverterTypeSyncServiceBuilder.lift(
+    callWithHandle {
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_matrix_sdk_ffi_fn_method_syncservicebuilder_with_profiles_extension(
         it,
         _status)
 }
@@ -29069,7 +30926,16 @@ public interface TimelineInterface {
     
     fun `sendAudio`(`params`: UploadParameters, `audioInfo`: AudioInfo): SendAttachmentJoinHandle
     
-    fun `sendFile`(`params`: UploadParameters, `fileInfo`: FileInfo): SendAttachmentJoinHandle
+    /**
+     * Send a file attachment, optionally with a thumbnail.
+     *
+     * A thumbnail is uploaded when both `thumbnail_source` and
+     * `file_info.thumbnail_info` are set; if only one of them is provided it
+     * is ignored. This is useful for file types a client can render a preview
+     * for but that aren't images or videos themselves, e.g. the first page of
+     * a PDF.
+     */
+    fun `sendFile`(`params`: UploadParameters, `fileInfo`: FileInfo, `thumbnailSource`: UploadSource? = null): SendAttachmentJoinHandle
     
     fun `sendImage`(`params`: UploadParameters, `thumbnailSource`: UploadSource?, `imageInfo`: ImageInfo): SendAttachmentJoinHandle
     
@@ -29091,6 +30957,12 @@ public interface TimelineInterface {
     fun `sendVideo`(`params`: UploadParameters, `thumbnailSource`: UploadSource?, `videoInfo`: VideoInfo): SendAttachmentJoinHandle
     
     fun `sendVoiceMessage`(`params`: UploadParameters, `audioInfo`: AudioInfo, `waveform`: List<kotlin.Float>): SendAttachmentJoinHandle
+    
+    /**
+     * Like [`Self::send`], but merges the given additional top-level fields
+     * (a JSON object, encoded as a string) into the outgoing event's content.
+     */
+    suspend fun `sendWithExtraContent`(`msg`: RoomMessageEventContentWithoutRelation, `extraContentJson`: kotlin.String?): SendHandle
     
     suspend fun `subscribeToBackPaginationStatus`(`listener`: PaginationStatusListener): TaskHandle
     
@@ -29661,13 +31533,22 @@ open class Timeline: Disposable, AutoCloseable, TimelineInterface
     
 
     
-    @Throws(RoomException::class)override fun `sendFile`(`params`: UploadParameters, `fileInfo`: FileInfo): SendAttachmentJoinHandle {
+    /**
+     * Send a file attachment, optionally with a thumbnail.
+     *
+     * A thumbnail is uploaded when both `thumbnail_source` and
+     * `file_info.thumbnail_info` are set; if only one of them is provided it
+     * is ignored. This is useful for file types a client can render a preview
+     * for but that aren't images or videos themselves, e.g. the first page of
+     * a PDF.
+     */
+    @Throws(RoomException::class)override fun `sendFile`(`params`: UploadParameters, `fileInfo`: FileInfo, `thumbnailSource`: UploadSource?): SendAttachmentJoinHandle {
             return FfiConverterTypeSendAttachmentJoinHandle.lift(
     callWithHandle {
     uniffiRustCallWithError(RoomException) { _status ->
     UniffiLib.uniffi_matrix_sdk_ffi_fn_method_timeline_send_file(
         it,
-        FfiConverterTypeUploadParameters.lower(`params`),FfiConverterTypeFileInfo.lower(`fileInfo`),_status)
+        FfiConverterTypeUploadParameters.lower(`params`),FfiConverterTypeFileInfo.lower(`fileInfo`),FfiConverterOptionalTypeUploadSource.lower(`thumbnailSource`),_status)
 }
     }
     )
@@ -29810,6 +31691,31 @@ open class Timeline: Disposable, AutoCloseable, TimelineInterface
     )
     }
     
+
+    
+    /**
+     * Like [`Self::send`], but merges the given additional top-level fields
+     * (a JSON object, encoded as a string) into the outgoing event's content.
+     */
+    @Throws(ClientException::class)
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `sendWithExtraContent`(`msg`: RoomMessageEventContentWithoutRelation, `extraContentJson`: kotlin.String?) : SendHandle {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_matrix_sdk_ffi_fn_method_timeline_send_with_extra_content(
+                uniffiHandle,
+                FfiConverterTypeRoomMessageEventContentWithoutRelation.lower(`msg`),FfiConverterOptionalString.lower(`extraContentJson`),
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_u64(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_complete_u64(future, continuation) },
+        { future -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_free_u64(future) },
+        // lift function
+        { FfiConverterTypeSendHandle.lift(it) },
+        // Error FFI converter
+        ClientException.ErrorHandler,
+    )
+    }
 
     
     @Throws(ClientException::class)
@@ -33374,53 +35280,6 @@ public object FfiConverterTypeGalleryUploadParameters: FfiConverterRustBuffer<Ga
 
 
 
-data class GlobalSearchResult (
-    var `roomId`: kotlin.String
-    , 
-    var `result`: RoomSearchResult
-    
-): Disposable{
-    
-
-    
-
-    
-    @Suppress("UNNECESSARY_SAFE_CALL") // codegen is much simpler if we unconditionally emit safe calls here
-    override fun destroy() {
-        
-    Disposable.destroy(
-        this.`roomId`,
-        this.`result`
-    )
-    }
-    
-    companion object
-}
-
-/**
- * @suppress
- */
-public object FfiConverterTypeGlobalSearchResult: FfiConverterRustBuffer<GlobalSearchResult> {
-    override fun read(buf: ByteBuffer): GlobalSearchResult {
-        return GlobalSearchResult(
-            FfiConverterString.read(buf),
-            FfiConverterTypeRoomSearchResult.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: GlobalSearchResult) = (
-            FfiConverterString.allocationSize(value.`roomId`) +
-            FfiConverterTypeRoomSearchResult.allocationSize(value.`result`)
-    )
-
-    override fun write(value: GlobalSearchResult, buf: ByteBuffer) {
-            FfiConverterString.write(value.`roomId`, buf)
-            FfiConverterTypeRoomSearchResult.write(value.`result`, buf)
-    }
-}
-
-
-
 data class HttpPusherData (
     var `url`: kotlin.String
     , 
@@ -34433,6 +36292,74 @@ public object FfiConverterTypeMessageContent: FfiConverterRustBuffer<MessageCont
 
 
 /**
+ * A message matching a search query, with its content and sender resolved.
+ */
+data class MessageSearchResult (
+    var `eventId`: kotlin.String
+    , 
+    var `sender`: kotlin.String
+    , 
+    var `senderProfile`: ProfileDetails
+    , 
+    var `content`: TimelineItemContent
+    , 
+    var `timestamp`: Timestamp
+    
+): Disposable{
+    
+
+    
+
+    
+    @Suppress("UNNECESSARY_SAFE_CALL") // codegen is much simpler if we unconditionally emit safe calls here
+    override fun destroy() {
+        
+    Disposable.destroy(
+        this.`eventId`,
+        this.`sender`,
+        this.`senderProfile`,
+        this.`content`,
+        this.`timestamp`
+    )
+    }
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeMessageSearchResult: FfiConverterRustBuffer<MessageSearchResult> {
+    override fun read(buf: ByteBuffer): MessageSearchResult {
+        return MessageSearchResult(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterTypeProfileDetails.read(buf),
+            FfiConverterTypeTimelineItemContent.read(buf),
+            FfiConverterTypeTimestamp.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: MessageSearchResult) = (
+            FfiConverterString.allocationSize(value.`eventId`) +
+            FfiConverterString.allocationSize(value.`sender`) +
+            FfiConverterTypeProfileDetails.allocationSize(value.`senderProfile`) +
+            FfiConverterTypeTimelineItemContent.allocationSize(value.`content`) +
+            FfiConverterTypeTimestamp.allocationSize(value.`timestamp`)
+    )
+
+    override fun write(value: MessageSearchResult, buf: ByteBuffer) {
+            FfiConverterString.write(value.`eventId`, buf)
+            FfiConverterString.write(value.`sender`, buf)
+            FfiConverterTypeProfileDetails.write(value.`senderProfile`, buf)
+            FfiConverterTypeTimelineItemContent.write(value.`content`, buf)
+            FfiConverterTypeTimestamp.write(value.`timestamp`, buf)
+    }
+}
+
+
+
+/**
  * A special kind of [`super::TimelineItemContent`] that groups together
  * different room message types with their respective reactions and thread
  * information.
@@ -35086,6 +37013,195 @@ public object FfiConverterTypePassPhrase: FfiConverterRustBuffer<PassPhrase> {
             FfiConverterString.write(value.`salt`, buf)
             FfiConverterULong.write(value.`iterations`, buf)
             FfiConverterULong.write(value.`bits`, buf)
+    }
+}
+
+
+
+/**
+ * The full result of a password strength estimation.
+ */
+data class PasswordStrengthEstimate (
+    /**
+     * Overall strength ranking from `VeryWeak` to `VeryStrong`.
+     */
+    var `ranking`: PasswordStrengthRanking
+    , 
+    /**
+     * Estimated number of guesses needed to crack the password.
+     */
+    var `guesses`: kotlin.ULong
+    , 
+    /**
+     * A numeric score derived from the order of magnitude of `guesses`
+     * (i.e. log base 10).
+     */
+    var `score`: kotlin.Double
+    , 
+    /**
+     * A normalized score from 0 to 1.0 derived from `score` and the
+     * estimator's `very_strong` threshold (`score / very_strong`).
+     * Scores above the `VeryStrong` threshold *can* exceed 1.0.
+     */
+    var `normalScore`: kotlin.Double
+    , 
+    /**
+     * Verbal feedback to help choose a better password. Only set when the
+     * ranking is Fair or below.
+     */
+    var `feedback`: PasswordStrengthFeedback?
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypePasswordStrengthEstimate: FfiConverterRustBuffer<PasswordStrengthEstimate> {
+    override fun read(buf: ByteBuffer): PasswordStrengthEstimate {
+        return PasswordStrengthEstimate(
+            FfiConverterTypePasswordStrengthRanking.read(buf),
+            FfiConverterULong.read(buf),
+            FfiConverterDouble.read(buf),
+            FfiConverterDouble.read(buf),
+            FfiConverterOptionalTypePasswordStrengthFeedback.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: PasswordStrengthEstimate) = (
+            FfiConverterTypePasswordStrengthRanking.allocationSize(value.`ranking`) +
+            FfiConverterULong.allocationSize(value.`guesses`) +
+            FfiConverterDouble.allocationSize(value.`score`) +
+            FfiConverterDouble.allocationSize(value.`normalScore`) +
+            FfiConverterOptionalTypePasswordStrengthFeedback.allocationSize(value.`feedback`)
+    )
+
+    override fun write(value: PasswordStrengthEstimate, buf: ByteBuffer) {
+            FfiConverterTypePasswordStrengthRanking.write(value.`ranking`, buf)
+            FfiConverterULong.write(value.`guesses`, buf)
+            FfiConverterDouble.write(value.`score`, buf)
+            FfiConverterDouble.write(value.`normalScore`, buf)
+            FfiConverterOptionalTypePasswordStrengthFeedback.write(value.`feedback`, buf)
+    }
+}
+
+
+
+/**
+ * Verbal feedback to help the user choose a stronger password.
+ */
+data class PasswordStrengthFeedback (
+    /**
+     * An optional warning explaining what is wrong with the password.
+     */
+    var `warning`: PasswordStrengthWarning?
+    , 
+    /**
+     * A possibly-empty list of actionable suggestions.
+     */
+    var `suggestions`: List<PasswordStrengthSuggestion>
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypePasswordStrengthFeedback: FfiConverterRustBuffer<PasswordStrengthFeedback> {
+    override fun read(buf: ByteBuffer): PasswordStrengthFeedback {
+        return PasswordStrengthFeedback(
+            FfiConverterOptionalTypePasswordStrengthWarning.read(buf),
+            FfiConverterSequenceTypePasswordStrengthSuggestion.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: PasswordStrengthFeedback) = (
+            FfiConverterOptionalTypePasswordStrengthWarning.allocationSize(value.`warning`) +
+            FfiConverterSequenceTypePasswordStrengthSuggestion.allocationSize(value.`suggestions`)
+    )
+
+    override fun write(value: PasswordStrengthFeedback, buf: ByteBuffer) {
+            FfiConverterOptionalTypePasswordStrengthWarning.write(value.`warning`, buf)
+            FfiConverterSequenceTypePasswordStrengthSuggestion.write(value.`suggestions`, buf)
+    }
+}
+
+
+
+/**
+ * Minimum `score` (log₁₀ of estimated guesses) required to achieve each
+ * ranking level. In [`PasswordStrengthEstimator`], any score below `weak` is
+ * ranked [`PasswordStrengthRanking::VeryWeak`]. Each value is assumed to be
+ * greater than the previous — if a lesser threshold carries a greater value
+ * than a higher threshold, ranking calculations will break.
+ */
+data class PasswordStrengthThresholds (
+    /**
+     * Minimum score to achieve [`PasswordStrengthRanking::Weak`].
+     */
+    var `weak`: kotlin.Double
+    , 
+    /**
+     * Minimum score to achieve [`PasswordStrengthRanking::Fair`].
+     */
+    var `fair`: kotlin.Double
+    , 
+    /**
+     * Minimum score to achieve [`PasswordStrengthRanking::Strong`].
+     */
+    var `strong`: kotlin.Double
+    , 
+    /**
+     * Minimum score to achieve [`PasswordStrengthRanking::VeryStrong`].
+     */
+    var `veryStrong`: kotlin.Double
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypePasswordStrengthThresholds: FfiConverterRustBuffer<PasswordStrengthThresholds> {
+    override fun read(buf: ByteBuffer): PasswordStrengthThresholds {
+        return PasswordStrengthThresholds(
+            FfiConverterDouble.read(buf),
+            FfiConverterDouble.read(buf),
+            FfiConverterDouble.read(buf),
+            FfiConverterDouble.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: PasswordStrengthThresholds) = (
+            FfiConverterDouble.allocationSize(value.`weak`) +
+            FfiConverterDouble.allocationSize(value.`fair`) +
+            FfiConverterDouble.allocationSize(value.`strong`) +
+            FfiConverterDouble.allocationSize(value.`veryStrong`)
+    )
+
+    override fun write(value: PasswordStrengthThresholds, buf: ByteBuffer) {
+            FfiConverterDouble.write(value.`weak`, buf)
+            FfiConverterDouble.write(value.`fair`, buf)
+            FfiConverterDouble.write(value.`strong`, buf)
+            FfiConverterDouble.write(value.`veryStrong`, buf)
     }
 }
 
@@ -35831,6 +37947,16 @@ data class RoomHero (
      * The avatar URL of the hero.
      */
     var `avatarUrl`: kotlin.String?
+    , 
+    /**
+     * The hero's user-set status, taken from their global profile.
+     */
+    var `status`: UserStatus?
+    , 
+    /**
+     * The hero's call indicator, taken from their global profile.
+     */
+    var `call`: UserCall?
     
 ){
     
@@ -35850,19 +37976,25 @@ public object FfiConverterTypeRoomHero: FfiConverterRustBuffer<RoomHero> {
             FfiConverterString.read(buf),
             FfiConverterOptionalString.read(buf),
             FfiConverterOptionalString.read(buf),
+            FfiConverterOptionalTypeUserStatus.read(buf),
+            FfiConverterOptionalTypeUserCall.read(buf),
         )
     }
 
     override fun allocationSize(value: RoomHero) = (
             FfiConverterString.allocationSize(value.`userId`) +
             FfiConverterOptionalString.allocationSize(value.`displayName`) +
-            FfiConverterOptionalString.allocationSize(value.`avatarUrl`)
+            FfiConverterOptionalString.allocationSize(value.`avatarUrl`) +
+            FfiConverterOptionalTypeUserStatus.allocationSize(value.`status`) +
+            FfiConverterOptionalTypeUserCall.allocationSize(value.`call`)
     )
 
     override fun write(value: RoomHero, buf: ByteBuffer) {
             FfiConverterString.write(value.`userId`, buf)
             FfiConverterOptionalString.write(value.`displayName`, buf)
             FfiConverterOptionalString.write(value.`avatarUrl`, buf)
+            FfiConverterOptionalTypeUserStatus.write(value.`status`, buf)
+            FfiConverterOptionalTypeUserCall.write(value.`call`, buf)
     }
 }
 
@@ -35976,6 +38108,11 @@ data class RoomInfo (
     var `numUnreadMentions`: kotlin.ULong
     , 
     /**
+     * Event ID of the user's `m.fully_read` marker for this room, if any.
+     */
+    var `fullyReadEventId`: kotlin.String?
+    , 
+    /**
      * The currently pinned event ids.
      */
     var `pinnedEventIds`: List<kotlin.String>
@@ -36052,6 +38189,7 @@ data class RoomInfo (
         this.`numUnreadMessages`,
         this.`numUnreadNotifications`,
         this.`numUnreadMentions`,
+        this.`fullyReadEventId`,
         this.`pinnedEventIds`,
         this.`joinRule`,
         this.`historyVisibility`,
@@ -36104,6 +38242,7 @@ public object FfiConverterTypeRoomInfo: FfiConverterRustBuffer<RoomInfo> {
             FfiConverterULong.read(buf),
             FfiConverterULong.read(buf),
             FfiConverterULong.read(buf),
+            FfiConverterOptionalString.read(buf),
             FfiConverterSequenceString.read(buf),
             FfiConverterOptionalTypeJoinRule.read(buf),
             FfiConverterTypeRoomHistoryVisibility.read(buf),
@@ -36148,6 +38287,7 @@ public object FfiConverterTypeRoomInfo: FfiConverterRustBuffer<RoomInfo> {
             FfiConverterULong.allocationSize(value.`numUnreadMessages`) +
             FfiConverterULong.allocationSize(value.`numUnreadNotifications`) +
             FfiConverterULong.allocationSize(value.`numUnreadMentions`) +
+            FfiConverterOptionalString.allocationSize(value.`fullyReadEventId`) +
             FfiConverterSequenceString.allocationSize(value.`pinnedEventIds`) +
             FfiConverterOptionalTypeJoinRule.allocationSize(value.`joinRule`) +
             FfiConverterTypeRoomHistoryVisibility.allocationSize(value.`historyVisibility`) +
@@ -36191,6 +38331,7 @@ public object FfiConverterTypeRoomInfo: FfiConverterRustBuffer<RoomInfo> {
             FfiConverterULong.write(value.`numUnreadMessages`, buf)
             FfiConverterULong.write(value.`numUnreadNotifications`, buf)
             FfiConverterULong.write(value.`numUnreadMentions`, buf)
+            FfiConverterOptionalString.write(value.`fullyReadEventId`, buf)
             FfiConverterSequenceString.write(value.`pinnedEventIds`, buf)
             FfiConverterOptionalTypeJoinRule.write(value.`joinRule`, buf)
             FfiConverterTypeRoomHistoryVisibility.write(value.`historyVisibility`, buf)
@@ -36256,6 +38397,10 @@ data class RoomMember (
     , 
     var `avatarUrl`: kotlin.String?
     , 
+    var `status`: UserStatus?
+    , 
+    var `call`: UserCall?
+    , 
     var `membership`: MembershipState
     , 
     var `isNameAmbiguous`: kotlin.Boolean
@@ -36288,6 +38433,8 @@ public object FfiConverterTypeRoomMember: FfiConverterRustBuffer<RoomMember> {
             FfiConverterString.read(buf),
             FfiConverterOptionalString.read(buf),
             FfiConverterOptionalString.read(buf),
+            FfiConverterOptionalTypeUserStatus.read(buf),
+            FfiConverterOptionalTypeUserCall.read(buf),
             FfiConverterTypeMembershipState.read(buf),
             FfiConverterBoolean.read(buf),
             FfiConverterTypePowerLevel.read(buf),
@@ -36302,6 +38449,8 @@ public object FfiConverterTypeRoomMember: FfiConverterRustBuffer<RoomMember> {
             FfiConverterString.allocationSize(value.`userId`) +
             FfiConverterOptionalString.allocationSize(value.`displayName`) +
             FfiConverterOptionalString.allocationSize(value.`avatarUrl`) +
+            FfiConverterOptionalTypeUserStatus.allocationSize(value.`status`) +
+            FfiConverterOptionalTypeUserCall.allocationSize(value.`call`) +
             FfiConverterTypeMembershipState.allocationSize(value.`membership`) +
             FfiConverterBoolean.allocationSize(value.`isNameAmbiguous`) +
             FfiConverterTypePowerLevel.allocationSize(value.`powerLevel`) +
@@ -36315,6 +38464,8 @@ public object FfiConverterTypeRoomMember: FfiConverterRustBuffer<RoomMember> {
             FfiConverterString.write(value.`userId`, buf)
             FfiConverterOptionalString.write(value.`displayName`, buf)
             FfiConverterOptionalString.write(value.`avatarUrl`, buf)
+            FfiConverterOptionalTypeUserStatus.write(value.`status`, buf)
+            FfiConverterOptionalTypeUserCall.write(value.`call`, buf)
             FfiConverterTypeMembershipState.write(value.`membership`, buf)
             FfiConverterBoolean.write(value.`isNameAmbiguous`, buf)
             FfiConverterTypePowerLevel.write(value.`powerLevel`, buf)
@@ -36689,71 +38840,6 @@ public object FfiConverterTypeRoomPreviewInfo: FfiConverterRustBuffer<RoomPrevie
             FfiConverterOptionalTypeJoinRule.write(value.`joinRule`, buf)
             FfiConverterOptionalBoolean.write(value.`isDirect`, buf)
             FfiConverterOptionalSequenceTypeRoomHero.write(value.`heroes`, buf)
-    }
-}
-
-
-
-data class RoomSearchResult (
-    var `eventId`: kotlin.String
-    , 
-    var `sender`: kotlin.String
-    , 
-    var `senderProfile`: ProfileDetails
-    , 
-    var `content`: TimelineItemContent
-    , 
-    var `timestamp`: Timestamp
-    
-): Disposable{
-    
-
-    
-
-    
-    @Suppress("UNNECESSARY_SAFE_CALL") // codegen is much simpler if we unconditionally emit safe calls here
-    override fun destroy() {
-        
-    Disposable.destroy(
-        this.`eventId`,
-        this.`sender`,
-        this.`senderProfile`,
-        this.`content`,
-        this.`timestamp`
-    )
-    }
-    
-    companion object
-}
-
-/**
- * @suppress
- */
-public object FfiConverterTypeRoomSearchResult: FfiConverterRustBuffer<RoomSearchResult> {
-    override fun read(buf: ByteBuffer): RoomSearchResult {
-        return RoomSearchResult(
-            FfiConverterString.read(buf),
-            FfiConverterString.read(buf),
-            FfiConverterTypeProfileDetails.read(buf),
-            FfiConverterTypeTimelineItemContent.read(buf),
-            FfiConverterTypeTimestamp.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: RoomSearchResult) = (
-            FfiConverterString.allocationSize(value.`eventId`) +
-            FfiConverterString.allocationSize(value.`sender`) +
-            FfiConverterTypeProfileDetails.allocationSize(value.`senderProfile`) +
-            FfiConverterTypeTimelineItemContent.allocationSize(value.`content`) +
-            FfiConverterTypeTimestamp.allocationSize(value.`timestamp`)
-    )
-
-    override fun write(value: RoomSearchResult, buf: ByteBuffer) {
-            FfiConverterString.write(value.`eventId`, buf)
-            FfiConverterString.write(value.`sender`, buf)
-            FfiConverterTypeProfileDetails.write(value.`senderProfile`, buf)
-            FfiConverterTypeTimelineItemContent.write(value.`content`, buf)
-            FfiConverterTypeTimestamp.write(value.`timestamp`, buf)
     }
 }
 
@@ -37359,6 +39445,64 @@ public object FfiConverterTypeSpaceRoom: FfiConverterRustBuffer<SpaceRoom> {
             FfiConverterOptionalSequenceTypeRoomHero.write(value.`heroes`, buf)
             FfiConverterSequenceString.write(value.`via`, buf)
             FfiConverterOptionalBoolean.write(value.`isDm`, buf)
+    }
+}
+
+
+
+/**
+ * Settings for [`Encryption::start_dehydrated_devices`].
+ */
+data class StartDehydratedDevicesSettings (
+    /**
+     * Force generation of a fresh random pickle key on start, replacing
+     * any existing entry in Secret Storage and the local cache.
+     */
+    var `createNewKey`: kotlin.Boolean = false 
+    , 
+    /**
+     * Whether to attempt to rehydrate the existing dehydrated device, if
+     * any, before creating the next one.
+     */
+    var `rehydrate`: kotlin.Boolean = true 
+    , 
+    /**
+     * If `true`, the call becomes a no-op when no pickle key is cached
+     * locally.
+     */
+    var `onlyIfKeyCached`: kotlin.Boolean = false 
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeStartDehydratedDevicesSettings: FfiConverterRustBuffer<StartDehydratedDevicesSettings> {
+    override fun read(buf: ByteBuffer): StartDehydratedDevicesSettings {
+        return StartDehydratedDevicesSettings(
+            FfiConverterBoolean.read(buf),
+            FfiConverterBoolean.read(buf),
+            FfiConverterBoolean.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: StartDehydratedDevicesSettings) = (
+            FfiConverterBoolean.allocationSize(value.`createNewKey`) +
+            FfiConverterBoolean.allocationSize(value.`rehydrate`) +
+            FfiConverterBoolean.allocationSize(value.`onlyIfKeyCached`)
+    )
+
+    override fun write(value: StartDehydratedDevicesSettings, buf: ByteBuffer) {
+            FfiConverterBoolean.write(value.`createNewKey`, buf)
+            FfiConverterBoolean.write(value.`rehydrate`, buf)
+            FfiConverterBoolean.write(value.`onlyIfKeyCached`, buf)
     }
 }
 
@@ -38497,6 +40641,12 @@ data class UploadParameters (
      * Optional Event ID to reply to.
      */
     var `inReplyTo`: kotlin.String?
+    , 
+    /**
+     * Optional additional top-level fields for the media event's content,
+     * as a serialized JSON object.
+     */
+    var `extraContentJson`: kotlin.String? = null 
     
 ){
     
@@ -38518,6 +40668,7 @@ public object FfiConverterTypeUploadParameters: FfiConverterRustBuffer<UploadPar
             FfiConverterOptionalTypeFormattedBody.read(buf),
             FfiConverterOptionalTypeMentions.read(buf),
             FfiConverterOptionalString.read(buf),
+            FfiConverterOptionalString.read(buf),
         )
     }
 
@@ -38526,7 +40677,8 @@ public object FfiConverterTypeUploadParameters: FfiConverterRustBuffer<UploadPar
             FfiConverterOptionalString.allocationSize(value.`caption`) +
             FfiConverterOptionalTypeFormattedBody.allocationSize(value.`formattedCaption`) +
             FfiConverterOptionalTypeMentions.allocationSize(value.`mentions`) +
-            FfiConverterOptionalString.allocationSize(value.`inReplyTo`)
+            FfiConverterOptionalString.allocationSize(value.`inReplyTo`) +
+            FfiConverterOptionalString.allocationSize(value.`extraContentJson`)
     )
 
     override fun write(value: UploadParameters, buf: ByteBuffer) {
@@ -38535,6 +40687,46 @@ public object FfiConverterTypeUploadParameters: FfiConverterRustBuffer<UploadPar
             FfiConverterOptionalTypeFormattedBody.write(value.`formattedCaption`, buf)
             FfiConverterOptionalTypeMentions.write(value.`mentions`, buf)
             FfiConverterOptionalString.write(value.`inReplyTo`, buf)
+            FfiConverterOptionalString.write(value.`extraContentJson`, buf)
+    }
+}
+
+
+
+/**
+ * The user's call indicator (MSC4426 `m.call` profile field value).
+ *
+ * Presence of a `UserCall` value means the user is in a call. The optional
+ * `call_joined_ts` is the Unix-epoch seconds when they joined, if known.
+ */
+data class UserCall (
+    var `callJoinedTs`: kotlin.ULong?
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeUserCall: FfiConverterRustBuffer<UserCall> {
+    override fun read(buf: ByteBuffer): UserCall {
+        return UserCall(
+            FfiConverterOptionalULong.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: UserCall) = (
+            FfiConverterOptionalULong.allocationSize(value.`callJoinedTs`)
+    )
+
+    override fun write(value: UserCall, buf: ByteBuffer) {
+            FfiConverterOptionalULong.write(value.`callJoinedTs`, buf)
     }
 }
 
@@ -38593,6 +40785,19 @@ data class UserProfile (
     var `displayName`: kotlin.String?
     , 
     var `avatarUrl`: kotlin.String?
+    , 
+    /**
+     * The user's status (MSC4426 `m.status` profile field), if set.
+     */
+    var `status`: UserStatus?
+    , 
+    /**
+     * Set when the user is in a call (MSC4426 `m.call` profile field).
+     *
+     * `None` means the user is not in a call. `Some(UserCall { call_joined_ts:
+     * None })` means the user is in a call but the join time wasn't recorded.
+     */
+    var `call`: UserCall?
     
 ){
     
@@ -38612,19 +40817,113 @@ public object FfiConverterTypeUserProfile: FfiConverterRustBuffer<UserProfile> {
             FfiConverterString.read(buf),
             FfiConverterOptionalString.read(buf),
             FfiConverterOptionalString.read(buf),
+            FfiConverterOptionalTypeUserStatus.read(buf),
+            FfiConverterOptionalTypeUserCall.read(buf),
         )
     }
 
     override fun allocationSize(value: UserProfile) = (
             FfiConverterString.allocationSize(value.`userId`) +
             FfiConverterOptionalString.allocationSize(value.`displayName`) +
-            FfiConverterOptionalString.allocationSize(value.`avatarUrl`)
+            FfiConverterOptionalString.allocationSize(value.`avatarUrl`) +
+            FfiConverterOptionalTypeUserStatus.allocationSize(value.`status`) +
+            FfiConverterOptionalTypeUserCall.allocationSize(value.`call`)
     )
 
     override fun write(value: UserProfile, buf: ByteBuffer) {
             FfiConverterString.write(value.`userId`, buf)
             FfiConverterOptionalString.write(value.`displayName`, buf)
             FfiConverterOptionalString.write(value.`avatarUrl`, buf)
+            FfiConverterOptionalTypeUserStatus.write(value.`status`, buf)
+            FfiConverterOptionalTypeUserCall.write(value.`call`, buf)
+    }
+}
+
+
+
+/**
+ * A receipt of a user in a room, as read from the local store.
+ */
+data class UserReceipt (
+    /**
+     * The ID of the event the receipt is attached to.
+     */
+    var `eventId`: kotlin.String
+    , 
+    /**
+     * The receipt itself.
+     */
+    var `receipt`: Receipt
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeUserReceipt: FfiConverterRustBuffer<UserReceipt> {
+    override fun read(buf: ByteBuffer): UserReceipt {
+        return UserReceipt(
+            FfiConverterString.read(buf),
+            FfiConverterTypeReceipt.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: UserReceipt) = (
+            FfiConverterString.allocationSize(value.`eventId`) +
+            FfiConverterTypeReceipt.allocationSize(value.`receipt`)
+    )
+
+    override fun write(value: UserReceipt, buf: ByteBuffer) {
+            FfiConverterString.write(value.`eventId`, buf)
+            FfiConverterTypeReceipt.write(value.`receipt`, buf)
+    }
+}
+
+
+
+/**
+ * A user-set status (MSC4426 `m.status` profile field value).
+ */
+data class UserStatus (
+    var `emoji`: kotlin.String
+    , 
+    var `text`: kotlin.String
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeUserStatus: FfiConverterRustBuffer<UserStatus> {
+    override fun read(buf: ByteBuffer): UserStatus {
+        return UserStatus(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: UserStatus) = (
+            FfiConverterString.allocationSize(value.`emoji`) +
+            FfiConverterString.allocationSize(value.`text`)
+    )
+
+    override fun write(value: UserStatus, buf: ByteBuffer) {
+            FfiConverterString.write(value.`emoji`, buf)
+            FfiConverterString.write(value.`text`, buf)
     }
 }
 
@@ -38854,6 +41153,12 @@ data class WidgetCapabilities (
      * This allows the widget to download files (avatars)
      */
     var `downloadFiles`: kotlin.Boolean
+    , 
+    /**
+     * This allows the widget to discover the RTC transports advertised by the
+     * homeserver (MSC4515).
+     */
+    var `rtcTransports`: kotlin.Boolean
     
 ){
     
@@ -38876,6 +41181,7 @@ public object FfiConverterTypeWidgetCapabilities: FfiConverterRustBuffer<WidgetC
             FfiConverterBoolean.read(buf),
             FfiConverterBoolean.read(buf),
             FfiConverterBoolean.read(buf),
+            FfiConverterBoolean.read(buf),
         )
     }
 
@@ -38885,7 +41191,8 @@ public object FfiConverterTypeWidgetCapabilities: FfiConverterRustBuffer<WidgetC
             FfiConverterBoolean.allocationSize(value.`requiresClient`) +
             FfiConverterBoolean.allocationSize(value.`updateDelayedEvent`) +
             FfiConverterBoolean.allocationSize(value.`sendDelayedEvent`) +
-            FfiConverterBoolean.allocationSize(value.`downloadFiles`)
+            FfiConverterBoolean.allocationSize(value.`downloadFiles`) +
+            FfiConverterBoolean.allocationSize(value.`rtcTransports`)
     )
 
     override fun write(value: WidgetCapabilities, buf: ByteBuffer) {
@@ -38895,6 +41202,7 @@ public object FfiConverterTypeWidgetCapabilities: FfiConverterRustBuffer<WidgetC
             FfiConverterBoolean.write(value.`updateDelayedEvent`, buf)
             FfiConverterBoolean.write(value.`sendDelayedEvent`, buf)
             FfiConverterBoolean.write(value.`downloadFiles`, buf)
+            FfiConverterBoolean.write(value.`rtcTransports`, buf)
     }
 }
 
@@ -40274,6 +42582,8 @@ sealed class ClientBuildException(message: String): kotlin.Exception(message) {
         
         class EventCache(message: String) : ClientBuildException(message)
         
+        class InvalidRawKey(message: String) : ClientBuildException(message)
+        
         class Generic(message: String) : ClientBuildException(message)
         
 
@@ -40297,7 +42607,8 @@ public object FfiConverterTypeClientBuildError : FfiConverterRustBuffer<ClientBu
             6 -> ClientBuildException.SlidingSyncVersion(FfiConverterString.read(buf))
             7 -> ClientBuildException.Sdk(FfiConverterString.read(buf))
             8 -> ClientBuildException.EventCache(FfiConverterString.read(buf))
-            9 -> ClientBuildException.Generic(FfiConverterString.read(buf))
+            9 -> ClientBuildException.InvalidRawKey(FfiConverterString.read(buf))
+            10 -> ClientBuildException.Generic(FfiConverterString.read(buf))
             else -> throw RuntimeException("invalid error enum value, something is very wrong!!")
         }
         
@@ -40341,8 +42652,12 @@ public object FfiConverterTypeClientBuildError : FfiConverterRustBuffer<ClientBu
                 buf.putInt(8)
                 Unit
             }
-            is ClientBuildException.Generic -> {
+            is ClientBuildException.InvalidRawKey -> {
                 buf.putInt(9)
+                Unit
+            }
+            is ClientBuildException.Generic -> {
+                buf.putInt(10)
                 Unit
             }
         }.let { /* this makes the `when` an expression, which ensures it is exhaustive */ }
@@ -40380,6 +42695,16 @@ sealed class ClientException: kotlin.Exception() {
             get() = "kind=${ `kind` }, code=${ `code` }, msg=${ `msg` }, details=${ `details` }"
     }
     
+    class ContentScanner(
+        
+        val `reason`: ErrorReason, 
+        
+        val `info`: kotlin.String
+        ) : ClientException() {
+        override val message
+            get() = "reason=${ `reason` }, info=${ `info` }"
+    }
+    
 
     
 
@@ -40409,6 +42734,10 @@ public object FfiConverterTypeClientError : FfiConverterRustBuffer<ClientExcepti
                 FfiConverterString.read(buf),
                 FfiConverterOptionalString.read(buf),
                 )
+            3 -> ClientException.ContentScanner(
+                FfiConverterTypeErrorReason.read(buf),
+                FfiConverterString.read(buf),
+                )
             else -> throw RuntimeException("invalid error enum value, something is very wrong!!")
         }
     }
@@ -40429,6 +42758,12 @@ public object FfiConverterTypeClientError : FfiConverterRustBuffer<ClientExcepti
                 + FfiConverterString.allocationSize(value.`msg`)
                 + FfiConverterOptionalString.allocationSize(value.`details`)
             )
+            is ClientException.ContentScanner -> (
+                // Add the size for the Int that specifies the variant plus the size needed for all fields
+                4UL
+                + FfiConverterTypeErrorReason.allocationSize(value.`reason`)
+                + FfiConverterString.allocationSize(value.`info`)
+            )
         }
     }
 
@@ -40446,6 +42781,12 @@ public object FfiConverterTypeClientError : FfiConverterRustBuffer<ClientExcepti
                 FfiConverterString.write(value.`code`, buf)
                 FfiConverterString.write(value.`msg`, buf)
                 FfiConverterOptionalString.write(value.`details`, buf)
+                Unit
+            }
+            is ClientException.ContentScanner -> {
+                buf.putInt(3)
+                FfiConverterTypeErrorReason.write(value.`reason`, buf)
+                FfiConverterString.write(value.`info`, buf)
                 Unit
             }
         }.let { /* this makes the `when` an expression, which ensures it is exhaustive */ }
@@ -40819,6 +43160,361 @@ public object FfiConverterTypeDateDividerMode: FfiConverterRustBuffer<DateDivide
 
     override fun write(value: DateDividerMode, buf: ByteBuffer) {
         buf.putInt(value.ordinal + 1)
+    }
+}
+
+
+
+
+
+
+
+/**
+ * Errors returned by the dehydrated-device FFI surface.
+ */
+sealed class DehydratedDeviceException(message: String): kotlin.Exception(message) {
+        
+    /**
+     * The client is not logged in.
+     */
+        class NotLoggedIn(message: String) : DehydratedDeviceException(message)
+        
+    /**
+     * The supplied base64-encoded pickle key did not decode to 32 bytes.
+     */
+        class InvalidPickleKey(message: String) : DehydratedDeviceException(message)
+        
+    /**
+     * Opening Secret Storage with the supplied recovery key failed.
+     */
+        class SecretStorage(message: String) : DehydratedDeviceException(message)
+        
+    /**
+     * Any other failure surfaced by the SDK.
+     */
+        class Sdk(message: String) : DehydratedDeviceException(message)
+        
+
+    companion object ErrorHandler : UniffiRustCallStatusErrorHandler<DehydratedDeviceException> {
+        override fun lift(error_buf: RustBuffer.ByValue): DehydratedDeviceException = FfiConverterTypeDehydratedDeviceError.lift(error_buf)
+    }
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeDehydratedDeviceError : FfiConverterRustBuffer<DehydratedDeviceException> {
+    override fun read(buf: ByteBuffer): DehydratedDeviceException {
+        
+            return when(buf.getInt()) {
+            1 -> DehydratedDeviceException.NotLoggedIn(FfiConverterString.read(buf))
+            2 -> DehydratedDeviceException.InvalidPickleKey(FfiConverterString.read(buf))
+            3 -> DehydratedDeviceException.SecretStorage(FfiConverterString.read(buf))
+            4 -> DehydratedDeviceException.Sdk(FfiConverterString.read(buf))
+            else -> throw RuntimeException("invalid error enum value, something is very wrong!!")
+        }
+        
+    }
+
+    override fun allocationSize(value: DehydratedDeviceException): ULong {
+        return 4UL
+    }
+
+    override fun write(value: DehydratedDeviceException, buf: ByteBuffer) {
+        when(value) {
+            is DehydratedDeviceException.NotLoggedIn -> {
+                buf.putInt(1)
+                Unit
+            }
+            is DehydratedDeviceException.InvalidPickleKey -> {
+                buf.putInt(2)
+                Unit
+            }
+            is DehydratedDeviceException.SecretStorage -> {
+                buf.putInt(3)
+                Unit
+            }
+            is DehydratedDeviceException.Sdk -> {
+                buf.putInt(4)
+                Unit
+            }
+        }.let { /* this makes the `when` an expression, which ensures it is exhaustive */ }
+    }
+
+}
+
+
+
+/**
+ * Lifecycle event emitted by the dehydrated-device manager.
+ *
+ * Mirrors [`dehydrated_devices::DehydratedDeviceEvent`]; subscribe via
+ * [`Encryption::dehydrated_device_event_listener`].
+ */
+sealed class DehydratedDeviceEvent {
+    
+    /**
+     * A fresh dehydrated device was constructed in the local crypto store,
+     * before the upload PUT.
+     */
+    data class Created(
+        val `deviceId`: kotlin.String) : DehydratedDeviceEvent()
+        
+    {
+        
+
+        companion object
+    }
+    
+    /**
+     * The homeserver accepted the upload of the dehydrated device.
+     */
+    data class Uploaded(
+        val `deviceId`: kotlin.String) : DehydratedDeviceEvent()
+        
+    {
+        
+
+        companion object
+    }
+    
+    /**
+     * The dehydrated device on the homeserver was deleted.
+     */
+    object Deleted : DehydratedDeviceEvent()
+    
+    
+    /**
+     * A pickle key was cached in the local crypto store.
+     */
+    object KeyCached : DehydratedDeviceEvent()
+    
+    
+    /**
+     * Rehydration of a dehydrated device began.
+     */
+    data class RehydrationStarted(
+        val `deviceId`: kotlin.String) : DehydratedDeviceEvent()
+        
+    {
+        
+
+        companion object
+    }
+    
+    /**
+     * A batch of to-device events has been imported during rehydration.
+     */
+    data class RehydrationProgress(
+        val `roomKeysImported`: kotlin.ULong, 
+        val `toDeviceEvents`: kotlin.ULong) : DehydratedDeviceEvent()
+        
+    {
+        
+
+        companion object
+    }
+    
+    /**
+     * Rehydration finished successfully.
+     */
+    data class RehydrationCompleted(
+        val `deviceId`: kotlin.String, 
+        val `roomKeysImported`: kotlin.ULong, 
+        val `toDeviceEvents`: kotlin.ULong) : DehydratedDeviceEvent()
+        
+    {
+        
+
+        companion object
+    }
+    
+    /**
+     * Rehydration failed.
+     */
+    data class RehydrationError(
+        val `error`: kotlin.String) : DehydratedDeviceEvent()
+        
+    {
+        
+
+        companion object
+    }
+    
+    /**
+     * A scheduled rotation tick failed; the rotation task remains scheduled.
+     */
+    data class RotationError(
+        val `error`: kotlin.String) : DehydratedDeviceEvent()
+        
+    {
+        
+
+        companion object
+    }
+    
+
+    
+
+    
+    
+
+
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeDehydratedDeviceEvent : FfiConverterRustBuffer<DehydratedDeviceEvent>{
+    override fun read(buf: ByteBuffer): DehydratedDeviceEvent {
+        return when(buf.getInt()) {
+            1 -> DehydratedDeviceEvent.Created(
+                FfiConverterString.read(buf),
+                )
+            2 -> DehydratedDeviceEvent.Uploaded(
+                FfiConverterString.read(buf),
+                )
+            3 -> DehydratedDeviceEvent.Deleted
+            4 -> DehydratedDeviceEvent.KeyCached
+            5 -> DehydratedDeviceEvent.RehydrationStarted(
+                FfiConverterString.read(buf),
+                )
+            6 -> DehydratedDeviceEvent.RehydrationProgress(
+                FfiConverterULong.read(buf),
+                FfiConverterULong.read(buf),
+                )
+            7 -> DehydratedDeviceEvent.RehydrationCompleted(
+                FfiConverterString.read(buf),
+                FfiConverterULong.read(buf),
+                FfiConverterULong.read(buf),
+                )
+            8 -> DehydratedDeviceEvent.RehydrationError(
+                FfiConverterString.read(buf),
+                )
+            9 -> DehydratedDeviceEvent.RotationError(
+                FfiConverterString.read(buf),
+                )
+            else -> throw RuntimeException("invalid enum value, something is very wrong!!")
+        }
+    }
+
+    override fun allocationSize(value: DehydratedDeviceEvent) = when(value) {
+        is DehydratedDeviceEvent.Created -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+                + FfiConverterString.allocationSize(value.`deviceId`)
+            )
+        }
+        is DehydratedDeviceEvent.Uploaded -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+                + FfiConverterString.allocationSize(value.`deviceId`)
+            )
+        }
+        is DehydratedDeviceEvent.Deleted -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
+        is DehydratedDeviceEvent.KeyCached -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
+        is DehydratedDeviceEvent.RehydrationStarted -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+                + FfiConverterString.allocationSize(value.`deviceId`)
+            )
+        }
+        is DehydratedDeviceEvent.RehydrationProgress -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+                + FfiConverterULong.allocationSize(value.`roomKeysImported`)
+                + FfiConverterULong.allocationSize(value.`toDeviceEvents`)
+            )
+        }
+        is DehydratedDeviceEvent.RehydrationCompleted -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+                + FfiConverterString.allocationSize(value.`deviceId`)
+                + FfiConverterULong.allocationSize(value.`roomKeysImported`)
+                + FfiConverterULong.allocationSize(value.`toDeviceEvents`)
+            )
+        }
+        is DehydratedDeviceEvent.RehydrationError -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+                + FfiConverterString.allocationSize(value.`error`)
+            )
+        }
+        is DehydratedDeviceEvent.RotationError -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+                + FfiConverterString.allocationSize(value.`error`)
+            )
+        }
+    }
+
+    override fun write(value: DehydratedDeviceEvent, buf: ByteBuffer) {
+        when(value) {
+            is DehydratedDeviceEvent.Created -> {
+                buf.putInt(1)
+                FfiConverterString.write(value.`deviceId`, buf)
+                Unit
+            }
+            is DehydratedDeviceEvent.Uploaded -> {
+                buf.putInt(2)
+                FfiConverterString.write(value.`deviceId`, buf)
+                Unit
+            }
+            is DehydratedDeviceEvent.Deleted -> {
+                buf.putInt(3)
+                Unit
+            }
+            is DehydratedDeviceEvent.KeyCached -> {
+                buf.putInt(4)
+                Unit
+            }
+            is DehydratedDeviceEvent.RehydrationStarted -> {
+                buf.putInt(5)
+                FfiConverterString.write(value.`deviceId`, buf)
+                Unit
+            }
+            is DehydratedDeviceEvent.RehydrationProgress -> {
+                buf.putInt(6)
+                FfiConverterULong.write(value.`roomKeysImported`, buf)
+                FfiConverterULong.write(value.`toDeviceEvents`, buf)
+                Unit
+            }
+            is DehydratedDeviceEvent.RehydrationCompleted -> {
+                buf.putInt(7)
+                FfiConverterString.write(value.`deviceId`, buf)
+                FfiConverterULong.write(value.`roomKeysImported`, buf)
+                FfiConverterULong.write(value.`toDeviceEvents`, buf)
+                Unit
+            }
+            is DehydratedDeviceEvent.RehydrationError -> {
+                buf.putInt(8)
+                FfiConverterString.write(value.`error`, buf)
+                Unit
+            }
+            is DehydratedDeviceEvent.RotationError -> {
+                buf.putInt(9)
+                FfiConverterString.write(value.`error`, buf)
+                Unit
+            }
+        }.let { /* this makes the `when` an expression, which ensures it is exhaustive */ }
     }
 }
 
@@ -42981,6 +45677,156 @@ public object FfiConverterTypeEventSendState : FfiConverterRustBuffer<EventSendS
 
 
 /**
+ * The timeline event type.
+ */
+sealed class FfiTimelineEventType {
+    
+    /**
+     * The event is a message-like one and should be displayed as such.
+     */
+    data class MessageLike(
+        val `value`: uniffi.ruma_events.MessageLikeEventType) : FfiTimelineEventType()
+        
+    {
+        
+
+    // The local Rust `Eq` implementation - only `eq` is used.
+    override fun equals(other: Any?): Boolean {
+        if (other !is FfiTimelineEventType) return false
+        return FfiConverterBoolean.lift(
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_matrix_sdk_ffi_fn_method_ffitimelineeventtype_uniffi_trait_eq_eq(FfiConverterTypeFfiTimelineEventType.lower(this),
+        FfiConverterTypeFfiTimelineEventType.lower(`other`),_status)
+}
+    )
+    }
+    // The local Rust `Hash` implementation
+    override fun hashCode(): Int {
+        return FfiConverterULong.lift(
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_matrix_sdk_ffi_fn_method_ffitimelineeventtype_uniffi_trait_hash(FfiConverterTypeFfiTimelineEventType.lower(this),
+        _status)
+}
+    ).toInt()
+    }
+        companion object
+    }
+    
+    /**
+     * The event is a state event, and may or may not be displayed in the
+     * timeline.
+     */
+    data class State(
+        val `value`: uniffi.ruma_events.StateEventType) : FfiTimelineEventType()
+        
+    {
+        
+
+    // The local Rust `Eq` implementation - only `eq` is used.
+    override fun equals(other: Any?): Boolean {
+        if (other !is FfiTimelineEventType) return false
+        return FfiConverterBoolean.lift(
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_matrix_sdk_ffi_fn_method_ffitimelineeventtype_uniffi_trait_eq_eq(FfiConverterTypeFfiTimelineEventType.lower(this),
+        FfiConverterTypeFfiTimelineEventType.lower(`other`),_status)
+}
+    )
+    }
+    // The local Rust `Hash` implementation
+    override fun hashCode(): Int {
+        return FfiConverterULong.lift(
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_matrix_sdk_ffi_fn_method_ffitimelineeventtype_uniffi_trait_hash(FfiConverterTypeFfiTimelineEventType.lower(this),
+        _status)
+}
+    ).toInt()
+    }
+        companion object
+    }
+    
+
+    
+
+    
+    
+
+    // The local Rust `Eq` implementation - only `eq` is used.
+    override fun equals(other: Any?): Boolean {
+        if (other !is FfiTimelineEventType) return false
+        return FfiConverterBoolean.lift(
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_matrix_sdk_ffi_fn_method_ffitimelineeventtype_uniffi_trait_eq_eq(FfiConverterTypeFfiTimelineEventType.lower(this),
+        FfiConverterTypeFfiTimelineEventType.lower(`other`),_status)
+}
+    )
+    }
+    // The local Rust `Hash` implementation
+    override fun hashCode(): Int {
+        return FfiConverterULong.lift(
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_matrix_sdk_ffi_fn_method_ffitimelineeventtype_uniffi_trait_hash(FfiConverterTypeFfiTimelineEventType.lower(this),
+        _status)
+}
+    ).toInt()
+    }
+
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeFfiTimelineEventType : FfiConverterRustBuffer<FfiTimelineEventType>{
+    override fun read(buf: ByteBuffer): FfiTimelineEventType {
+        return when(buf.getInt()) {
+            1 -> FfiTimelineEventType.MessageLike(
+                FfiConverterTypeMessageLikeEventType.read(buf),
+                )
+            2 -> FfiTimelineEventType.State(
+                FfiConverterTypeStateEventType.read(buf),
+                )
+            else -> throw RuntimeException("invalid enum value, something is very wrong!!")
+        }
+    }
+
+    override fun allocationSize(value: FfiTimelineEventType) = when(value) {
+        is FfiTimelineEventType.MessageLike -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+                + FfiConverterTypeMessageLikeEventType.allocationSize(value.`value`)
+            )
+        }
+        is FfiTimelineEventType.State -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+                + FfiConverterTypeStateEventType.allocationSize(value.`value`)
+            )
+        }
+    }
+
+    override fun write(value: FfiTimelineEventType, buf: ByteBuffer) {
+        when(value) {
+            is FfiTimelineEventType.MessageLike -> {
+                buf.putInt(1)
+                FfiConverterTypeMessageLikeEventType.write(value.`value`, buf)
+                Unit
+            }
+            is FfiTimelineEventType.State -> {
+                buf.putInt(2)
+                FfiConverterTypeStateEventType.write(value.`value`, buf)
+                Unit
+            }
+        }.let { /* this makes the `when` an expression, which ensures it is exhaustive */ }
+    }
+}
+
+
+
+
+
+/**
  * A condition that matches on an event's type or content.
  */
 sealed class FilterTimelineEventCondition {
@@ -43001,8 +45847,14 @@ sealed class FilterTimelineEventCondition {
      * The event is an `m.room.member` event that represents a membership
      * change (join, leave, etc.).
      */
-    object MembershipChange : FilterTimelineEventCondition()
-    
+    data class MembershipChange(
+        val `filter`: uniffi.matrix_sdk_ui.MembershipChangeFilter) : FilterTimelineEventCondition()
+        
+    {
+        
+
+        companion object
+    }
     
     /**
      * The event is an `m.room.member` event that represents a profile
@@ -43030,7 +45882,9 @@ public object FfiConverterTypeFilterTimelineEventCondition : FfiConverterRustBuf
             1 -> FilterTimelineEventCondition.EventType(
                 FfiConverterTypeFilterTimelineEventType.read(buf),
                 )
-            2 -> FilterTimelineEventCondition.MembershipChange
+            2 -> FilterTimelineEventCondition.MembershipChange(
+                FfiConverterTypeMembershipChangeFilter.read(buf),
+                )
             3 -> FilterTimelineEventCondition.ProfileChange
             else -> throw RuntimeException("invalid enum value, something is very wrong!!")
         }
@@ -43048,6 +45902,7 @@ public object FfiConverterTypeFilterTimelineEventCondition : FfiConverterRustBuf
             // Add the size for the Int that specifies the variant plus the size needed for all fields
             (
                 4UL
+                + FfiConverterTypeMembershipChangeFilter.allocationSize(value.`filter`)
             )
         }
         is FilterTimelineEventCondition.ProfileChange -> {
@@ -43067,6 +45922,7 @@ public object FfiConverterTypeFilterTimelineEventCondition : FfiConverterRustBuf
             }
             is FilterTimelineEventCondition.MembershipChange -> {
                 buf.putInt(2)
+                FfiConverterTypeMembershipChangeFilter.write(value.`filter`, buf)
                 Unit
             }
             is FilterTimelineEventCondition.ProfileChange -> {
@@ -43084,7 +45940,7 @@ public object FfiConverterTypeFilterTimelineEventCondition : FfiConverterRustBuf
 sealed class FilterTimelineEventType {
     
     data class MessageLike(
-        val `eventType`: org.matrix.rustcomponents.sdk.MessageLikeEventType) : FilterTimelineEventType()
+        val `eventType`: uniffi.ruma_events.MessageLikeEventType) : FilterTimelineEventType()
         
     {
         
@@ -43093,7 +45949,7 @@ sealed class FilterTimelineEventType {
     }
     
     data class State(
-        val `eventType`: org.matrix.rustcomponents.sdk.StateEventType) : FilterTimelineEventType()
+        val `eventType`: uniffi.ruma_events.StateEventType) : FilterTimelineEventType()
         
     {
         
@@ -43964,7 +46820,15 @@ sealed class GrantGeneratedQrLoginProgress: Disposable  {
         /**
          * A URI to open in a (secure) system browser to verify the new login.
          */
-        val `verificationUri`: kotlin.String) : GrantGeneratedQrLoginProgress()
+        val `verificationUri`: kotlin.String, 
+        /**
+         * A sender to confirm that the authorization using the verification
+         * URI has been started in the browser and that the application is
+         * ready to proceed. This allows applications that suspend or navigate
+         * away while the verification URI is open to resume the process
+         * explicitly.
+         */
+        val `continuationSender`: org.matrix.rustcomponents.sdk.ContinuationMessageSender) : GrantGeneratedQrLoginProgress()
         
     {
         
@@ -44008,7 +46872,8 @@ sealed class GrantGeneratedQrLoginProgress: Disposable  {
             is GrantGeneratedQrLoginProgress.WaitingForAuth -> {
                 
     Disposable.destroy(
-        this.`verificationUri`
+        this.`verificationUri`,
+        this.`continuationSender`
     )
                 
             }
@@ -44042,6 +46907,7 @@ public object FfiConverterTypeGrantGeneratedQrLoginProgress : FfiConverterRustBu
                 )
             4 -> GrantGeneratedQrLoginProgress.WaitingForAuth(
                 FfiConverterString.read(buf),
+                FfiConverterTypeContinuationMessageSender.read(buf),
                 )
             5 -> GrantGeneratedQrLoginProgress.SyncingSecrets
             6 -> GrantGeneratedQrLoginProgress.Done
@@ -44075,6 +46941,7 @@ public object FfiConverterTypeGrantGeneratedQrLoginProgress : FfiConverterRustBu
             (
                 4UL
                 + FfiConverterString.allocationSize(value.`verificationUri`)
+                + FfiConverterTypeContinuationMessageSender.allocationSize(value.`continuationSender`)
             )
         }
         is GrantGeneratedQrLoginProgress.SyncingSecrets -> {
@@ -44110,6 +46977,7 @@ public object FfiConverterTypeGrantGeneratedQrLoginProgress : FfiConverterRustBu
             is GrantGeneratedQrLoginProgress.WaitingForAuth -> {
                 buf.putInt(4)
                 FfiConverterString.write(value.`verificationUri`, buf)
+                FfiConverterTypeContinuationMessageSender.write(value.`continuationSender`, buf)
                 Unit
             }
             is GrantGeneratedQrLoginProgress.SyncingSecrets -> {
@@ -44132,7 +47000,7 @@ public object FfiConverterTypeGrantGeneratedQrLoginProgress : FfiConverterRustBu
  * Enum describing the progress of granting login in by scanning a QR code that
  * was generated on a new device.
  */
-sealed class GrantQrLoginProgress {
+sealed class GrantQrLoginProgress: Disposable  {
     
     /**
      * The login process is starting.
@@ -44170,7 +47038,15 @@ sealed class GrantQrLoginProgress {
         /**
          * A URI to open in a (secure) system browser to verify the new login.
          */
-        val `verificationUri`: kotlin.String) : GrantQrLoginProgress()
+        val `verificationUri`: kotlin.String, 
+        /**
+         * A sender to confirm that the authorization using the verification
+         * URI has been started in the browser and that the application is
+         * ready to proceed. This allows applications that suspend or navigate
+         * away while the verification URI is open to resume the process
+         * explicitly.
+         */
+        val `continuationSender`: org.matrix.rustcomponents.sdk.ContinuationMessageSender) : GrantQrLoginProgress()
         
     {
         
@@ -44191,6 +47067,34 @@ sealed class GrantQrLoginProgress {
     
     
 
+    
+    @Suppress("UNNECESSARY_SAFE_CALL") // codegen is much simpler if we unconditionally emit safe calls here
+    override fun destroy() {
+        when(this) {
+            is GrantQrLoginProgress.Starting -> {// Nothing to destroy
+            }
+            is GrantQrLoginProgress.EstablishingSecureChannel -> {
+                
+    Disposable.destroy(
+        this.`checkCode`,
+        this.`checkCodeString`
+    )
+                
+            }
+            is GrantQrLoginProgress.WaitingForAuth -> {
+                
+    Disposable.destroy(
+        this.`verificationUri`,
+        this.`continuationSender`
+    )
+                
+            }
+            is GrantQrLoginProgress.SyncingSecrets -> {// Nothing to destroy
+            }
+            is GrantQrLoginProgress.Done -> {// Nothing to destroy
+            }
+        }.let { /* this makes the `when` an expression, which ensures it is exhaustive */ }
+    }
     
 
     
@@ -44213,6 +47117,7 @@ public object FfiConverterTypeGrantQrLoginProgress : FfiConverterRustBuffer<Gran
                 )
             3 -> GrantQrLoginProgress.WaitingForAuth(
                 FfiConverterString.read(buf),
+                FfiConverterTypeContinuationMessageSender.read(buf),
                 )
             4 -> GrantQrLoginProgress.SyncingSecrets
             5 -> GrantQrLoginProgress.Done
@@ -44240,6 +47145,7 @@ public object FfiConverterTypeGrantQrLoginProgress : FfiConverterRustBuffer<Gran
             (
                 4UL
                 + FfiConverterString.allocationSize(value.`verificationUri`)
+                + FfiConverterTypeContinuationMessageSender.allocationSize(value.`continuationSender`)
             )
         }
         is GrantQrLoginProgress.SyncingSecrets -> {
@@ -44271,6 +47177,7 @@ public object FfiConverterTypeGrantQrLoginProgress : FfiConverterRustBuffer<Gran
             is GrantQrLoginProgress.WaitingForAuth -> {
                 buf.putInt(3)
                 FfiConverterString.write(value.`verificationUri`, buf)
+                FfiConverterTypeContinuationMessageSender.write(value.`continuationSender`, buf)
                 Unit
             }
             is GrantQrLoginProgress.SyncingSecrets -> {
@@ -44660,6 +47567,18 @@ sealed class HumanQrLoginException: kotlin.Exception() {
             get() = ""
     }
     
+    class ContinuationAlreadySent(
+        ) : HumanQrLoginException() {
+        override val message
+            get() = ""
+    }
+    
+    class ContinuationCannotBeSent(
+        ) : HumanQrLoginException() {
+        override val message
+            get() = ""
+    }
+    
     class NotFound(
         ) : HumanQrLoginException() {
         override val message
@@ -44702,8 +47621,10 @@ public object FfiConverterTypeHumanQrLoginError : FfiConverterRustBuffer<HumanQr
             9 -> HumanQrLoginException.OtherDeviceNotSignedIn()
             10 -> HumanQrLoginException.CheckCodeAlreadySent()
             11 -> HumanQrLoginException.CheckCodeCannotBeSent()
-            12 -> HumanQrLoginException.NotFound()
-            13 -> HumanQrLoginException.UnsupportedQrCodeType()
+            12 -> HumanQrLoginException.ContinuationAlreadySent()
+            13 -> HumanQrLoginException.ContinuationCannotBeSent()
+            14 -> HumanQrLoginException.NotFound()
+            15 -> HumanQrLoginException.UnsupportedQrCodeType()
             else -> throw RuntimeException("invalid error enum value, something is very wrong!!")
         }
     }
@@ -44751,6 +47672,14 @@ public object FfiConverterTypeHumanQrLoginError : FfiConverterRustBuffer<HumanQr
                 4UL
             )
             is HumanQrLoginException.CheckCodeCannotBeSent -> (
+                // Add the size for the Int that specifies the variant plus the size needed for all fields
+                4UL
+            )
+            is HumanQrLoginException.ContinuationAlreadySent -> (
+                // Add the size for the Int that specifies the variant plus the size needed for all fields
+                4UL
+            )
+            is HumanQrLoginException.ContinuationCannotBeSent -> (
                 // Add the size for the Int that specifies the variant plus the size needed for all fields
                 4UL
             )
@@ -44811,12 +47740,20 @@ public object FfiConverterTypeHumanQrLoginError : FfiConverterRustBuffer<HumanQr
                 buf.putInt(11)
                 Unit
             }
-            is HumanQrLoginException.NotFound -> {
+            is HumanQrLoginException.ContinuationAlreadySent -> {
                 buf.putInt(12)
                 Unit
             }
-            is HumanQrLoginException.UnsupportedQrCodeType -> {
+            is HumanQrLoginException.ContinuationCannotBeSent -> {
                 buf.putInt(13)
+                Unit
+            }
+            is HumanQrLoginException.NotFound -> {
+                buf.putInt(14)
+                Unit
+            }
+            is HumanQrLoginException.UnsupportedQrCodeType -> {
+                buf.putInt(15)
                 Unit
             }
         }.let { /* this makes the `when` an expression, which ensures it is exhaustive */ }
@@ -46562,6 +49499,9 @@ sealed class MessageLikeEventContent: Disposable  {
     object Sticker : MessageLikeEventContent()
     
     
+    object Beacon : MessageLikeEventContent()
+    
+    
 
     
     @Suppress("UNNECESSARY_SAFE_CALL") // codegen is much simpler if we unconditionally emit safe calls here
@@ -46632,6 +49572,8 @@ sealed class MessageLikeEventContent: Disposable  {
             }
             is MessageLikeEventContent.Sticker -> {// Nothing to destroy
             }
+            is MessageLikeEventContent.Beacon -> {// Nothing to destroy
+            }
         }.let { /* this makes the `when` an expression, which ensures it is exhaustive */ }
     }
     
@@ -46681,6 +49623,7 @@ public object FfiConverterTypeMessageLikeEventContent : FfiConverterRustBuffer<M
                 FfiConverterOptionalString.read(buf),
                 )
             18 -> MessageLikeEventContent.Sticker
+            19 -> MessageLikeEventContent.Beacon
             else -> throw RuntimeException("invalid enum value, something is very wrong!!")
         }
     }
@@ -46803,6 +49746,12 @@ public object FfiConverterTypeMessageLikeEventContent : FfiConverterRustBuffer<M
                 4UL
             )
         }
+        is MessageLikeEventContent.Beacon -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
     }
 
     override fun write(value: MessageLikeEventContent, buf: ByteBuffer) {
@@ -46888,609 +49837,8 @@ public object FfiConverterTypeMessageLikeEventContent : FfiConverterRustBuffer<M
                 buf.putInt(18)
                 Unit
             }
-        }.let { /* this makes the `when` an expression, which ensures it is exhaustive */ }
-    }
-}
-
-
-
-
-
-sealed class MessageLikeEventType {
-    
-    object Audio : MessageLikeEventType()
-    
-    
-    object Beacon : MessageLikeEventType()
-    
-    
-    object CallAnswer : MessageLikeEventType()
-    
-    
-    object CallCandidates : MessageLikeEventType()
-    
-    
-    object CallHangup : MessageLikeEventType()
-    
-    
-    object CallInvite : MessageLikeEventType()
-    
-    
-    object CallNegotiate : MessageLikeEventType()
-    
-    
-    object CallNotify : MessageLikeEventType()
-    
-    
-    object CallReject : MessageLikeEventType()
-    
-    
-    object CallSdpStreamMetadataChanged : MessageLikeEventType()
-    
-    
-    object CallSelectAnswer : MessageLikeEventType()
-    
-    
-    object Emote : MessageLikeEventType()
-    
-    
-    object Encrypted : MessageLikeEventType()
-    
-    
-    object File : MessageLikeEventType()
-    
-    
-    object Image : MessageLikeEventType()
-    
-    
-    object KeyVerificationAccept : MessageLikeEventType()
-    
-    
-    object KeyVerificationCancel : MessageLikeEventType()
-    
-    
-    object KeyVerificationDone : MessageLikeEventType()
-    
-    
-    object KeyVerificationKey : MessageLikeEventType()
-    
-    
-    object KeyVerificationMac : MessageLikeEventType()
-    
-    
-    object KeyVerificationReady : MessageLikeEventType()
-    
-    
-    object KeyVerificationStart : MessageLikeEventType()
-    
-    
-    object Location : MessageLikeEventType()
-    
-    
-    object Message : MessageLikeEventType()
-    
-    
-    object PollEnd : MessageLikeEventType()
-    
-    
-    object PollResponse : MessageLikeEventType()
-    
-    
-    object PollStart : MessageLikeEventType()
-    
-    
-    object Reaction : MessageLikeEventType()
-    
-    
-    object RoomEncrypted : MessageLikeEventType()
-    
-    
-    object RoomMessage : MessageLikeEventType()
-    
-    
-    object RoomRedaction : MessageLikeEventType()
-    
-    
-    object RtcDecline : MessageLikeEventType()
-    
-    
-    object RtcNotification : MessageLikeEventType()
-    
-    
-    object Sticker : MessageLikeEventType()
-    
-    
-    object UnstablePollEnd : MessageLikeEventType()
-    
-    
-    object UnstablePollResponse : MessageLikeEventType()
-    
-    
-    object UnstablePollStart : MessageLikeEventType()
-    
-    
-    object Video : MessageLikeEventType()
-    
-    
-    object Voice : MessageLikeEventType()
-    
-    
-    data class Other(
-        val v1: kotlin.String) : MessageLikeEventType()
-        
-    {
-        
-
-        companion object
-    }
-    
-
-    
-
-    
-    
-
-
-    companion object
-}
-
-/**
- * @suppress
- */
-public object FfiConverterTypeMessageLikeEventType : FfiConverterRustBuffer<MessageLikeEventType>{
-    override fun read(buf: ByteBuffer): MessageLikeEventType {
-        return when(buf.getInt()) {
-            1 -> MessageLikeEventType.Audio
-            2 -> MessageLikeEventType.Beacon
-            3 -> MessageLikeEventType.CallAnswer
-            4 -> MessageLikeEventType.CallCandidates
-            5 -> MessageLikeEventType.CallHangup
-            6 -> MessageLikeEventType.CallInvite
-            7 -> MessageLikeEventType.CallNegotiate
-            8 -> MessageLikeEventType.CallNotify
-            9 -> MessageLikeEventType.CallReject
-            10 -> MessageLikeEventType.CallSdpStreamMetadataChanged
-            11 -> MessageLikeEventType.CallSelectAnswer
-            12 -> MessageLikeEventType.Emote
-            13 -> MessageLikeEventType.Encrypted
-            14 -> MessageLikeEventType.File
-            15 -> MessageLikeEventType.Image
-            16 -> MessageLikeEventType.KeyVerificationAccept
-            17 -> MessageLikeEventType.KeyVerificationCancel
-            18 -> MessageLikeEventType.KeyVerificationDone
-            19 -> MessageLikeEventType.KeyVerificationKey
-            20 -> MessageLikeEventType.KeyVerificationMac
-            21 -> MessageLikeEventType.KeyVerificationReady
-            22 -> MessageLikeEventType.KeyVerificationStart
-            23 -> MessageLikeEventType.Location
-            24 -> MessageLikeEventType.Message
-            25 -> MessageLikeEventType.PollEnd
-            26 -> MessageLikeEventType.PollResponse
-            27 -> MessageLikeEventType.PollStart
-            28 -> MessageLikeEventType.Reaction
-            29 -> MessageLikeEventType.RoomEncrypted
-            30 -> MessageLikeEventType.RoomMessage
-            31 -> MessageLikeEventType.RoomRedaction
-            32 -> MessageLikeEventType.RtcDecline
-            33 -> MessageLikeEventType.RtcNotification
-            34 -> MessageLikeEventType.Sticker
-            35 -> MessageLikeEventType.UnstablePollEnd
-            36 -> MessageLikeEventType.UnstablePollResponse
-            37 -> MessageLikeEventType.UnstablePollStart
-            38 -> MessageLikeEventType.Video
-            39 -> MessageLikeEventType.Voice
-            40 -> MessageLikeEventType.Other(
-                FfiConverterString.read(buf),
-                )
-            else -> throw RuntimeException("invalid enum value, something is very wrong!!")
-        }
-    }
-
-    override fun allocationSize(value: MessageLikeEventType) = when(value) {
-        is MessageLikeEventType.Audio -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.Beacon -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.CallAnswer -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.CallCandidates -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.CallHangup -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.CallInvite -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.CallNegotiate -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.CallNotify -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.CallReject -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.CallSdpStreamMetadataChanged -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.CallSelectAnswer -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.Emote -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.Encrypted -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.File -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.Image -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.KeyVerificationAccept -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.KeyVerificationCancel -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.KeyVerificationDone -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.KeyVerificationKey -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.KeyVerificationMac -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.KeyVerificationReady -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.KeyVerificationStart -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.Location -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.Message -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.PollEnd -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.PollResponse -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.PollStart -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.Reaction -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.RoomEncrypted -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.RoomMessage -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.RoomRedaction -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.RtcDecline -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.RtcNotification -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.Sticker -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.UnstablePollEnd -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.UnstablePollResponse -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.UnstablePollStart -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.Video -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.Voice -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is MessageLikeEventType.Other -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-                + FfiConverterString.allocationSize(value.v1)
-            )
-        }
-    }
-
-    override fun write(value: MessageLikeEventType, buf: ByteBuffer) {
-        when(value) {
-            is MessageLikeEventType.Audio -> {
-                buf.putInt(1)
-                Unit
-            }
-            is MessageLikeEventType.Beacon -> {
-                buf.putInt(2)
-                Unit
-            }
-            is MessageLikeEventType.CallAnswer -> {
-                buf.putInt(3)
-                Unit
-            }
-            is MessageLikeEventType.CallCandidates -> {
-                buf.putInt(4)
-                Unit
-            }
-            is MessageLikeEventType.CallHangup -> {
-                buf.putInt(5)
-                Unit
-            }
-            is MessageLikeEventType.CallInvite -> {
-                buf.putInt(6)
-                Unit
-            }
-            is MessageLikeEventType.CallNegotiate -> {
-                buf.putInt(7)
-                Unit
-            }
-            is MessageLikeEventType.CallNotify -> {
-                buf.putInt(8)
-                Unit
-            }
-            is MessageLikeEventType.CallReject -> {
-                buf.putInt(9)
-                Unit
-            }
-            is MessageLikeEventType.CallSdpStreamMetadataChanged -> {
-                buf.putInt(10)
-                Unit
-            }
-            is MessageLikeEventType.CallSelectAnswer -> {
-                buf.putInt(11)
-                Unit
-            }
-            is MessageLikeEventType.Emote -> {
-                buf.putInt(12)
-                Unit
-            }
-            is MessageLikeEventType.Encrypted -> {
-                buf.putInt(13)
-                Unit
-            }
-            is MessageLikeEventType.File -> {
-                buf.putInt(14)
-                Unit
-            }
-            is MessageLikeEventType.Image -> {
-                buf.putInt(15)
-                Unit
-            }
-            is MessageLikeEventType.KeyVerificationAccept -> {
-                buf.putInt(16)
-                Unit
-            }
-            is MessageLikeEventType.KeyVerificationCancel -> {
-                buf.putInt(17)
-                Unit
-            }
-            is MessageLikeEventType.KeyVerificationDone -> {
-                buf.putInt(18)
-                Unit
-            }
-            is MessageLikeEventType.KeyVerificationKey -> {
+            is MessageLikeEventContent.Beacon -> {
                 buf.putInt(19)
-                Unit
-            }
-            is MessageLikeEventType.KeyVerificationMac -> {
-                buf.putInt(20)
-                Unit
-            }
-            is MessageLikeEventType.KeyVerificationReady -> {
-                buf.putInt(21)
-                Unit
-            }
-            is MessageLikeEventType.KeyVerificationStart -> {
-                buf.putInt(22)
-                Unit
-            }
-            is MessageLikeEventType.Location -> {
-                buf.putInt(23)
-                Unit
-            }
-            is MessageLikeEventType.Message -> {
-                buf.putInt(24)
-                Unit
-            }
-            is MessageLikeEventType.PollEnd -> {
-                buf.putInt(25)
-                Unit
-            }
-            is MessageLikeEventType.PollResponse -> {
-                buf.putInt(26)
-                Unit
-            }
-            is MessageLikeEventType.PollStart -> {
-                buf.putInt(27)
-                Unit
-            }
-            is MessageLikeEventType.Reaction -> {
-                buf.putInt(28)
-                Unit
-            }
-            is MessageLikeEventType.RoomEncrypted -> {
-                buf.putInt(29)
-                Unit
-            }
-            is MessageLikeEventType.RoomMessage -> {
-                buf.putInt(30)
-                Unit
-            }
-            is MessageLikeEventType.RoomRedaction -> {
-                buf.putInt(31)
-                Unit
-            }
-            is MessageLikeEventType.RtcDecline -> {
-                buf.putInt(32)
-                Unit
-            }
-            is MessageLikeEventType.RtcNotification -> {
-                buf.putInt(33)
-                Unit
-            }
-            is MessageLikeEventType.Sticker -> {
-                buf.putInt(34)
-                Unit
-            }
-            is MessageLikeEventType.UnstablePollEnd -> {
-                buf.putInt(35)
-                Unit
-            }
-            is MessageLikeEventType.UnstablePollResponse -> {
-                buf.putInt(36)
-                Unit
-            }
-            is MessageLikeEventType.UnstablePollStart -> {
-                buf.putInt(37)
-                Unit
-            }
-            is MessageLikeEventType.Video -> {
-                buf.putInt(38)
-                Unit
-            }
-            is MessageLikeEventType.Voice -> {
-                buf.putInt(39)
-                Unit
-            }
-            is MessageLikeEventType.Other -> {
-                buf.putInt(40)
-                FfiConverterString.write(value.v1, buf)
                 Unit
             }
         }.let { /* this makes the `when` an expression, which ensures it is exhaustive */ }
@@ -47925,7 +50273,7 @@ sealed class MsgLikeKind: Disposable  {
      * A custom message like event.
      */
     data class Other(
-        val `eventType`: org.matrix.rustcomponents.sdk.MessageLikeEventType) : MsgLikeKind()
+        val `eventType`: uniffi.ruma_events.MessageLikeEventType) : MsgLikeKind()
         
     {
         
@@ -48958,8 +51306,8 @@ sealed class OtherState {
     }
     
     data class RoomPowerLevels(
-        val `events`: Map<org.matrix.rustcomponents.sdk.TimelineEventType, kotlin.Long>, 
-        val `previousEvents`: Map<org.matrix.rustcomponents.sdk.TimelineEventType, kotlin.Long>?, 
+        val `events`: Map<org.matrix.rustcomponents.sdk.FfiTimelineEventType, kotlin.Long>, 
+        val `previousEvents`: Map<org.matrix.rustcomponents.sdk.FfiTimelineEventType, kotlin.Long>?, 
         val `users`: Map<kotlin.String, kotlin.Long>, 
         val `previousUsers`: Map<kotlin.String, kotlin.Long>?, 
         val `thresholds`: org.matrix.rustcomponents.sdk.PowerLevelChanges, 
@@ -49051,8 +51399,8 @@ public object FfiConverterTypeOtherState : FfiConverterRustBuffer<OtherState>{
                 FfiConverterTypeRoomPinnedEventsChange.read(buf),
                 )
             13 -> OtherState.RoomPowerLevels(
-                FfiConverterMapTypeTimelineEventTypeLong.read(buf),
-                FfiConverterOptionalMapTypeTimelineEventTypeLong.read(buf),
+                FfiConverterMapTypeFfiTimelineEventTypeLong.read(buf),
+                FfiConverterOptionalMapTypeFfiTimelineEventTypeLong.read(buf),
                 FfiConverterMapStringLong.read(buf),
                 FfiConverterOptionalMapStringLong.read(buf),
                 FfiConverterTypePowerLevelChanges.read(buf),
@@ -49158,8 +51506,8 @@ public object FfiConverterTypeOtherState : FfiConverterRustBuffer<OtherState>{
             // Add the size for the Int that specifies the variant plus the size needed for all fields
             (
                 4UL
-                + FfiConverterMapTypeTimelineEventTypeLong.allocationSize(value.`events`)
-                + FfiConverterOptionalMapTypeTimelineEventTypeLong.allocationSize(value.`previousEvents`)
+                + FfiConverterMapTypeFfiTimelineEventTypeLong.allocationSize(value.`events`)
+                + FfiConverterOptionalMapTypeFfiTimelineEventTypeLong.allocationSize(value.`previousEvents`)
                 + FfiConverterMapStringLong.allocationSize(value.`users`)
                 + FfiConverterOptionalMapStringLong.allocationSize(value.`previousUsers`)
                 + FfiConverterTypePowerLevelChanges.allocationSize(value.`thresholds`)
@@ -49271,8 +51619,8 @@ public object FfiConverterTypeOtherState : FfiConverterRustBuffer<OtherState>{
             }
             is OtherState.RoomPowerLevels -> {
                 buf.putInt(13)
-                FfiConverterMapTypeTimelineEventTypeLong.write(value.`events`, buf)
-                FfiConverterOptionalMapTypeTimelineEventTypeLong.write(value.`previousEvents`, buf)
+                FfiConverterMapTypeFfiTimelineEventTypeLong.write(value.`events`, buf)
+                FfiConverterOptionalMapTypeFfiTimelineEventTypeLong.write(value.`previousEvents`, buf)
                 FfiConverterMapStringLong.write(value.`users`, buf)
                 FfiConverterOptionalMapStringLong.write(value.`previousUsers`, buf)
                 FfiConverterTypePowerLevelChanges.write(value.`thresholds`, buf)
@@ -49430,6 +51778,144 @@ public object FfiConverterTypeParseError : FfiConverterRustBuffer<ParseException
 
 
 
+/**
+ * A ranking representing the estimated strength of a password, ranging from
+ * `VeryWeak` (easily guessable) to `VeryStrong` (highly resistant to attack).
+ */
+
+enum class PasswordStrengthRanking {
+    
+    VERY_WEAK,
+    WEAK,
+    FAIR,
+    STRONG,
+    VERY_STRONG;
+
+    
+
+
+    companion object
+}
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypePasswordStrengthRanking: FfiConverterRustBuffer<PasswordStrengthRanking> {
+    override fun read(buf: ByteBuffer) = try {
+        PasswordStrengthRanking.values()[buf.getInt() - 1]
+    } catch (e: IndexOutOfBoundsException) {
+        throw RuntimeException("invalid enum value, something is very wrong!!", e)
+    }
+
+    override fun allocationSize(value: PasswordStrengthRanking) = 4UL
+
+    override fun write(value: PasswordStrengthRanking, buf: ByteBuffer) {
+        buf.putInt(value.ordinal + 1)
+    }
+}
+
+
+
+
+
+/**
+ * A suggestion to help the user choose a stronger password.
+ */
+
+enum class PasswordStrengthSuggestion {
+    
+    USE_A_FEW_WORDS_AVOID_COMMON_PHRASES,
+    NO_NEED_FOR_SYMBOLS_DIGITS_OR_UPPERCASE_LETTERS,
+    ADD_ANOTHER_WORD_OR_TWO,
+    CAPITALIZATION_DOESNT_HELP_VERY_MUCH,
+    ALL_UPPERCASE_IS_ALMOST_AS_EASY_TO_GUESS_AS_ALL_LOWERCASE,
+    REVERSED_WORDS_ARENT_MUCH_HARDER_TO_GUESS,
+    PREDICTABLE_SUBSTITUTIONS_DONT_HELP_VERY_MUCH,
+    USE_A_LONGER_KEYBOARD_PATTERN_WITH_MORE_TURNS,
+    AVOID_REPEATED_WORDS_AND_CHARACTERS,
+    AVOID_SEQUENCES,
+    AVOID_RECENT_YEARS,
+    AVOID_YEARS_THAT_ARE_ASSOCIATED_WITH_YOU,
+    AVOID_DATES_AND_YEARS_THAT_ARE_ASSOCIATED_WITH_YOU;
+
+    
+
+
+    companion object
+}
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypePasswordStrengthSuggestion: FfiConverterRustBuffer<PasswordStrengthSuggestion> {
+    override fun read(buf: ByteBuffer) = try {
+        PasswordStrengthSuggestion.values()[buf.getInt() - 1]
+    } catch (e: IndexOutOfBoundsException) {
+        throw RuntimeException("invalid enum value, something is very wrong!!", e)
+    }
+
+    override fun allocationSize(value: PasswordStrengthSuggestion) = 4UL
+
+    override fun write(value: PasswordStrengthSuggestion, buf: ByteBuffer) {
+        buf.putInt(value.ordinal + 1)
+    }
+}
+
+
+
+
+
+/**
+ * A warning explaining what is wrong with the password.
+ */
+
+enum class PasswordStrengthWarning {
+    
+    STRAIGHT_ROWS_OF_KEYS_ARE_EASY_TO_GUESS,
+    SHORT_KEYBOARD_PATTERNS_ARE_EASY_TO_GUESS,
+    REPEATS_LIKE_AAA_ARE_EASY_TO_GUESS,
+    REPEATS_LIKE_ABC_ABC_ARE_ONLY_SLIGHTLY_HARDER_TO_GUESS,
+    THIS_IS_A_TOP10_PASSWORD,
+    THIS_IS_A_TOP100_PASSWORD,
+    THIS_IS_A_COMMON_PASSWORD,
+    THIS_IS_SIMILAR_TO_A_COMMONLY_USED_PASSWORD,
+    SEQUENCES_LIKE_ABC_ARE_EASY_TO_GUESS,
+    RECENT_YEARS_ARE_EASY_TO_GUESS,
+    A_WORD_BY_ITSELF_IS_EASY_TO_GUESS,
+    DATES_ARE_OFTEN_EASY_TO_GUESS,
+    NAMES_AND_SURNAMES_BY_THEMSELVES_ARE_EASY_TO_GUESS,
+    COMMON_NAMES_AND_SURNAMES_ARE_EASY_TO_GUESS;
+
+    
+
+
+    companion object
+}
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypePasswordStrengthWarning: FfiConverterRustBuffer<PasswordStrengthWarning> {
+    override fun read(buf: ByteBuffer) = try {
+        PasswordStrengthWarning.values()[buf.getInt() - 1]
+    } catch (e: IndexOutOfBoundsException) {
+        throw RuntimeException("invalid enum value, something is very wrong!!", e)
+    }
+
+    override fun allocationSize(value: PasswordStrengthWarning) = 4UL
+
+    override fun write(value: PasswordStrengthWarning, buf: ByteBuffer) {
+        buf.putInt(value.ordinal + 1)
+    }
+}
+
+
+
+
+
 
 enum class PollKind {
     
@@ -49545,6 +52031,41 @@ public object FfiConverterTypePowerLevel : FfiConverterRustBuffer<PowerLevel>{
 
 
 
+
+enum class PresenceState {
+    
+    ONLINE,
+    OFFLINE,
+    UNAVAILABLE;
+
+    
+
+
+    companion object
+}
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypePresenceState: FfiConverterRustBuffer<PresenceState> {
+    override fun read(buf: ByteBuffer) = try {
+        PresenceState.values()[buf.getInt() - 1]
+    } catch (e: IndexOutOfBoundsException) {
+        throw RuntimeException("invalid enum value, something is very wrong!!", e)
+    }
+
+    override fun allocationSize(value: PresenceState) = 4UL
+
+    override fun write(value: PresenceState, buf: ByteBuffer) {
+        buf.putInt(value.ordinal + 1)
+    }
+}
+
+
+
+
+
 sealed class ProfileDetails {
     
     object Unavailable : ProfileDetails()
@@ -49556,7 +52077,9 @@ sealed class ProfileDetails {
     data class Ready(
         val `displayName`: kotlin.String?, 
         val `displayNameAmbiguous`: kotlin.Boolean, 
-        val `avatarUrl`: kotlin.String?) : ProfileDetails()
+        val `avatarUrl`: kotlin.String?, 
+        val `status`: org.matrix.rustcomponents.sdk.UserStatus?, 
+        val `call`: org.matrix.rustcomponents.sdk.UserCall?) : ProfileDetails()
         
     {
         
@@ -49595,6 +52118,8 @@ public object FfiConverterTypeProfileDetails : FfiConverterRustBuffer<ProfileDet
                 FfiConverterOptionalString.read(buf),
                 FfiConverterBoolean.read(buf),
                 FfiConverterOptionalString.read(buf),
+                FfiConverterOptionalTypeUserStatus.read(buf),
+                FfiConverterOptionalTypeUserCall.read(buf),
                 )
             4 -> ProfileDetails.Error(
                 FfiConverterString.read(buf),
@@ -49623,6 +52148,8 @@ public object FfiConverterTypeProfileDetails : FfiConverterRustBuffer<ProfileDet
                 + FfiConverterOptionalString.allocationSize(value.`displayName`)
                 + FfiConverterBoolean.allocationSize(value.`displayNameAmbiguous`)
                 + FfiConverterOptionalString.allocationSize(value.`avatarUrl`)
+                + FfiConverterOptionalTypeUserStatus.allocationSize(value.`status`)
+                + FfiConverterOptionalTypeUserCall.allocationSize(value.`call`)
             )
         }
         is ProfileDetails.Error -> {
@@ -49649,6 +52176,8 @@ public object FfiConverterTypeProfileDetails : FfiConverterRustBuffer<ProfileDet
                 FfiConverterOptionalString.write(value.`displayName`, buf)
                 FfiConverterBoolean.write(value.`displayNameAmbiguous`, buf)
                 FfiConverterOptionalString.write(value.`avatarUrl`, buf)
+                FfiConverterOptionalTypeUserStatus.write(value.`status`, buf)
+                FfiConverterOptionalTypeUserCall.write(value.`call`, buf)
                 Unit
             }
             is ProfileDetails.Error -> {
@@ -50447,6 +52976,108 @@ public object FfiConverterTypeQueueWedgeError : FfiConverterRustBuffer<QueueWedg
 
 
 /**
+ * The thread scope of a read receipt.
+ */
+sealed class ReceiptThread {
+    
+    /**
+     * The receipt applies to the room, regardless of threads.
+     */
+    object Unthreaded : ReceiptThread()
+    
+    
+    /**
+     * The receipt applies to the un-threaded main timeline only.
+     */
+    object Main : ReceiptThread()
+    
+    
+    /**
+     * The receipt applies to the thread with the given root event.
+     */
+    data class Thread(
+        /**
+         * The ID of the thread's root event.
+         */
+        val `threadRootEventId`: kotlin.String) : ReceiptThread()
+        
+    {
+        
+
+        companion object
+    }
+    
+
+    
+
+    
+    
+
+
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeReceiptThread : FfiConverterRustBuffer<ReceiptThread>{
+    override fun read(buf: ByteBuffer): ReceiptThread {
+        return when(buf.getInt()) {
+            1 -> ReceiptThread.Unthreaded
+            2 -> ReceiptThread.Main
+            3 -> ReceiptThread.Thread(
+                FfiConverterString.read(buf),
+                )
+            else -> throw RuntimeException("invalid enum value, something is very wrong!!")
+        }
+    }
+
+    override fun allocationSize(value: ReceiptThread) = when(value) {
+        is ReceiptThread.Unthreaded -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
+        is ReceiptThread.Main -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
+        is ReceiptThread.Thread -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+                + FfiConverterString.allocationSize(value.`threadRootEventId`)
+            )
+        }
+    }
+
+    override fun write(value: ReceiptThread, buf: ByteBuffer) {
+        when(value) {
+            is ReceiptThread.Unthreaded -> {
+                buf.putInt(1)
+                Unit
+            }
+            is ReceiptThread.Main -> {
+                buf.putInt(2)
+                Unit
+            }
+            is ReceiptThread.Thread -> {
+                buf.putInt(3)
+                FfiConverterString.write(value.`threadRootEventId`, buf)
+                Unit
+            }
+        }.let { /* this makes the `when` an expression, which ensures it is exhaustive */ }
+    }
+}
+
+
+
+
+
+/**
  * A [`TimelineItem`](super::TimelineItem) that doesn't correspond to an event.
  */
 
@@ -50801,57 +53432,6 @@ public object FfiConverterTypeRoomAccountDataEvent : FfiConverterRustBuffer<Room
                 Unit
             }
         }.let { /* this makes the `when` an expression, which ensures it is exhaustive */ }
-    }
-}
-
-
-
-
-
-/**
- * Types of room account data events.
- */
-
-enum class RoomAccountDataEventType {
-    
-    /**
-     * m.fully_read
-     */
-    FULLY_READ,
-    /**
-     * m.marked_unread
-     */
-    MARKED_UNREAD,
-    /**
-     * m.tag
-     */
-    TAG,
-    /**
-     * com.famedly.marked_unread
-     */
-    UNSTABLE_MARKED_UNREAD;
-
-    
-
-
-    companion object
-}
-
-
-/**
- * @suppress
- */
-public object FfiConverterTypeRoomAccountDataEventType: FfiConverterRustBuffer<RoomAccountDataEventType> {
-    override fun read(buf: ByteBuffer) = try {
-        RoomAccountDataEventType.values()[buf.getInt() - 1]
-    } catch (e: IndexOutOfBoundsException) {
-        throw RuntimeException("invalid enum value, something is very wrong!!", e)
-    }
-
-    override fun allocationSize(value: RoomAccountDataEventType) = 4UL
-
-    override fun write(value: RoomAccountDataEventType, buf: ByteBuffer) {
-        buf.putInt(value.ordinal + 1)
     }
 }
 
@@ -53528,126 +56108,429 @@ public object FfiConverterTypeRuleKind : FfiConverterRustBuffer<RuleKind>{
 
 
 
-
-
-sealed class SearchException: kotlin.Exception() {
-    
-    class IndexException(
-        
-        val v1: kotlin.String
-        ) : SearchException() {
-        override val message
-            get() = "v1=${ v1 }"
-    }
-    
-    class EventLoadException(
-        
-        val v1: kotlin.String
-        ) : SearchException() {
-        override val message
-            get() = "v1=${ v1 }"
-    }
-    
-
-    
-
-
-    companion object ErrorHandler : UniffiRustCallStatusErrorHandler<SearchException> {
-        override fun lift(error_buf: RustBuffer.ByValue): SearchException = FfiConverterTypeSearchError.lift(error_buf)
-    }
-
-    
-}
-
 /**
- * @suppress
+ * A single search result, tagged by the kind of entity it represents.
  */
-public object FfiConverterTypeSearchError : FfiConverterRustBuffer<SearchException> {
-    override fun read(buf: ByteBuffer): SearchException {
+sealed class SearchServiceResult: Disposable  {
+    
+    /**
+     * A message (room timeline event) matching the query.
+     */
+    data class Message(
+        val `roomId`: kotlin.String, 
+        val `result`: org.matrix.rustcomponents.sdk.MessageSearchResult) : SearchServiceResult()
+        
+    {
         
 
-        return when(buf.getInt()) {
-            1 -> SearchException.IndexException(
-                FfiConverterString.read(buf),
-                )
-            2 -> SearchException.EventLoadException(
-                FfiConverterString.read(buf),
-                )
-            else -> throw RuntimeException("invalid error enum value, something is very wrong!!")
-        }
+        companion object
     }
+    
 
-    override fun allocationSize(value: SearchException): ULong {
-        return when(value) {
-            is SearchException.IndexException -> (
-                // Add the size for the Int that specifies the variant plus the size needed for all fields
-                4UL
-                + FfiConverterString.allocationSize(value.v1)
-            )
-            is SearchException.EventLoadException -> (
-                // Add the size for the Int that specifies the variant plus the size needed for all fields
-                4UL
-                + FfiConverterString.allocationSize(value.v1)
-            )
-        }
-    }
-
-    override fun write(value: SearchException, buf: ByteBuffer) {
-        when(value) {
-            is SearchException.IndexException -> {
-                buf.putInt(1)
-                FfiConverterString.write(value.v1, buf)
-                Unit
-            }
-            is SearchException.EventLoadException -> {
-                buf.putInt(2)
-                FfiConverterString.write(value.v1, buf)
-                Unit
+    
+    @Suppress("UNNECESSARY_SAFE_CALL") // codegen is much simpler if we unconditionally emit safe calls here
+    override fun destroy() {
+        when(this) {
+            is SearchServiceResult.Message -> {
+                
+    Disposable.destroy(
+        this.`roomId`,
+        this.`result`
+    )
+                
             }
         }.let { /* this makes the `when` an expression, which ensures it is exhaustive */ }
     }
-
-}
-
-
-
-
-enum class SearchRoomFilter {
     
-    /**
-     * All the joined rooms (= DMs + non-DMs).
-     */
-    ROOMS,
-    /**
-     * Only joined DM rooms.
-     */
-    DMS,
-    /**
-     * Only joined non-DM (group) rooms.
-     */
-    NON_DMS;
 
+    
     
 
 
     companion object
 }
 
+/**
+ * @suppress
+ */
+public object FfiConverterTypeSearchServiceResult : FfiConverterRustBuffer<SearchServiceResult>{
+    override fun read(buf: ByteBuffer): SearchServiceResult {
+        return when(buf.getInt()) {
+            1 -> SearchServiceResult.Message(
+                FfiConverterString.read(buf),
+                FfiConverterTypeMessageSearchResult.read(buf),
+                )
+            else -> throw RuntimeException("invalid enum value, something is very wrong!!")
+        }
+    }
+
+    override fun allocationSize(value: SearchServiceResult) = when(value) {
+        is SearchServiceResult.Message -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+                + FfiConverterString.allocationSize(value.`roomId`)
+                + FfiConverterTypeMessageSearchResult.allocationSize(value.`result`)
+            )
+        }
+    }
+
+    override fun write(value: SearchServiceResult, buf: ByteBuffer) {
+        when(value) {
+            is SearchServiceResult.Message -> {
+                buf.putInt(1)
+                FfiConverterString.write(value.`roomId`, buf)
+                FfiConverterTypeMessageSearchResult.write(value.`result`, buf)
+                Unit
+            }
+        }.let { /* this makes the `when` an expression, which ensures it is exhaustive */ }
+    }
+}
+
+
+
+
+
+sealed class SearchServiceResultsUpdate: Disposable  {
+    
+    data class Append(
+        val `values`: List<org.matrix.rustcomponents.sdk.SearchServiceResult>) : SearchServiceResultsUpdate()
+        
+    {
+        
+
+        companion object
+    }
+    
+    object Clear : SearchServiceResultsUpdate()
+    
+    
+    data class PushFront(
+        val `value`: org.matrix.rustcomponents.sdk.SearchServiceResult) : SearchServiceResultsUpdate()
+        
+    {
+        
+
+        companion object
+    }
+    
+    data class PushBack(
+        val `value`: org.matrix.rustcomponents.sdk.SearchServiceResult) : SearchServiceResultsUpdate()
+        
+    {
+        
+
+        companion object
+    }
+    
+    object PopFront : SearchServiceResultsUpdate()
+    
+    
+    object PopBack : SearchServiceResultsUpdate()
+    
+    
+    data class Insert(
+        val `index`: kotlin.UInt, 
+        val `value`: org.matrix.rustcomponents.sdk.SearchServiceResult) : SearchServiceResultsUpdate()
+        
+    {
+        
+
+        companion object
+    }
+    
+    data class Set(
+        val `index`: kotlin.UInt, 
+        val `value`: org.matrix.rustcomponents.sdk.SearchServiceResult) : SearchServiceResultsUpdate()
+        
+    {
+        
+
+        companion object
+    }
+    
+    data class Remove(
+        val `index`: kotlin.UInt) : SearchServiceResultsUpdate()
+        
+    {
+        
+
+        companion object
+    }
+    
+    data class Truncate(
+        val `length`: kotlin.UInt) : SearchServiceResultsUpdate()
+        
+    {
+        
+
+        companion object
+    }
+    
+    data class Reset(
+        val `values`: List<org.matrix.rustcomponents.sdk.SearchServiceResult>) : SearchServiceResultsUpdate()
+        
+    {
+        
+
+        companion object
+    }
+    
+
+    
+    @Suppress("UNNECESSARY_SAFE_CALL") // codegen is much simpler if we unconditionally emit safe calls here
+    override fun destroy() {
+        when(this) {
+            is SearchServiceResultsUpdate.Append -> {
+                
+    Disposable.destroy(
+        this.`values`
+    )
+                
+            }
+            is SearchServiceResultsUpdate.Clear -> {// Nothing to destroy
+            }
+            is SearchServiceResultsUpdate.PushFront -> {
+                
+    Disposable.destroy(
+        this.`value`
+    )
+                
+            }
+            is SearchServiceResultsUpdate.PushBack -> {
+                
+    Disposable.destroy(
+        this.`value`
+    )
+                
+            }
+            is SearchServiceResultsUpdate.PopFront -> {// Nothing to destroy
+            }
+            is SearchServiceResultsUpdate.PopBack -> {// Nothing to destroy
+            }
+            is SearchServiceResultsUpdate.Insert -> {
+                
+    Disposable.destroy(
+        this.`index`,
+        this.`value`
+    )
+                
+            }
+            is SearchServiceResultsUpdate.Set -> {
+                
+    Disposable.destroy(
+        this.`index`,
+        this.`value`
+    )
+                
+            }
+            is SearchServiceResultsUpdate.Remove -> {
+                
+    Disposable.destroy(
+        this.`index`
+    )
+                
+            }
+            is SearchServiceResultsUpdate.Truncate -> {
+                
+    Disposable.destroy(
+        this.`length`
+    )
+                
+            }
+            is SearchServiceResultsUpdate.Reset -> {
+                
+    Disposable.destroy(
+        this.`values`
+    )
+                
+            }
+        }.let { /* this makes the `when` an expression, which ensures it is exhaustive */ }
+    }
+    
+
+    
+    
+
+
+    companion object
+}
 
 /**
  * @suppress
  */
-public object FfiConverterTypeSearchRoomFilter: FfiConverterRustBuffer<SearchRoomFilter> {
-    override fun read(buf: ByteBuffer) = try {
-        SearchRoomFilter.values()[buf.getInt() - 1]
-    } catch (e: IndexOutOfBoundsException) {
-        throw RuntimeException("invalid enum value, something is very wrong!!", e)
+public object FfiConverterTypeSearchServiceResultsUpdate : FfiConverterRustBuffer<SearchServiceResultsUpdate>{
+    override fun read(buf: ByteBuffer): SearchServiceResultsUpdate {
+        return when(buf.getInt()) {
+            1 -> SearchServiceResultsUpdate.Append(
+                FfiConverterSequenceTypeSearchServiceResult.read(buf),
+                )
+            2 -> SearchServiceResultsUpdate.Clear
+            3 -> SearchServiceResultsUpdate.PushFront(
+                FfiConverterTypeSearchServiceResult.read(buf),
+                )
+            4 -> SearchServiceResultsUpdate.PushBack(
+                FfiConverterTypeSearchServiceResult.read(buf),
+                )
+            5 -> SearchServiceResultsUpdate.PopFront
+            6 -> SearchServiceResultsUpdate.PopBack
+            7 -> SearchServiceResultsUpdate.Insert(
+                FfiConverterUInt.read(buf),
+                FfiConverterTypeSearchServiceResult.read(buf),
+                )
+            8 -> SearchServiceResultsUpdate.Set(
+                FfiConverterUInt.read(buf),
+                FfiConverterTypeSearchServiceResult.read(buf),
+                )
+            9 -> SearchServiceResultsUpdate.Remove(
+                FfiConverterUInt.read(buf),
+                )
+            10 -> SearchServiceResultsUpdate.Truncate(
+                FfiConverterUInt.read(buf),
+                )
+            11 -> SearchServiceResultsUpdate.Reset(
+                FfiConverterSequenceTypeSearchServiceResult.read(buf),
+                )
+            else -> throw RuntimeException("invalid enum value, something is very wrong!!")
+        }
     }
 
-    override fun allocationSize(value: SearchRoomFilter) = 4UL
+    override fun allocationSize(value: SearchServiceResultsUpdate) = when(value) {
+        is SearchServiceResultsUpdate.Append -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+                + FfiConverterSequenceTypeSearchServiceResult.allocationSize(value.`values`)
+            )
+        }
+        is SearchServiceResultsUpdate.Clear -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
+        is SearchServiceResultsUpdate.PushFront -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+                + FfiConverterTypeSearchServiceResult.allocationSize(value.`value`)
+            )
+        }
+        is SearchServiceResultsUpdate.PushBack -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+                + FfiConverterTypeSearchServiceResult.allocationSize(value.`value`)
+            )
+        }
+        is SearchServiceResultsUpdate.PopFront -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
+        is SearchServiceResultsUpdate.PopBack -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
+        is SearchServiceResultsUpdate.Insert -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+                + FfiConverterUInt.allocationSize(value.`index`)
+                + FfiConverterTypeSearchServiceResult.allocationSize(value.`value`)
+            )
+        }
+        is SearchServiceResultsUpdate.Set -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+                + FfiConverterUInt.allocationSize(value.`index`)
+                + FfiConverterTypeSearchServiceResult.allocationSize(value.`value`)
+            )
+        }
+        is SearchServiceResultsUpdate.Remove -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+                + FfiConverterUInt.allocationSize(value.`index`)
+            )
+        }
+        is SearchServiceResultsUpdate.Truncate -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+                + FfiConverterUInt.allocationSize(value.`length`)
+            )
+        }
+        is SearchServiceResultsUpdate.Reset -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+                + FfiConverterSequenceTypeSearchServiceResult.allocationSize(value.`values`)
+            )
+        }
+    }
 
-    override fun write(value: SearchRoomFilter, buf: ByteBuffer) {
-        buf.putInt(value.ordinal + 1)
+    override fun write(value: SearchServiceResultsUpdate, buf: ByteBuffer) {
+        when(value) {
+            is SearchServiceResultsUpdate.Append -> {
+                buf.putInt(1)
+                FfiConverterSequenceTypeSearchServiceResult.write(value.`values`, buf)
+                Unit
+            }
+            is SearchServiceResultsUpdate.Clear -> {
+                buf.putInt(2)
+                Unit
+            }
+            is SearchServiceResultsUpdate.PushFront -> {
+                buf.putInt(3)
+                FfiConverterTypeSearchServiceResult.write(value.`value`, buf)
+                Unit
+            }
+            is SearchServiceResultsUpdate.PushBack -> {
+                buf.putInt(4)
+                FfiConverterTypeSearchServiceResult.write(value.`value`, buf)
+                Unit
+            }
+            is SearchServiceResultsUpdate.PopFront -> {
+                buf.putInt(5)
+                Unit
+            }
+            is SearchServiceResultsUpdate.PopBack -> {
+                buf.putInt(6)
+                Unit
+            }
+            is SearchServiceResultsUpdate.Insert -> {
+                buf.putInt(7)
+                FfiConverterUInt.write(value.`index`, buf)
+                FfiConverterTypeSearchServiceResult.write(value.`value`, buf)
+                Unit
+            }
+            is SearchServiceResultsUpdate.Set -> {
+                buf.putInt(8)
+                FfiConverterUInt.write(value.`index`, buf)
+                FfiConverterTypeSearchServiceResult.write(value.`value`, buf)
+                Unit
+            }
+            is SearchServiceResultsUpdate.Remove -> {
+                buf.putInt(9)
+                FfiConverterUInt.write(value.`index`, buf)
+                Unit
+            }
+            is SearchServiceResultsUpdate.Truncate -> {
+                buf.putInt(10)
+                FfiConverterUInt.write(value.`length`, buf)
+                Unit
+            }
+            is SearchServiceResultsUpdate.Reset -> {
+                buf.putInt(11)
+                FfiConverterSequenceTypeSearchServiceResult.write(value.`values`, buf)
+                Unit
+            }
+        }.let { /* this makes the `when` an expression, which ensures it is exhaustive */ }
     }
 }
 
@@ -54697,6 +57580,9 @@ sealed class StateEventContent {
     object SpaceParent : StateEventContent()
     
     
+    object BeaconInfo : StateEventContent()
+    
+    
 
     
 
@@ -54738,6 +57624,7 @@ public object FfiConverterTypeStateEventContent : FfiConverterRustBuffer<StateEv
                 )
             19 -> StateEventContent.SpaceChild
             20 -> StateEventContent.SpaceParent
+            21 -> StateEventContent.BeaconInfo
             else -> throw RuntimeException("invalid enum value, something is very wrong!!")
         }
     }
@@ -54866,6 +57753,12 @@ public object FfiConverterTypeStateEventContent : FfiConverterRustBuffer<StateEv
                 4UL
             )
         }
+        is StateEventContent.BeaconInfo -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
     }
 
     override fun write(value: StateEventContent, buf: ByteBuffer) {
@@ -54953,413 +57846,8 @@ public object FfiConverterTypeStateEventContent : FfiConverterRustBuffer<StateEv
                 buf.putInt(20)
                 Unit
             }
-        }.let { /* this makes the `when` an expression, which ensures it is exhaustive */ }
-    }
-}
-
-
-
-
-
-sealed class StateEventType {
-    
-    object BeaconInfo : StateEventType()
-    
-    
-    object CallMember : StateEventType()
-    
-    
-    object MemberHints : StateEventType()
-    
-    
-    object PolicyRuleRoom : StateEventType()
-    
-    
-    object PolicyRuleServer : StateEventType()
-    
-    
-    object PolicyRuleUser : StateEventType()
-    
-    
-    object RoomAvatar : StateEventType()
-    
-    
-    object RoomCanonicalAlias : StateEventType()
-    
-    
-    object RoomCreate : StateEventType()
-    
-    
-    object RoomEncryption : StateEventType()
-    
-    
-    object RoomGuestAccess : StateEventType()
-    
-    
-    object RoomHistoryVisibility : StateEventType()
-    
-    
-    object RoomImagePack : StateEventType()
-    
-    
-    object RoomJoinRules : StateEventType()
-    
-    
-    object RoomMemberEvent : StateEventType()
-    
-    
-    object RoomLanguage : StateEventType()
-    
-    
-    object RoomName : StateEventType()
-    
-    
-    object RoomPinnedEvents : StateEventType()
-    
-    
-    object RoomPowerLevels : StateEventType()
-    
-    
-    object RoomServerAcl : StateEventType()
-    
-    
-    object RoomThirdPartyInvite : StateEventType()
-    
-    
-    object RoomTombstone : StateEventType()
-    
-    
-    object RoomTopic : StateEventType()
-    
-    
-    object SpaceChild : StateEventType()
-    
-    
-    object SpaceParent : StateEventType()
-    
-    
-    data class Custom(
-        val `value`: kotlin.String) : StateEventType()
-        
-    {
-        
-
-        companion object
-    }
-    
-
-    
-
-    
-    
-
-
-    companion object
-}
-
-/**
- * @suppress
- */
-public object FfiConverterTypeStateEventType : FfiConverterRustBuffer<StateEventType>{
-    override fun read(buf: ByteBuffer): StateEventType {
-        return when(buf.getInt()) {
-            1 -> StateEventType.BeaconInfo
-            2 -> StateEventType.CallMember
-            3 -> StateEventType.MemberHints
-            4 -> StateEventType.PolicyRuleRoom
-            5 -> StateEventType.PolicyRuleServer
-            6 -> StateEventType.PolicyRuleUser
-            7 -> StateEventType.RoomAvatar
-            8 -> StateEventType.RoomCanonicalAlias
-            9 -> StateEventType.RoomCreate
-            10 -> StateEventType.RoomEncryption
-            11 -> StateEventType.RoomGuestAccess
-            12 -> StateEventType.RoomHistoryVisibility
-            13 -> StateEventType.RoomImagePack
-            14 -> StateEventType.RoomJoinRules
-            15 -> StateEventType.RoomMemberEvent
-            16 -> StateEventType.RoomLanguage
-            17 -> StateEventType.RoomName
-            18 -> StateEventType.RoomPinnedEvents
-            19 -> StateEventType.RoomPowerLevels
-            20 -> StateEventType.RoomServerAcl
-            21 -> StateEventType.RoomThirdPartyInvite
-            22 -> StateEventType.RoomTombstone
-            23 -> StateEventType.RoomTopic
-            24 -> StateEventType.SpaceChild
-            25 -> StateEventType.SpaceParent
-            26 -> StateEventType.Custom(
-                FfiConverterString.read(buf),
-                )
-            else -> throw RuntimeException("invalid enum value, something is very wrong!!")
-        }
-    }
-
-    override fun allocationSize(value: StateEventType) = when(value) {
-        is StateEventType.BeaconInfo -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is StateEventType.CallMember -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is StateEventType.MemberHints -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is StateEventType.PolicyRuleRoom -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is StateEventType.PolicyRuleServer -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is StateEventType.PolicyRuleUser -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is StateEventType.RoomAvatar -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is StateEventType.RoomCanonicalAlias -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is StateEventType.RoomCreate -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is StateEventType.RoomEncryption -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is StateEventType.RoomGuestAccess -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is StateEventType.RoomHistoryVisibility -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is StateEventType.RoomImagePack -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is StateEventType.RoomJoinRules -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is StateEventType.RoomMemberEvent -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is StateEventType.RoomLanguage -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is StateEventType.RoomName -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is StateEventType.RoomPinnedEvents -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is StateEventType.RoomPowerLevels -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is StateEventType.RoomServerAcl -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is StateEventType.RoomThirdPartyInvite -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is StateEventType.RoomTombstone -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is StateEventType.RoomTopic -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is StateEventType.SpaceChild -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is StateEventType.SpaceParent -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-            )
-        }
-        is StateEventType.Custom -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-                + FfiConverterString.allocationSize(value.`value`)
-            )
-        }
-    }
-
-    override fun write(value: StateEventType, buf: ByteBuffer) {
-        when(value) {
-            is StateEventType.BeaconInfo -> {
-                buf.putInt(1)
-                Unit
-            }
-            is StateEventType.CallMember -> {
-                buf.putInt(2)
-                Unit
-            }
-            is StateEventType.MemberHints -> {
-                buf.putInt(3)
-                Unit
-            }
-            is StateEventType.PolicyRuleRoom -> {
-                buf.putInt(4)
-                Unit
-            }
-            is StateEventType.PolicyRuleServer -> {
-                buf.putInt(5)
-                Unit
-            }
-            is StateEventType.PolicyRuleUser -> {
-                buf.putInt(6)
-                Unit
-            }
-            is StateEventType.RoomAvatar -> {
-                buf.putInt(7)
-                Unit
-            }
-            is StateEventType.RoomCanonicalAlias -> {
-                buf.putInt(8)
-                Unit
-            }
-            is StateEventType.RoomCreate -> {
-                buf.putInt(9)
-                Unit
-            }
-            is StateEventType.RoomEncryption -> {
-                buf.putInt(10)
-                Unit
-            }
-            is StateEventType.RoomGuestAccess -> {
-                buf.putInt(11)
-                Unit
-            }
-            is StateEventType.RoomHistoryVisibility -> {
-                buf.putInt(12)
-                Unit
-            }
-            is StateEventType.RoomImagePack -> {
-                buf.putInt(13)
-                Unit
-            }
-            is StateEventType.RoomJoinRules -> {
-                buf.putInt(14)
-                Unit
-            }
-            is StateEventType.RoomMemberEvent -> {
-                buf.putInt(15)
-                Unit
-            }
-            is StateEventType.RoomLanguage -> {
-                buf.putInt(16)
-                Unit
-            }
-            is StateEventType.RoomName -> {
-                buf.putInt(17)
-                Unit
-            }
-            is StateEventType.RoomPinnedEvents -> {
-                buf.putInt(18)
-                Unit
-            }
-            is StateEventType.RoomPowerLevels -> {
-                buf.putInt(19)
-                Unit
-            }
-            is StateEventType.RoomServerAcl -> {
-                buf.putInt(20)
-                Unit
-            }
-            is StateEventType.RoomThirdPartyInvite -> {
+            is StateEventContent.BeaconInfo -> {
                 buf.putInt(21)
-                Unit
-            }
-            is StateEventType.RoomTombstone -> {
-                buf.putInt(22)
-                Unit
-            }
-            is StateEventType.RoomTopic -> {
-                buf.putInt(23)
-                Unit
-            }
-            is StateEventType.SpaceChild -> {
-                buf.putInt(24)
-                Unit
-            }
-            is StateEventType.SpaceParent -> {
-                buf.putInt(25)
-                Unit
-            }
-            is StateEventType.Custom -> {
-                buf.putInt(26)
-                FfiConverterString.write(value.`value`, buf)
                 Unit
             }
         }.let { /* this makes the `when` an expression, which ensures it is exhaustive */ }
@@ -56453,156 +58941,6 @@ public object FfiConverterTypeTimelineEventContent : FfiConverterRustBuffer<Time
 
 
 
-/**
- * The timeline event type.
- */
-sealed class TimelineEventType {
-    
-    /**
-     * The event is a message-like one and should be displayed as such.
-     */
-    data class MessageLike(
-        val `value`: org.matrix.rustcomponents.sdk.MessageLikeEventType) : TimelineEventType()
-        
-    {
-        
-
-    // The local Rust `Eq` implementation - only `eq` is used.
-    override fun equals(other: Any?): Boolean {
-        if (other !is TimelineEventType) return false
-        return FfiConverterBoolean.lift(
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_matrix_sdk_ffi_fn_method_timelineeventtype_uniffi_trait_eq_eq(FfiConverterTypeTimelineEventType.lower(this),
-        FfiConverterTypeTimelineEventType.lower(`other`),_status)
-}
-    )
-    }
-    // The local Rust `Hash` implementation
-    override fun hashCode(): Int {
-        return FfiConverterULong.lift(
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_matrix_sdk_ffi_fn_method_timelineeventtype_uniffi_trait_hash(FfiConverterTypeTimelineEventType.lower(this),
-        _status)
-}
-    ).toInt()
-    }
-        companion object
-    }
-    
-    /**
-     * The event is a state event, and may or may not be displayed in the
-     * timeline.
-     */
-    data class State(
-        val `value`: org.matrix.rustcomponents.sdk.StateEventType) : TimelineEventType()
-        
-    {
-        
-
-    // The local Rust `Eq` implementation - only `eq` is used.
-    override fun equals(other: Any?): Boolean {
-        if (other !is TimelineEventType) return false
-        return FfiConverterBoolean.lift(
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_matrix_sdk_ffi_fn_method_timelineeventtype_uniffi_trait_eq_eq(FfiConverterTypeTimelineEventType.lower(this),
-        FfiConverterTypeTimelineEventType.lower(`other`),_status)
-}
-    )
-    }
-    // The local Rust `Hash` implementation
-    override fun hashCode(): Int {
-        return FfiConverterULong.lift(
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_matrix_sdk_ffi_fn_method_timelineeventtype_uniffi_trait_hash(FfiConverterTypeTimelineEventType.lower(this),
-        _status)
-}
-    ).toInt()
-    }
-        companion object
-    }
-    
-
-    
-
-    
-    
-
-    // The local Rust `Eq` implementation - only `eq` is used.
-    override fun equals(other: Any?): Boolean {
-        if (other !is TimelineEventType) return false
-        return FfiConverterBoolean.lift(
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_matrix_sdk_ffi_fn_method_timelineeventtype_uniffi_trait_eq_eq(FfiConverterTypeTimelineEventType.lower(this),
-        FfiConverterTypeTimelineEventType.lower(`other`),_status)
-}
-    )
-    }
-    // The local Rust `Hash` implementation
-    override fun hashCode(): Int {
-        return FfiConverterULong.lift(
-    uniffiRustCall() { _status ->
-    UniffiLib.uniffi_matrix_sdk_ffi_fn_method_timelineeventtype_uniffi_trait_hash(FfiConverterTypeTimelineEventType.lower(this),
-        _status)
-}
-    ).toInt()
-    }
-
-    companion object
-}
-
-/**
- * @suppress
- */
-public object FfiConverterTypeTimelineEventType : FfiConverterRustBuffer<TimelineEventType>{
-    override fun read(buf: ByteBuffer): TimelineEventType {
-        return when(buf.getInt()) {
-            1 -> TimelineEventType.MessageLike(
-                FfiConverterTypeMessageLikeEventType.read(buf),
-                )
-            2 -> TimelineEventType.State(
-                FfiConverterTypeStateEventType.read(buf),
-                )
-            else -> throw RuntimeException("invalid enum value, something is very wrong!!")
-        }
-    }
-
-    override fun allocationSize(value: TimelineEventType) = when(value) {
-        is TimelineEventType.MessageLike -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-                + FfiConverterTypeMessageLikeEventType.allocationSize(value.`value`)
-            )
-        }
-        is TimelineEventType.State -> {
-            // Add the size for the Int that specifies the variant plus the size needed for all fields
-            (
-                4UL
-                + FfiConverterTypeStateEventType.allocationSize(value.`value`)
-            )
-        }
-    }
-
-    override fun write(value: TimelineEventType, buf: ByteBuffer) {
-        when(value) {
-            is TimelineEventType.MessageLike -> {
-                buf.putInt(1)
-                FfiConverterTypeMessageLikeEventType.write(value.`value`, buf)
-                Unit
-            }
-            is TimelineEventType.State -> {
-                buf.putInt(2)
-                FfiConverterTypeStateEventType.write(value.`value`, buf)
-                Unit
-            }
-        }.let { /* this makes the `when` an expression, which ensures it is exhaustive */ }
-    }
-}
-
-
-
-
-
 sealed class TimelineFilter: Disposable  {
     
     /**
@@ -56896,7 +59234,10 @@ sealed class TimelineItemContent: Disposable  {
     
     data class RtcNotification(
         val `callIntent`: kotlin.String?, 
-        val `declinedBy`: List<kotlin.String>) : TimelineItemContent()
+        val `declinedBy`: List<kotlin.String>, 
+        val `activeMembers`: List<kotlin.String>, 
+        val `callStartTsMillis`: kotlin.ULong?, 
+        val `isJoined`: kotlin.Boolean) : TimelineItemContent()
         
     {
         
@@ -56977,7 +59318,10 @@ sealed class TimelineItemContent: Disposable  {
                 
     Disposable.destroy(
         this.`callIntent`,
-        this.`declinedBy`
+        this.`declinedBy`,
+        this.`activeMembers`,
+        this.`callStartTsMillis`,
+        this.`isJoined`
     )
                 
             }
@@ -57050,6 +59394,9 @@ public object FfiConverterTypeTimelineItemContent : FfiConverterRustBuffer<Timel
             3 -> TimelineItemContent.RtcNotification(
                 FfiConverterOptionalString.read(buf),
                 FfiConverterSequenceString.read(buf),
+                FfiConverterSequenceString.read(buf),
+                FfiConverterOptionalULong.read(buf),
+                FfiConverterBoolean.read(buf),
                 )
             4 -> TimelineItemContent.RoomMembership(
                 FfiConverterString.read(buf),
@@ -57100,6 +59447,9 @@ public object FfiConverterTypeTimelineItemContent : FfiConverterRustBuffer<Timel
                 4UL
                 + FfiConverterOptionalString.allocationSize(value.`callIntent`)
                 + FfiConverterSequenceString.allocationSize(value.`declinedBy`)
+                + FfiConverterSequenceString.allocationSize(value.`activeMembers`)
+                + FfiConverterOptionalULong.allocationSize(value.`callStartTsMillis`)
+                + FfiConverterBoolean.allocationSize(value.`isJoined`)
             )
         }
         is TimelineItemContent.RoomMembership -> {
@@ -57164,6 +59514,9 @@ public object FfiConverterTypeTimelineItemContent : FfiConverterRustBuffer<Timel
                 buf.putInt(3)
                 FfiConverterOptionalString.write(value.`callIntent`, buf)
                 FfiConverterSequenceString.write(value.`declinedBy`, buf)
+                FfiConverterSequenceString.write(value.`activeMembers`, buf)
+                FfiConverterOptionalULong.write(value.`callStartTsMillis`, buf)
+                FfiConverterBoolean.write(value.`isJoined`, buf)
                 Unit
             }
             is TimelineItemContent.RoomMembership -> {
@@ -57239,7 +59592,11 @@ enum class TraceLogPacks {
     /**
      * Enables all the logs relevant to the latest events.
      */
-    LATEST_EVENTS;
+    LATEST_EVENTS,
+    /**
+     * Enables all the logs relevant to message search.
+     */
+    SEARCH;
 
     
 
@@ -58307,6 +60664,66 @@ public object FfiConverterTypeClientSessionDelegate: FfiConverterCallbackInterfa
 
 
 
+public interface DehydratedDeviceEventListener {
+    
+    fun `onEvent`(`event`: DehydratedDeviceEvent)
+    
+    companion object
+}
+
+
+
+// Put the implementation in an object so we don't pollute the top-level namespace
+internal object uniffiCallbackInterfaceDehydratedDeviceEventListener {
+    internal object `onEvent`: UniffiCallbackInterfaceDehydratedDeviceEventListenerMethod0 {
+        override fun callback(`uniffiHandle`: Long,`event`: RustBuffer.ByValue,`uniffiOutReturn`: Pointer,uniffiCallStatus: UniffiRustCallStatus,) {
+            val uniffiObj = FfiConverterTypeDehydratedDeviceEventListener.handleMap.get(uniffiHandle)
+            val makeCall = { ->
+                uniffiObj.`onEvent`(
+                    FfiConverterTypeDehydratedDeviceEvent.lift(`event`),
+                )
+            }
+            val writeReturn = { _: Unit -> Unit }
+            uniffiTraitInterfaceCall(uniffiCallStatus, makeCall, writeReturn)
+        }
+    }
+
+    internal object uniffiFree: UniffiCallbackInterfaceFree {
+        override fun callback(handle: Long) {
+            FfiConverterTypeDehydratedDeviceEventListener.handleMap.remove(handle)
+        }
+    }
+
+    internal object uniffiClone: UniffiCallbackInterfaceClone {
+        override fun callback(handle: Long): Long {
+            return FfiConverterTypeDehydratedDeviceEventListener.handleMap.clone(handle)
+        }
+    }
+
+    internal var vtable = UniffiVTableCallbackInterfaceDehydratedDeviceEventListener.UniffiByValue(
+        uniffiFree,
+        uniffiClone,
+        `onEvent`,
+    )
+
+    // Registers the foreign callback with the Rust side.
+    // This method is generated for each callback interface.
+    internal fun register(lib: UniffiLib) {
+        lib.uniffi_matrix_sdk_ffi_fn_init_callback_vtable_dehydrateddeviceeventlistener(vtable)
+    }
+}
+
+/**
+ * The ffiConverter which transforms the Callbacks in to handles to pass to Rust.
+ *
+ * @suppress
+ */
+public object FfiConverterTypeDehydratedDeviceEventListener: FfiConverterCallbackInterface<DehydratedDeviceEventListener>()
+
+
+
+
+
 /**
  * A listener for duplicate key upload errors triggered by requests to
  * /keys/upload.
@@ -59046,6 +61463,72 @@ public object FfiConverterTypePaginationStatusListener: FfiConverterCallbackInte
 
 
 
+/**
+ * A listener for the current user's global profile.
+ */
+public interface ProfileListener {
+    
+    /**
+     * Called whenever the current user's global profile changes.
+     */
+    fun `onUpdate`(`profile`: UserProfile)
+    
+    companion object
+}
+
+
+
+// Put the implementation in an object so we don't pollute the top-level namespace
+internal object uniffiCallbackInterfaceProfileListener {
+    internal object `onUpdate`: UniffiCallbackInterfaceProfileListenerMethod0 {
+        override fun callback(`uniffiHandle`: Long,`profile`: RustBuffer.ByValue,`uniffiOutReturn`: Pointer,uniffiCallStatus: UniffiRustCallStatus,) {
+            val uniffiObj = FfiConverterTypeProfileListener.handleMap.get(uniffiHandle)
+            val makeCall = { ->
+                uniffiObj.`onUpdate`(
+                    FfiConverterTypeUserProfile.lift(`profile`),
+                )
+            }
+            val writeReturn = { _: Unit -> Unit }
+            uniffiTraitInterfaceCall(uniffiCallStatus, makeCall, writeReturn)
+        }
+    }
+
+    internal object uniffiFree: UniffiCallbackInterfaceFree {
+        override fun callback(handle: Long) {
+            FfiConverterTypeProfileListener.handleMap.remove(handle)
+        }
+    }
+
+    internal object uniffiClone: UniffiCallbackInterfaceClone {
+        override fun callback(handle: Long): Long {
+            return FfiConverterTypeProfileListener.handleMap.clone(handle)
+        }
+    }
+
+    internal var vtable = UniffiVTableCallbackInterfaceProfileListener.UniffiByValue(
+        uniffiFree,
+        uniffiClone,
+        `onUpdate`,
+    )
+
+    // Registers the foreign callback with the Rust side.
+    // This method is generated for each callback interface.
+    internal fun register(lib: UniffiLib) {
+        lib.uniffi_matrix_sdk_ffi_fn_init_callback_vtable_profilelistener(vtable)
+    }
+}
+
+/**
+ * The ffiConverter which transforms the Callbacks in to handles to pass to Rust.
+ *
+ * @suppress
+ */
+public object FfiConverterTypeProfileListener: FfiConverterCallbackInterface<ProfileListener>()
+
+
+
+
+
 public interface ProgressWatcher {
     
     fun `transmissionProgress`(`progress`: TransmissionProgress)
@@ -59648,6 +62131,126 @@ internal object uniffiCallbackInterfaceRoomListServiceSyncIndicatorListener {
  * @suppress
  */
 public object FfiConverterTypeRoomListServiceSyncIndicatorListener: FfiConverterCallbackInterface<RoomListServiceSyncIndicatorListener>()
+
+
+
+
+
+public interface SearchServicePaginationStateListener {
+    
+    fun `onUpdate`(`paginationState`: SearchServicePaginationState)
+    
+    companion object
+}
+
+
+
+// Put the implementation in an object so we don't pollute the top-level namespace
+internal object uniffiCallbackInterfaceSearchServicePaginationStateListener {
+    internal object `onUpdate`: UniffiCallbackInterfaceSearchServicePaginationStateListenerMethod0 {
+        override fun callback(`uniffiHandle`: Long,`paginationState`: RustBufferSearchServicePaginationState.ByValue,`uniffiOutReturn`: Pointer,uniffiCallStatus: UniffiRustCallStatus,) {
+            val uniffiObj = FfiConverterTypeSearchServicePaginationStateListener.handleMap.get(uniffiHandle)
+            val makeCall = { ->
+                uniffiObj.`onUpdate`(
+                    FfiConverterTypeSearchServicePaginationState.lift(`paginationState`),
+                )
+            }
+            val writeReturn = { _: Unit -> Unit }
+            uniffiTraitInterfaceCall(uniffiCallStatus, makeCall, writeReturn)
+        }
+    }
+
+    internal object uniffiFree: UniffiCallbackInterfaceFree {
+        override fun callback(handle: Long) {
+            FfiConverterTypeSearchServicePaginationStateListener.handleMap.remove(handle)
+        }
+    }
+
+    internal object uniffiClone: UniffiCallbackInterfaceClone {
+        override fun callback(handle: Long): Long {
+            return FfiConverterTypeSearchServicePaginationStateListener.handleMap.clone(handle)
+        }
+    }
+
+    internal var vtable = UniffiVTableCallbackInterfaceSearchServicePaginationStateListener.UniffiByValue(
+        uniffiFree,
+        uniffiClone,
+        `onUpdate`,
+    )
+
+    // Registers the foreign callback with the Rust side.
+    // This method is generated for each callback interface.
+    internal fun register(lib: UniffiLib) {
+        lib.uniffi_matrix_sdk_ffi_fn_init_callback_vtable_searchservicepaginationstatelistener(vtable)
+    }
+}
+
+/**
+ * The ffiConverter which transforms the Callbacks in to handles to pass to Rust.
+ *
+ * @suppress
+ */
+public object FfiConverterTypeSearchServicePaginationStateListener: FfiConverterCallbackInterface<SearchServicePaginationStateListener>()
+
+
+
+
+
+public interface SearchServiceResultsListener {
+    
+    fun `onUpdate`(`updates`: List<SearchServiceResultsUpdate>)
+    
+    companion object
+}
+
+
+
+// Put the implementation in an object so we don't pollute the top-level namespace
+internal object uniffiCallbackInterfaceSearchServiceResultsListener {
+    internal object `onUpdate`: UniffiCallbackInterfaceSearchServiceResultsListenerMethod0 {
+        override fun callback(`uniffiHandle`: Long,`updates`: RustBuffer.ByValue,`uniffiOutReturn`: Pointer,uniffiCallStatus: UniffiRustCallStatus,) {
+            val uniffiObj = FfiConverterTypeSearchServiceResultsListener.handleMap.get(uniffiHandle)
+            val makeCall = { ->
+                uniffiObj.`onUpdate`(
+                    FfiConverterSequenceTypeSearchServiceResultsUpdate.lift(`updates`),
+                )
+            }
+            val writeReturn = { _: Unit -> Unit }
+            uniffiTraitInterfaceCall(uniffiCallStatus, makeCall, writeReturn)
+        }
+    }
+
+    internal object uniffiFree: UniffiCallbackInterfaceFree {
+        override fun callback(handle: Long) {
+            FfiConverterTypeSearchServiceResultsListener.handleMap.remove(handle)
+        }
+    }
+
+    internal object uniffiClone: UniffiCallbackInterfaceClone {
+        override fun callback(handle: Long): Long {
+            return FfiConverterTypeSearchServiceResultsListener.handleMap.clone(handle)
+        }
+    }
+
+    internal var vtable = UniffiVTableCallbackInterfaceSearchServiceResultsListener.UniffiByValue(
+        uniffiFree,
+        uniffiClone,
+        `onUpdate`,
+    )
+
+    // Registers the foreign callback with the Rust side.
+    // This method is generated for each callback interface.
+    internal fun register(lib: UniffiLib) {
+        lib.uniffi_matrix_sdk_ffi_fn_init_callback_vtable_searchserviceresultslistener(vtable)
+    }
+}
+
+/**
+ * The ffiConverter which transforms the Callbacks in to handles to pass to Rust.
+ *
+ * @suppress
+ */
+public object FfiConverterTypeSearchServiceResultsListener: FfiConverterCallbackInterface<SearchServiceResultsListener>()
 
 
 
@@ -61183,6 +63786,38 @@ public object FfiConverterOptionalString: FfiConverterRustBuffer<kotlin.String?>
 /**
  * @suppress
  */
+public object FfiConverterOptionalByteArray: FfiConverterRustBuffer<kotlin.ByteArray?> {
+    override fun read(buf: ByteBuffer): kotlin.ByteArray? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterByteArray.read(buf)
+    }
+
+    override fun allocationSize(value: kotlin.ByteArray?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterByteArray.allocationSize(value)
+        }
+    }
+
+    override fun write(value: kotlin.ByteArray?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterByteArray.write(value, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
 public object FfiConverterOptionalDuration: FfiConverterRustBuffer<java.time.Duration?> {
     override fun read(buf: ByteBuffer): java.time.Duration? {
         if (buf.get().toInt() == 0) {
@@ -61205,6 +63840,38 @@ public object FfiConverterOptionalDuration: FfiConverterRustBuffer<java.time.Dur
         } else {
             buf.put(1)
             FfiConverterDuration.write(value, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterOptionalTypeContentScanner: FfiConverterRustBuffer<ContentScanner?> {
+    override fun read(buf: ByteBuffer): ContentScanner? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterTypeContentScanner.read(buf)
+    }
+
+    override fun allocationSize(value: ContentScanner?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterTypeContentScanner.allocationSize(value)
+        }
+    }
+
+    override fun write(value: ContentScanner?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterTypeContentScanner.write(value, buf)
         }
     }
 }
@@ -61557,6 +64224,38 @@ public object FfiConverterOptionalTypeUserIdentity: FfiConverterRustBuffer<UserI
         } else {
             buf.put(1)
             FfiConverterTypeUserIdentity.write(value, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterOptionalTypeTileServerInfo: FfiConverterRustBuffer<TileServerInfo?> {
+    override fun read(buf: ByteBuffer): TileServerInfo? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterTypeTileServerInfo.read(buf)
+    }
+
+    override fun allocationSize(value: TileServerInfo?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterTypeTileServerInfo.allocationSize(value)
+        }
+    }
+
+    override fun write(value: TileServerInfo?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterTypeTileServerInfo.write(value, buf)
         }
     }
 }
@@ -62015,6 +64714,38 @@ public object FfiConverterOptionalTypePassPhrase: FfiConverterRustBuffer<PassPhr
 /**
  * @suppress
  */
+public object FfiConverterOptionalTypePasswordStrengthFeedback: FfiConverterRustBuffer<PasswordStrengthFeedback?> {
+    override fun read(buf: ByteBuffer): PasswordStrengthFeedback? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterTypePasswordStrengthFeedback.read(buf)
+    }
+
+    override fun allocationSize(value: PasswordStrengthFeedback?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterTypePasswordStrengthFeedback.allocationSize(value)
+        }
+    }
+
+    override fun write(value: PasswordStrengthFeedback?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterTypePasswordStrengthFeedback.write(value, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
 public object FfiConverterOptionalTypePowerLevelChanges: FfiConverterRustBuffer<PowerLevelChanges?> {
     override fun read(buf: ByteBuffer): PowerLevelChanges? {
         if (buf.get().toInt() == 0) {
@@ -62463,6 +65194,102 @@ public object FfiConverterOptionalTypeUnstableVoiceContent: FfiConverterRustBuff
 /**
  * @suppress
  */
+public object FfiConverterOptionalTypeUserCall: FfiConverterRustBuffer<UserCall?> {
+    override fun read(buf: ByteBuffer): UserCall? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterTypeUserCall.read(buf)
+    }
+
+    override fun allocationSize(value: UserCall?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterTypeUserCall.allocationSize(value)
+        }
+    }
+
+    override fun write(value: UserCall?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterTypeUserCall.write(value, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterOptionalTypeUserReceipt: FfiConverterRustBuffer<UserReceipt?> {
+    override fun read(buf: ByteBuffer): UserReceipt? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterTypeUserReceipt.read(buf)
+    }
+
+    override fun allocationSize(value: UserReceipt?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterTypeUserReceipt.allocationSize(value)
+        }
+    }
+
+    override fun write(value: UserReceipt?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterTypeUserReceipt.write(value, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterOptionalTypeUserStatus: FfiConverterRustBuffer<UserStatus?> {
+    override fun read(buf: ByteBuffer): UserStatus? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterTypeUserStatus.read(buf)
+    }
+
+    override fun allocationSize(value: UserStatus?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterTypeUserStatus.allocationSize(value)
+        }
+    }
+
+    override fun write(value: UserStatus?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterTypeUserStatus.write(value, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
 public object FfiConverterOptionalTypeVideoInfo: FfiConverterRustBuffer<VideoInfo?> {
     override fun read(buf: ByteBuffer): VideoInfo? {
         if (buf.get().toInt() == 0) {
@@ -62805,6 +65632,38 @@ public object FfiConverterOptionalTypeOAuthPrompt: FfiConverterRustBuffer<OAuthP
         } else {
             buf.put(1)
             FfiConverterTypeOAuthPrompt.write(value, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterOptionalTypePasswordStrengthWarning: FfiConverterRustBuffer<PasswordStrengthWarning?> {
+    override fun read(buf: ByteBuffer): PasswordStrengthWarning? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterTypePasswordStrengthWarning.read(buf)
+    }
+
+    override fun allocationSize(value: PasswordStrengthWarning?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterTypePasswordStrengthWarning.allocationSize(value)
+        }
+    }
+
+    override fun write(value: PasswordStrengthWarning?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterTypePasswordStrengthWarning.write(value, buf)
         }
     }
 }
@@ -63327,38 +66186,6 @@ public object FfiConverterOptionalSequenceString: FfiConverterRustBuffer<List<ko
 /**
  * @suppress
  */
-public object FfiConverterOptionalSequenceTypeGlobalSearchResult: FfiConverterRustBuffer<List<GlobalSearchResult>?> {
-    override fun read(buf: ByteBuffer): List<GlobalSearchResult>? {
-        if (buf.get().toInt() == 0) {
-            return null
-        }
-        return FfiConverterSequenceTypeGlobalSearchResult.read(buf)
-    }
-
-    override fun allocationSize(value: List<GlobalSearchResult>?): ULong {
-        if (value == null) {
-            return 1UL
-        } else {
-            return 1UL + FfiConverterSequenceTypeGlobalSearchResult.allocationSize(value)
-        }
-    }
-
-    override fun write(value: List<GlobalSearchResult>?, buf: ByteBuffer) {
-        if (value == null) {
-            buf.put(0)
-        } else {
-            buf.put(1)
-            FfiConverterSequenceTypeGlobalSearchResult.write(value, buf)
-        }
-    }
-}
-
-
-
-
-/**
- * @suppress
- */
 public object FfiConverterOptionalSequenceTypeRoomHero: FfiConverterRustBuffer<List<RoomHero>?> {
     override fun read(buf: ByteBuffer): List<RoomHero>? {
         if (buf.get().toInt() == 0) {
@@ -63413,38 +66240,6 @@ public object FfiConverterOptionalSequenceTypeRoomMember: FfiConverterRustBuffer
         } else {
             buf.put(1)
             FfiConverterSequenceTypeRoomMember.write(value, buf)
-        }
-    }
-}
-
-
-
-
-/**
- * @suppress
- */
-public object FfiConverterOptionalSequenceTypeRoomSearchResult: FfiConverterRustBuffer<List<RoomSearchResult>?> {
-    override fun read(buf: ByteBuffer): List<RoomSearchResult>? {
-        if (buf.get().toInt() == 0) {
-            return null
-        }
-        return FfiConverterSequenceTypeRoomSearchResult.read(buf)
-    }
-
-    override fun allocationSize(value: List<RoomSearchResult>?): ULong {
-        if (value == null) {
-            return 1UL
-        } else {
-            return 1UL + FfiConverterSequenceTypeRoomSearchResult.allocationSize(value)
-        }
-    }
-
-    override fun write(value: List<RoomSearchResult>?, buf: ByteBuffer) {
-        if (value == null) {
-            buf.put(0)
-        } else {
-            buf.put(1)
-            FfiConverterSequenceTypeRoomSearchResult.write(value, buf)
         }
     }
 }
@@ -63519,28 +66314,28 @@ public object FfiConverterOptionalMapStringLong: FfiConverterRustBuffer<Map<kotl
 /**
  * @suppress
  */
-public object FfiConverterOptionalMapTypeTimelineEventTypeLong: FfiConverterRustBuffer<Map<TimelineEventType, kotlin.Long>?> {
-    override fun read(buf: ByteBuffer): Map<TimelineEventType, kotlin.Long>? {
+public object FfiConverterOptionalMapTypeFfiTimelineEventTypeLong: FfiConverterRustBuffer<Map<FfiTimelineEventType, kotlin.Long>?> {
+    override fun read(buf: ByteBuffer): Map<FfiTimelineEventType, kotlin.Long>? {
         if (buf.get().toInt() == 0) {
             return null
         }
-        return FfiConverterMapTypeTimelineEventTypeLong.read(buf)
+        return FfiConverterMapTypeFfiTimelineEventTypeLong.read(buf)
     }
 
-    override fun allocationSize(value: Map<TimelineEventType, kotlin.Long>?): ULong {
+    override fun allocationSize(value: Map<FfiTimelineEventType, kotlin.Long>?): ULong {
         if (value == null) {
             return 1UL
         } else {
-            return 1UL + FfiConverterMapTypeTimelineEventTypeLong.allocationSize(value)
+            return 1UL + FfiConverterMapTypeFfiTimelineEventTypeLong.allocationSize(value)
         }
     }
 
-    override fun write(value: Map<TimelineEventType, kotlin.Long>?, buf: ByteBuffer) {
+    override fun write(value: Map<FfiTimelineEventType, kotlin.Long>?, buf: ByteBuffer) {
         if (value == null) {
             buf.put(0)
         } else {
             buf.put(1)
-            FfiConverterMapTypeTimelineEventTypeLong.write(value, buf)
+            FfiConverterMapTypeFfiTimelineEventTypeLong.write(value, buf)
         }
     }
 }
@@ -63825,34 +66620,6 @@ public object FfiConverterSequenceTypeConditionalPushRule: FfiConverterRustBuffe
         buf.putInt(value.size)
         value.iterator().forEach {
             FfiConverterTypeConditionalPushRule.write(it, buf)
-        }
-    }
-}
-
-
-
-
-/**
- * @suppress
- */
-public object FfiConverterSequenceTypeGlobalSearchResult: FfiConverterRustBuffer<List<GlobalSearchResult>> {
-    override fun read(buf: ByteBuffer): List<GlobalSearchResult> {
-        val len = buf.getInt()
-        return List<GlobalSearchResult>(len) {
-            FfiConverterTypeGlobalSearchResult.read(buf)
-        }
-    }
-
-    override fun allocationSize(value: List<GlobalSearchResult>): ULong {
-        val sizeForLength = 4UL
-        val sizeForItems = value.map { FfiConverterTypeGlobalSearchResult.allocationSize(it) }.sum()
-        return sizeForLength + sizeForItems
-    }
-
-    override fun write(value: List<GlobalSearchResult>, buf: ByteBuffer) {
-        buf.putInt(value.size)
-        value.iterator().forEach {
-            FfiConverterTypeGlobalSearchResult.write(it, buf)
         }
     }
 }
@@ -64217,34 +66984,6 @@ public object FfiConverterSequenceTypeRoomMember: FfiConverterRustBuffer<List<Ro
         buf.putInt(value.size)
         value.iterator().forEach {
             FfiConverterTypeRoomMember.write(it, buf)
-        }
-    }
-}
-
-
-
-
-/**
- * @suppress
- */
-public object FfiConverterSequenceTypeRoomSearchResult: FfiConverterRustBuffer<List<RoomSearchResult>> {
-    override fun read(buf: ByteBuffer): List<RoomSearchResult> {
-        val len = buf.getInt()
-        return List<RoomSearchResult>(len) {
-            FfiConverterTypeRoomSearchResult.read(buf)
-        }
-    }
-
-    override fun allocationSize(value: List<RoomSearchResult>): ULong {
-        val sizeForLength = 4UL
-        val sizeForItems = value.map { FfiConverterTypeRoomSearchResult.allocationSize(it) }.sum()
-        return sizeForLength + sizeForItems
-    }
-
-    override fun write(value: List<RoomSearchResult>, buf: ByteBuffer) {
-        buf.putInt(value.size)
-        value.iterator().forEach {
-            FfiConverterTypeRoomSearchResult.write(it, buf)
         }
     }
 }
@@ -64703,6 +67442,34 @@ public object FfiConverterSequenceTypeOAuthPrompt: FfiConverterRustBuffer<List<O
 /**
  * @suppress
  */
+public object FfiConverterSequenceTypePasswordStrengthSuggestion: FfiConverterRustBuffer<List<PasswordStrengthSuggestion>> {
+    override fun read(buf: ByteBuffer): List<PasswordStrengthSuggestion> {
+        val len = buf.getInt()
+        return List<PasswordStrengthSuggestion>(len) {
+            FfiConverterTypePasswordStrengthSuggestion.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<PasswordStrengthSuggestion>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypePasswordStrengthSuggestion.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<PasswordStrengthSuggestion>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypePasswordStrengthSuggestion.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
 public object FfiConverterSequenceTypePushCondition: FfiConverterRustBuffer<List<PushCondition>> {
     override fun read(buf: ByteBuffer): List<PushCondition> {
         val len = buf.getInt()
@@ -64833,6 +67600,62 @@ public object FfiConverterSequenceTypeRoomMessageEventMessageType: FfiConverterR
         buf.putInt(value.size)
         value.iterator().forEach {
             FfiConverterTypeRoomMessageEventMessageType.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterSequenceTypeSearchServiceResult: FfiConverterRustBuffer<List<SearchServiceResult>> {
+    override fun read(buf: ByteBuffer): List<SearchServiceResult> {
+        val len = buf.getInt()
+        return List<SearchServiceResult>(len) {
+            FfiConverterTypeSearchServiceResult.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<SearchServiceResult>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeSearchServiceResult.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<SearchServiceResult>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeSearchServiceResult.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterSequenceTypeSearchServiceResultsUpdate: FfiConverterRustBuffer<List<SearchServiceResultsUpdate>> {
+    override fun read(buf: ByteBuffer): List<SearchServiceResultsUpdate> {
+        val len = buf.getInt()
+        return List<SearchServiceResultsUpdate>(len) {
+            FfiConverterTypeSearchServiceResultsUpdate.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<SearchServiceResultsUpdate>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeSearchServiceResultsUpdate.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<SearchServiceResultsUpdate>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeSearchServiceResultsUpdate.write(it, buf)
         }
     }
 }
@@ -65312,6 +68135,45 @@ public object FfiConverterMapStringSequenceString: FfiConverterRustBuffer<Map<ko
 /**
  * @suppress
  */
+public object FfiConverterMapTypeFfiTimelineEventTypeLong: FfiConverterRustBuffer<Map<FfiTimelineEventType, kotlin.Long>> {
+    override fun read(buf: ByteBuffer): Map<FfiTimelineEventType, kotlin.Long> {
+        val len = buf.getInt()
+        return buildMap<FfiTimelineEventType, kotlin.Long>(len) {
+            repeat(len) {
+                val k = FfiConverterTypeFfiTimelineEventType.read(buf)
+                val v = FfiConverterLong.read(buf)
+                this[k] = v
+            }
+        }
+    }
+
+    override fun allocationSize(value: Map<FfiTimelineEventType, kotlin.Long>): ULong {
+        val spaceForMapSize = 4UL
+        val spaceForChildren = value.map { (k, v) ->
+            FfiConverterTypeFfiTimelineEventType.allocationSize(k) +
+            FfiConverterLong.allocationSize(v)
+        }.sum()
+        return spaceForMapSize + spaceForChildren
+    }
+
+    override fun write(value: Map<FfiTimelineEventType, kotlin.Long>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        // The parens on `(k, v)` here ensure we're calling the right method,
+        // which is important for compatibility with older android devices.
+        // Ref https://blog.danlew.net/2017/03/16/kotlin-puzzler-whose-line-is-it-anyways/
+        value.forEach { (k, v) ->
+            FfiConverterTypeFfiTimelineEventType.write(k, buf)
+            FfiConverterLong.write(v, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
 public object FfiConverterMapTypeTagNameTypeTagInfo: FfiConverterRustBuffer<Map<TagName, TagInfo>> {
     override fun read(buf: ByteBuffer): Map<TagName, TagInfo> {
         val len = buf.getInt()
@@ -65347,45 +68209,6 @@ public object FfiConverterMapTypeTagNameTypeTagInfo: FfiConverterRustBuffer<Map<
 
 
 
-
-/**
- * @suppress
- */
-public object FfiConverterMapTypeTimelineEventTypeLong: FfiConverterRustBuffer<Map<TimelineEventType, kotlin.Long>> {
-    override fun read(buf: ByteBuffer): Map<TimelineEventType, kotlin.Long> {
-        val len = buf.getInt()
-        return buildMap<TimelineEventType, kotlin.Long>(len) {
-            repeat(len) {
-                val k = FfiConverterTypeTimelineEventType.read(buf)
-                val v = FfiConverterLong.read(buf)
-                this[k] = v
-            }
-        }
-    }
-
-    override fun allocationSize(value: Map<TimelineEventType, kotlin.Long>): ULong {
-        val spaceForMapSize = 4UL
-        val spaceForChildren = value.map { (k, v) ->
-            FfiConverterTypeTimelineEventType.allocationSize(k) +
-            FfiConverterLong.allocationSize(v)
-        }.sum()
-        return spaceForMapSize + spaceForChildren
-    }
-
-    override fun write(value: Map<TimelineEventType, kotlin.Long>, buf: ByteBuffer) {
-        buf.putInt(value.size)
-        // The parens on `(k, v)` here ensure we're calling the right method,
-        // which is important for compatibility with older android devices.
-        // Ref https://blog.danlew.net/2017/03/16/kotlin-puzzler-whose-line-is-it-anyways/
-        value.forEach { (k, v) ->
-            FfiConverterTypeTimelineEventType.write(k, buf)
-            FfiConverterLong.write(v, buf)
-        }
-    }
-}
-
-
-
 /**
  * Typealias from the type name used in the UDL file to the builtin type.  This
  * is needed because the UDL type name is used in function/method signatures.
@@ -65393,6 +68216,22 @@ public object FfiConverterMapTypeTimelineEventTypeLong: FfiConverterRustBuffer<M
  */
 public typealias Timestamp = kotlin.ULong
 public typealias FfiConverterTypeTimestamp = FfiConverterULong
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -128,6 +128,27 @@ repositories {
 
 def kotlin_version = getExtOrDefault("kotlinVersion")
 
+// The JVM half of the `rustls-platform-verifier` Rust crate, vendored under
+// `android/libs`. matrix-sdk-ffi uses that crate to validate TLS certificates on
+// Android; without these classes every HTTPS request fails with
+// `ClassNotFoundException: org/rustls/platformverifier/CertificateVerifier`.
+//
+// Upstream documents resolving it out of the local Cargo registry with a
+// `cargo metadata` call at configuration time. We vendor it instead, so apps
+// consuming this package need neither a Rust toolchain nor an extra repository
+// declaration in their own build. It is shipped as a plain jar rather than the
+// original aar because a consuming app resolves this module's dependencies
+// against *its* repositories, which would not see one declared here.
+//
+// Refresh with `yarn vendor:rustls-verifier` after changing the pinned
+// matrix-rust-sdk revision.
+def rustlsPlatformVerifier = fileTree(dir: "$projectDir/libs", include: ["rustls-platform-verifier-*.jar"])
+if (rustlsPlatformVerifier.isEmpty()) {
+  throw new GradleException(
+    "No vendored rustls-platform-verifier jar found in $projectDir/libs. " +
+    "Run `yarn vendor:rustls-verifier` to restore it.")
+}
+
 dependencies {
   // For < 0.71, this will be from the local maven repo
   // For > 0.71, this will be replaced by `com.facebook.react:react-android:$version` by react gradle plugin
@@ -135,6 +156,7 @@ dependencies {
   implementation "com.facebook.react:react-native:+"
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
   implementation "net.java.dev.jna:jna:5.17.0@aar"
+  implementation rustlsPlatformVerifier
 }
 
 if (isNewArchitectureEnabled()) {
