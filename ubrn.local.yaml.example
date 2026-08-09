@@ -1,0 +1,44 @@
+---
+# Local development override for `ubrn.yaml`.
+#
+# Copy this to `ubrn.local.yaml` (which is gitignored) to build against a
+# matrix-rust-sdk checkout sitting next to this repository, instead of cloning a
+# pinned revision into `rust_modules`. Rust changes then take effect on the next
+# build, with no commit/push/bump-the-SHA round trip.
+#
+#   cp ubrn.local.yaml.example ubrn.local.yaml
+#   yarn generate:local:android
+#
+# `ubrn checkout` does not apply to an on-disk source, so the `generate:local:*`
+# scripts skip it. Keep `ubrn.yaml` pinned to a repo + rev: that is what CI and
+# published builds use, and it is what keeps builds reproducible.
+crate:
+  directory: ../matrix-rust-sdk
+  manifestPath: bindings/matrix-sdk-ffi/Cargo.toml
+android:
+  cargoExtras: []
+  directory: android
+  native_bindings_dir: kotlin
+  useSharedLibrary: true
+  jniLibs: src/main/jniLibs
+  targets:
+    - arm64-v8a
+    - armeabi-v7a
+ios:
+  cargoExtras: []
+  directory: ios
+  native_bindings_dir: swift
+  targets:
+    - aarch64-apple-ios
+    - aarch64-apple-ios-sim
+    - x86_64-apple-ios
+  xcodebuildExtras: []
+  frameworkName: build/RnMatrixRustSdk
+noOverwrite:
+  - "android/build.gradle"
+turboModule:
+  cpp: cpp
+  ts: src
+bindings:
+  cpp: cpp/generated
+  ts: src/generated

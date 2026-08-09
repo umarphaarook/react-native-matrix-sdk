@@ -83,3 +83,6 @@ rust_modules/
 ios/generated
 android/generated
 binaries.tar.gz
+
+# Local ubrn override for side-by-side matrix-rust-sdk development
+ubrn.local.yaml
