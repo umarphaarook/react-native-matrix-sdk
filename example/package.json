@@ -10,6 +10,9 @@
     "prebuild": "expo prebuild",
     "prebuild:clean": "expo prebuild --clean",
     "build:android": "cd android && ./gradlew assembleDebug --no-daemon --console=plain -PreactNativeArchitectures=arm64-v8a",
+    "build:android:release": "cd android && ./gradlew assembleRelease --no-daemon --console=plain -PreactNativeArchitectures=arm64-v8a",
+    "check:alignment": "node ../scripts/check-apk-alignment.js android/app/build/outputs/apk/debug/app-debug.apk",
+    "check:alignment:release": "node ../scripts/check-apk-alignment.js android/app/build/outputs/apk/release/app-release.apk",
     "build:ios": "xcodebuild -workspace ios/ReactNativeMatrixSdkExample.xcworkspace -scheme ReactNativeMatrixSdkExample -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath ios/build build"
   },
   "dependencies": {

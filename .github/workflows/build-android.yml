@@ -68,3 +68,22 @@ jobs:
           JAVA_OPTS: "-XX:MaxHeapSize=6g"
         run: |
           yarn turbo run build:android --cache-dir="${{ env.TURBO_CACHE_DIR }}"
+
+      # Both of these need an APK on disk, which a turbo cache hit does not
+      # produce.
+      - name: Check 16 KB page size readiness
+        if: env.turbo_cache_hit != 1
+        run: yarn example check:alignment
+
+      # A release build is the only thing that runs R8 over this package's
+      # consumerProguardFiles. It costs a few minutes, and it earns them: the
+      # rules shipped for `rustls-platform-verifier` exist because R8 deleted
+      # those classes outright, which turned every HTTPS request into a
+      # ClassNotFoundException at runtime while the build stayed green.
+      - name: Build example for Android (release, R8)
+        if: env.turbo_cache_hit != 1
+        env:
+          JAVA_OPTS: "-XX:MaxHeapSize=6g"
+        run: |
+          yarn example build:android:release
+          yarn example check:alignment:release
