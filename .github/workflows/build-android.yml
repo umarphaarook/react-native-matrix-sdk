@@ -8,6 +8,12 @@ on:
       - main
   workflow_dispatch:
 
+# Cancel the previous run for the same ref when a new one starts, so a superseded
+# commit does not keep a runner busy on an answer nobody wants.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
