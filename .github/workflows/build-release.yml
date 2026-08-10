@@ -24,7 +24,8 @@ jobs:
           if-no-files-found: error
 
   ios:
-    runs-on: macos-14
+    # React Native 0.86 requires Xcode >= 16.1, and macos-14 ships 15.4.
+    runs-on: macos-15
 
     steps:
       - name: Checkout
