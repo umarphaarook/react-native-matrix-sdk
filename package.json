@@ -62,7 +62,7 @@
     "example-expo": "yarn workspace @unomed/react-native-matrix-sdk-example-expo",
     "typecheck": "tsc",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
-    "clean": "del-cli -v android/build example/android/build example/android/app/build example/ios/build example-expo/android/build example-expo/android/app/build example-expo/ios/build lib **/.cxx",
+    "clean": "del-cli -v android/build example/android/build example/android/app/build example/ios/build example/ios/derived example-expo/android/build example-expo/android/app/build example-expo/ios/build example-expo/ios/derived lib **/.cxx",
     "prepare": "bob build",
     "release": "release-it",
     "postinstall": "patch-package && node scripts/fix-bin-permissions.js && node scripts/download-binaries.js"

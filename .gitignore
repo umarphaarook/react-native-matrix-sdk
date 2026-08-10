@@ -52,6 +52,10 @@ android.iml
 example-expo/android/
 example-expo/ios/
 
+# Xcode derived data, kept out of ios/build so that `yarn clean` cannot
+# destroy the app-level codegen output that React Native writes there.
+example/ios/derived/
+
 # Cocoapods
 example/ios/Pods
 example-expo/ios/Pods
