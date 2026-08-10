@@ -43,7 +43,7 @@
     "ubrn:android:build:release": "yarn ubrn:android:build --release",
     "ubrn:ios:build": "CARGO_FEATURE_NO_NEON=1 ubrn build ios --config ${UBRN_CONFIG:-ubrn.yaml} --native-bindings --and-generate",
     "ubrn:ios:build:release": "yarn ubrn:ios:build --release",
-    "ubrn:ios:post-process": "del-cli swift && mv ios/swift swift && (cd example/ios && pod install) && rm -rf src/index.web.ts",
+    "ubrn:ios:post-process": "del-cli swift && mv ios/swift swift && node scripts/patch-podspec.js && (cd example/ios && pod install) && rm -rf src/index.web.ts",
     "ubrn:checkout": "( test -d rust_modules/matrix-rust-sdk && git -C rust_modules/matrix-rust-sdk reset --hard HEAD ); ubrn checkout --config ${UBRN_CONFIG:-ubrn.yaml}",
     "ubrn:clean": "del-cli -v cpp android/src/main/java ios \"src/Native*\" src/generated \"src/index.ts*\"",
     "ubrn:clean:android": "del-cli -v android/src/main/java \"src/Native*\" src/generated \"src/index.ts*\"",
