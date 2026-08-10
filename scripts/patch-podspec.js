@@ -26,6 +26,12 @@ const SOURCE_FILES_PATTERN = /^(\s*)s\.source_files\s*=.*$/m;
 
 const MARKER = 's.exclude_files';
 
+// The leading and trailing newlines are both load-bearing. In the generated
+// podspec `s.source_files` and `s.vendored_frameworks` are adjacent with no blank
+// line between them, so this block has to supply the blank line on each side of
+// itself. Verify any change to this against real generated output - e.g.
+// `git show <upstream>:ReactNativeMatrixSdk.podspec` - and not against the
+// committed file with this block deleted, which begs the question.
 const EXCLUDES = `
   # From React Native 0.86 on, codegen writes app-level scaffolding into the same
   # output directory as this package's TurboModule spec: a Package.swift for SPM,
@@ -47,7 +53,8 @@ const EXCLUDES = `
   # and the question never arose.
   s.exclude_files = "ios/generated/Package.swift",
                     "ios/generated/ReactAppDependencyProvider/**/*",
-                    "ios/generated/ReactCodegen/RCT*.{h,mm}"`;
+                    "ios/generated/ReactCodegen/RCT*.{h,mm}"
+`;
 
 /**
  * @returns {string} Path to the single podspec at the repository root
