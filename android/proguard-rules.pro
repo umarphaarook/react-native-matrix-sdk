@@ -2,3 +2,23 @@
 -dontwarn java.awt.*
 -keep class com.sun.jna.* { *; }
 -keepclassmembers class * extends com.sun.jna.* { public *; }
+
+# matrix-sdk-ffi validates TLS certificates through the `rustls-platform-verifier`
+# crate, whose Rust half reaches this JVM half by name over JNI:
+#
+#   FindClass("org/rustls/platformverifier/CertificateVerifier")
+#
+# No Java or Kotlin code references these classes, so R8 sees an unused package
+# and deletes it. Nothing fails at build time; the app installs, starts, and then
+# every HTTPS request fails, because the verifier cannot be constructed:
+#
+#   java.lang.ClassNotFoundException: Didn't find class
+#   "org/rustls/platformverifier/CertificateVerifier"
+#
+# In this package's example that surfaces as a homeserver returning
+# supportsOidcLogin: false / supportsPasswordLogin: false rather than as an
+# error, which makes it easy to mistake for a server-side answer.
+#
+# `verifier_full_name` in the crate's build script pins the class path, so these
+# names cannot be renamed either - hence -keep rather than -keepnames.
+-keep class org.rustls.platformverifier.** { *; }
