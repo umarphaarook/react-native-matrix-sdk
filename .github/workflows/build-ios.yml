@@ -103,8 +103,25 @@ jobs:
   # tested here, not provisioning.
   expo:
     name: Expo example (release, device slice)
-    # React Native 0.86 requires Xcode >= 16.1, and macos-14 ships 15.4.
-    runs-on: macos-15
+    # A newer image than the bare job, and deliberately so.
+    #
+    # `expo-modules-core` builds ExpoModulesJSI as an xcframework in a script
+    # phase, through Swift Package Manager, whenever React Native is built from
+    # source and pods are linked as static frameworks - which is exactly this
+    # example's configuration, and the consuming app's. That package needs Swift
+    # tools 6.2, and macos-15's default Xcode is 16.4, which ships Swift 6.1:
+    #
+    #   [ExpoModulesJSI] Detected: source-built RN, static frameworks
+    #   xcodebuild: error: Could not resolve package dependencies:
+    #     package 'apple' is using Swift tools version 6.2.0 but the installed
+    #     version is 6.1.0
+    #
+    # macos-26 defaults to Xcode 26.6, which is also what the consuming app is
+    # built with, so this is the toolchain the example is supposed to predict.
+    # The bare job stays on macos-15 on purpose: it does not build React Native
+    # from source, so it never reaches this, and leaving it there keeps the older
+    # supported Xcode covered too.
+    runs-on: macos-26
     env:
       TURBO_CACHE_DIR: .turbo/ios-expo
 
