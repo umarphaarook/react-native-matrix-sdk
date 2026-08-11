@@ -32,6 +32,7 @@ project.xcworkspace
 .classpath
 .cxx
 .gradle
+.kotlin
 .idea
 .project
 .settings
@@ -39,11 +40,29 @@ local.properties
 android.iml
 *.aar
 
+# Continuous Native Generation: the Expo example's native projects are
+# `expo prebuild` output, regenerated from app.json + plugins/. Checking them in
+# would let them drift from what consuming apps actually get, which is the whole
+# reason that example exists. Anything that needs to survive a prebuild belongs in
+# a config plugin - see example-expo/plugins/withMatrixCodegen.js.
+#
+# The bare example's android/ and ios/ ARE checked in, deliberately: it is the
+# example a non-Expo consumer would recognise, and its native config is the thing
+# under test rather than a build artefact.
+example-expo/android/
+example-expo/ios/
+
+# Xcode derived data, kept out of ios/build so that `yarn clean` cannot
+# destroy the app-level codegen output that React Native writes there.
+example/ios/derived/
+
 # Cocoapods
 example/ios/Pods
+example-expo/ios/Pods
 
 # Ruby
 example/vendor/
+example-expo/vendor/
 
 # node.js
 node_modules/

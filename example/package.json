@@ -6,26 +6,28 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start",
-    "build:android": "react-native build-android --extra-params \"--no-daemon --console=plain -PreactNativeArchitectures=arm64-v8a\"",
-    "build:ios": "react-native build-ios --scheme ReactNativeMatrixSdkExample --mode Debug --extra-params \"-sdk iphonesimulator CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ GCC_OPTIMIZATION_LEVEL=0 GCC_PRECOMPILE_PREFIX_HEADER=YES ASSETCATALOG_COMPILER_OPTIMIZATION=time DEBUG_INFORMATION_FORMAT=dwarf COMPILER_INDEX_STORE_ENABLE=NO\""
+    "build:android": "react-native build-android --tasks assembleDebug --extra-params \"--no-daemon --console=plain -PreactNativeArchitectures=arm64-v8a\"",
+    "build:ios": "react-native build-ios --scheme ReactNativeMatrixSdkExample --mode Debug --extra-params \"-sdk iphonesimulator -derivedDataPath derived CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ GCC_OPTIMIZATION_LEVEL=0 GCC_PRECOMPILE_PREFIX_HEADER=YES ASSETCATALOG_COMPILER_OPTIMIZATION=time DEBUG_INFORMATION_FORMAT=dwarf COMPILER_INDEX_STORE_ENABLE=NO\"",
+    "check:alignment": "node ../scripts/check-apk-alignment.js android/app/build/outputs/apk/debug/app-debug.apk",
+    "check:ios": "node ../scripts/check-ios-app.js ios/derived/Build/Products/Debug-iphonesimulator/ReactNativeMatrixSdkExample.app"
   },
   "dependencies": {
-    "react": "18.3.1",
-    "react-native": "0.76.9"
+    "react": "19.2.3",
+    "react-native": "0.86.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@babel/preset-env": "^7.25.3",
     "@babel/runtime": "^7.25.0",
-    "@react-native-community/cli": "15.0.1",
-    "@react-native-community/cli-platform-android": "15.0.1",
-    "@react-native-community/cli-platform-ios": "15.0.1",
-    "@react-native/babel-preset": "0.76.9",
-    "@react-native/metro-config": "0.76.9",
-    "@react-native/typescript-config": "0.76.9",
+    "@react-native-community/cli": "20.1.0",
+    "@react-native-community/cli-platform-android": "20.1.0",
+    "@react-native-community/cli-platform-ios": "20.1.0",
+    "@react-native/babel-preset": "0.86.0",
+    "@react-native/metro-config": "0.86.0",
+    "@react-native/typescript-config": "0.86.0",
     "react-native-builder-bob": "^0.31.0"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=22.11.0"
   }
 }

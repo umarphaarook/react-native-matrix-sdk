@@ -16,6 +16,29 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/unomed-dev/react-native-matrix-sdk.git", :tag => "#{s.version}" }
 
   s.source_files = "ios/**/*.{h,m,mm,swift}", "ios/generated/**/*.{h,m,mm}", "cpp/**/*.{hpp,cpp,c,h}", "cpp/generated/**/*.{hpp,cpp,c,h}"
+
+  # From React Native 0.86 on, codegen writes app-level scaffolding into the same
+  # output directory as this package's TurboModule spec: a Package.swift for SPM,
+  # the RCTAppDependencyProvider, and the RCTModuleProviders family. All of that
+  # belongs to the app - its own ReactCodegen and ReactAppDependencyProvider pods
+  # build those exact files - so the globs above must not sweep them in here.
+  #
+  # Package.swift is the one that breaks the build outright rather than merely
+  # duplicating. A single .swift file makes this a mixed Swift/ObjC pod, so Clang
+  # has to build the Objective-C module for Swift to import it - and it does that
+  # in Objective-C mode, not Objective-C++. The umbrella header reaches the Fabric
+  # event emitter headers, which `#include <memory>`, and the build dies with:
+  #
+  #   React-Fabric/react/renderer/components/view/BaseViewEventEmitter.h:10:10:
+  #   error: 'memory' file not found
+  #   error: could not build Objective-C module 'ReactNativeMatrixSdk'
+  #
+  # Up to 0.76 codegen emitted no Swift here at all, so the pod was pure ObjC/C++
+  # and the question never arose.
+  s.exclude_files = "ios/generated/Package.swift",
+                    "ios/generated/ReactAppDependencyProvider/**/*",
+                    "ios/generated/ReactCodegen/RCT*.{h,mm}"
+
   s.vendored_frameworks = "build/RnMatrixRustSdk.xcframework"
   s.dependency    "uniffi-bindgen-react-native", "0.31.0-2"
 

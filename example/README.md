@@ -1,5 +1,16 @@
 This is a new [**React Native**] project, bootstrapped using [`@react-native-community/cli`].
 
+> **There are two examples in this repository, and they claim different things.**
+>
+> This one is bare React Native with checked-in native projects, and it proves the
+> package works for *any* consumer. [`../example-expo`](../example-expo) is the same
+> app built with Expo's Continuous Native Generation, and it is the one that
+> predicts whether a real consuming app will work.
+>
+> A green build here is not a claim about consuming apps. Both have to be green to
+> release. `src/App.tsx` lives here and the Expo example imports it, so the two
+> always run identical JavaScript.
+
 
 # Getting Started
 

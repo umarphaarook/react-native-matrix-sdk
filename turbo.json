@@ -28,7 +28,23 @@
         "example/package.json",
         "example/ios",
         "!example/ios/build",
+        "!example/ios/derived",
         "!example/ios/Pods"
+      ],
+      "outputs": []
+    },
+    "build:ios:device": {
+      "env": ["RCT_NEW_ARCH_ENABLED"],
+      "inputs": [
+        "package.json",
+        "*.podspec",
+        "ios",
+        "src/*.ts",
+        "src/*.tsx",
+        "example/src/**",
+        "example-expo/package.json",
+        "example-expo/app.json",
+        "example-expo/plugins/**"
       ],
       "outputs": []
     }
