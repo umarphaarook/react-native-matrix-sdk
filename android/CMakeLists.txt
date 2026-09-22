@@ -31,6 +31,7 @@ add_library(unomed-react-native-matrix-sdk            SHARED
     ../cpp/generated/matrix_sdk_contentscanner.cpp
     ../cpp/generated/matrix_sdk_crypto.cpp
     ../cpp/generated/matrix_sdk_ffi.cpp
+    ../cpp/generated/matrix_sdk_sqlite.cpp
     ../cpp/generated/matrix_sdk_ui.cpp
     ../cpp/generated/ruma_events.cpp
     cpp-adapter.cpp
