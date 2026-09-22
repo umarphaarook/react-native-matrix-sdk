@@ -286,7 +286,9 @@ typedef void (*UniffiCallbackInterfaceUnableToDecryptDelegateMethod0)(
     RustCallStatus *rust_call_status);
 typedef void (*UniffiCallbackInterfaceWidgetCapabilitiesProviderMethod0)(
     uint64_t uniffi_handle, RustBuffer capabilities,
-    RustBuffer *uniffi_out_return, RustCallStatus *rust_call_status);
+    UniffiForeignFutureCompleteRustBuffer uniffi_future_callback,
+    uint64_t uniffi_callback_data,
+    UniffiForeignFutureDroppedCallbackStruct *uniffi_out_dropped_callback);
 typedef struct UniffiVTableCallbackInterfaceAccountDataListener {
   UniffiCallbackInterfaceFree uniffi_free;
   UniffiCallbackInterfaceClone uniffi_clone;
@@ -648,13 +650,13 @@ uniffi_matrix_sdk_ffi_fn_method_client_custom_login_with_jwt(
     /*handle*/ uint64_t ptr, RustBuffer identifiers);
 RustBuffer uniffi_matrix_sdk_ffi_fn_method_client_device_id(
     /*handle*/ uint64_t ptr, RustCallStatus *uniffi_out_err);
+void uniffi_matrix_sdk_ffi_fn_method_client_disable_well_known_lookup(
+    /*handle*/ uint64_t ptr, int8_t disable, RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_client_display_name(
     /*handle*/ uint64_t ptr);
 /*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_method_client_enable_all_send_queues(
     /*handle*/ uint64_t ptr, int8_t enable);
-void uniffi_matrix_sdk_ffi_fn_method_client_enable_automatic_backpagination(
-    /*handle*/ uint64_t ptr, RustCallStatus *uniffi_out_err);
 void uniffi_matrix_sdk_ffi_fn_method_client_enable_automatic_call_status(
     /*handle*/ uint64_t ptr, int8_t enabled, RustCallStatus *uniffi_out_err);
 void uniffi_matrix_sdk_ffi_fn_method_client_enable_send_queue_upload_progress(
@@ -713,6 +715,8 @@ uniffi_matrix_sdk_ffi_fn_method_client_get_session_verification_controller(
     /*handle*/ uint64_t ptr);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_client_get_url(
     /*handle*/ uint64_t ptr, RustBuffer url);
+/*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_client_get_url_preview(
+    /*handle*/ uint64_t ptr, RustBuffer url, RustBuffer ts);
 RustBuffer uniffi_matrix_sdk_ffi_fn_method_client_homeserver(
     /*handle*/ uint64_t ptr, RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t
@@ -727,9 +731,12 @@ uniffi_matrix_sdk_ffi_fn_method_client_homeserver_login_details(
     /*handle*/ uint64_t ptr);
 /*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_method_client_is_livekit_rtc_supported(
-    /*handle*/ uint64_t ptr, int8_t fallback_to_well_known);
+    /*handle*/ uint64_t ptr);
 /*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_method_client_is_login_with_qr_code_supported(
+    /*handle*/ uint64_t ptr);
+/*handle*/ uint64_t
+uniffi_matrix_sdk_ffi_fn_method_client_is_profiles_sliding_sync_extension_supported(
     /*handle*/ uint64_t ptr);
 /*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_method_client_is_report_room_api_supported(
@@ -772,6 +779,9 @@ uniffi_matrix_sdk_ffi_fn_method_client_new_login_with_qr_code_handler(
     RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_client_notification_client(
     /*handle*/ uint64_t ptr, RustBuffer process_setup);
+/*handle*/ uint64_t
+uniffi_matrix_sdk_ffi_fn_method_client_notification_client_with_timeouts(
+    /*handle*/ uint64_t ptr, RustBuffer process_setup, RustBuffer timeouts);
 /*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_method_client_observe_account_data_event(
     /*handle*/ uint64_t ptr, RustBuffer event_type, uint64_t listener,
@@ -888,6 +898,8 @@ uniffi_matrix_sdk_ffi_fn_method_client_subscribe_to_send_queue_updates(
     RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_client_tile_server(
     /*handle*/ uint64_t ptr);
+uint64_t uniffi_matrix_sdk_ffi_fn_method_client_total_unread_notifications(
+    /*handle*/ uint64_t ptr, RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_method_client_track_recently_visited_room(
     /*handle*/ uint64_t ptr, RustBuffer room);
@@ -989,8 +1001,16 @@ uniffi_matrix_sdk_ffi_fn_method_clientbuilder_disable_built_in_root_certificates
 uniffi_matrix_sdk_ffi_fn_method_clientbuilder_disable_ssl_verification(
     /*handle*/ uint64_t ptr, RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t
+uniffi_matrix_sdk_ffi_fn_method_clientbuilder_disable_well_known_lookup(
+    /*handle*/ uint64_t ptr, int8_t disable_well_known_lookup,
+    RustCallStatus *uniffi_out_err);
+/*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_method_clientbuilder_dm_room_definition(
     /*handle*/ uint64_t ptr, RustBuffer dm_room_definition,
+    RustCallStatus *uniffi_out_err);
+/*handle*/ uint64_t
+uniffi_matrix_sdk_ffi_fn_method_clientbuilder_enable_automatic_back_pagination(
+    /*handle*/ uint64_t ptr, int8_t enable_automatic_back_pagination,
     RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_method_clientbuilder_enable_share_history_on_invite(
@@ -1013,6 +1033,10 @@ uniffi_matrix_sdk_ffi_fn_method_clientbuilder_room_key_recipient_strategy(
     RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_clientbuilder_server_name(
     /*handle*/ uint64_t ptr, RustBuffer server_name,
+    RustCallStatus *uniffi_out_err);
+/*handle*/ uint64_t
+uniffi_matrix_sdk_ffi_fn_method_clientbuilder_server_name_from_user_id(
+    /*handle*/ uint64_t ptr, RustBuffer user_id,
     RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_method_clientbuilder_server_name_or_homeserver_url(
@@ -1041,9 +1065,6 @@ uniffi_matrix_sdk_ffi_fn_method_clientbuilder_threads_enabled(
     RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_clientbuilder_user_agent(
     /*handle*/ uint64_t ptr, RustBuffer user_agent,
-    RustCallStatus *uniffi_out_err);
-/*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_clientbuilder_username(
-    /*handle*/ uint64_t ptr, RustBuffer username,
     RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_method_clientbuilder_with_search_index_store(
@@ -1217,6 +1238,8 @@ uniffi_matrix_sdk_ffi_fn_method_notificationclient_get_notifications(
 RustBuffer uniffi_matrix_sdk_ffi_fn_method_notificationclient_get_room(
     /*handle*/ uint64_t ptr, RustBuffer room_id,
     RustCallStatus *uniffi_out_err);
+RustBuffer uniffi_matrix_sdk_ffi_fn_method_notificationclient_timeouts(
+    /*handle*/ uint64_t ptr, RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_clone_notificationsettings(
     /*handle*/ uint64_t handle, RustCallStatus *uniffi_out_err);
 void uniffi_matrix_sdk_ffi_fn_free_notificationsettings(
@@ -1397,6 +1420,12 @@ uniffi_matrix_sdk_ffi_fn_method_knockrequestactions_mark_as_seen(
     /*handle*/ uint64_t handle, RustCallStatus *uniffi_out_err);
 void uniffi_matrix_sdk_ffi_fn_free_room(
     /*handle*/ uint64_t handle, RustCallStatus *uniffi_out_err);
+/*handle*/ uint64_t
+uniffi_matrix_sdk_ffi_fn_method_room_active_human_member_ids(
+    /*handle*/ uint64_t ptr);
+/*handle*/ uint64_t
+uniffi_matrix_sdk_ffi_fn_method_room_active_human_member_ids_no_sync(
+    /*handle*/ uint64_t ptr);
 uint64_t uniffi_matrix_sdk_ffi_fn_method_room_active_members_count(
     /*handle*/ uint64_t ptr, RustCallStatus *uniffi_out_err);
 RustBuffer uniffi_matrix_sdk_ffi_fn_method_room_active_room_call_participants(
@@ -1414,6 +1443,8 @@ RustBuffer uniffi_matrix_sdk_ffi_fn_method_room_canonical_alias(
     /*handle*/ uint64_t ptr, RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_room_clear_composer_draft(
     /*handle*/ uint64_t ptr, RustBuffer thread_root);
+/*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_room_clear_event_cache(
+    /*handle*/ uint64_t ptr);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_room_decline_call(
     /*handle*/ uint64_t ptr, RustBuffer rtc_notification_event_id);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_room_discard_room_key(
@@ -1486,6 +1517,9 @@ uniffi_matrix_sdk_ffi_fn_method_room_live_locations_observer(
     /*handle*/ uint64_t ptr, RustBuffer thread_root);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_room_load_or_fetch_event(
     /*handle*/ uint64_t ptr, RustBuffer event_id);
+/*handle*/ uint64_t
+uniffi_matrix_sdk_ffi_fn_method_room_load_or_fetch_event_with_relations(
+    /*handle*/ uint64_t ptr, RustBuffer event_id, RustBuffer relation_filter);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_room_load_user_receipt(
     /*handle*/ uint64_t ptr, RustBuffer receipt_type, RustBuffer thread,
     RustBuffer user_id);
@@ -1764,14 +1798,20 @@ void uniffi_matrix_sdk_ffi_fn_free_roomlistservice(
     /*handle*/ uint64_t handle, RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_roomlistservice_all_rooms(
     /*handle*/ uint64_t ptr);
+void uniffi_matrix_sdk_ffi_fn_method_roomlistservice_remove_room_subscriptions(
+    /*handle*/ uint64_t ptr, RustBuffer room_ids,
+    RustCallStatus *uniffi_out_err);
+/*handle*/ uint64_t
+uniffi_matrix_sdk_ffi_fn_method_roomlistservice_reset_and_add_room_subscriptions(
+    /*handle*/ uint64_t ptr, RustBuffer room_ids);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_roomlistservice_room(
     /*handle*/ uint64_t ptr, RustBuffer room_id,
     RustCallStatus *uniffi_out_err);
+/*handle*/ uint64_t
+uniffi_matrix_sdk_ffi_fn_method_roomlistservice_set_room_subscriptions(
+    /*handle*/ uint64_t ptr, RustBuffer room_ids);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_roomlistservice_state(
     /*handle*/ uint64_t ptr, uint64_t listener, RustCallStatus *uniffi_out_err);
-/*handle*/ uint64_t
-uniffi_matrix_sdk_ffi_fn_method_roomlistservice_subscribe_to_rooms(
-    /*handle*/ uint64_t ptr, RustBuffer room_ids);
 /*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_method_roomlistservice_sync_indicator(
     /*handle*/ uint64_t ptr, uint32_t delay_before_showing_in_ms,
@@ -1917,6 +1957,9 @@ uniffi_matrix_sdk_ffi_fn_method_spaceservice_editable_spaces(
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_spaceservice_get_space_room(
     /*handle*/ uint64_t ptr, RustBuffer room_id);
 /*handle*/ uint64_t
+uniffi_matrix_sdk_ffi_fn_method_spaceservice_joined_parent_ids_of_child(
+    /*handle*/ uint64_t ptr, RustBuffer child_id);
+/*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_method_spaceservice_joined_parents_of_child(
     /*handle*/ uint64_t ptr, RustBuffer child_id);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_spaceservice_leave_space(
@@ -1936,6 +1979,9 @@ uniffi_matrix_sdk_ffi_fn_method_spaceservice_subscribe_to_space_filters(
 uniffi_matrix_sdk_ffi_fn_method_spaceservice_subscribe_to_top_level_joined_spaces(
     /*handle*/ uint64_t ptr, uint64_t listener);
 /*handle*/ uint64_t
+uniffi_matrix_sdk_ffi_fn_method_spaceservice_top_level_ancestors_of(
+    /*handle*/ uint64_t ptr, RustBuffer child_id);
+/*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_method_spaceservice_top_level_joined_spaces(
     /*handle*/ uint64_t ptr);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_clone_sqlitestorebuilder(
@@ -1948,6 +1994,10 @@ void uniffi_matrix_sdk_ffi_fn_free_sqlitestorebuilder(
 /*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_method_sqlitestorebuilder_cache_size(
     /*handle*/ uint64_t ptr, RustBuffer cache_size,
+    RustCallStatus *uniffi_out_err);
+/*handle*/ uint64_t
+uniffi_matrix_sdk_ffi_fn_method_sqlitestorebuilder_high_entropy_passphrase(
+    /*handle*/ uint64_t ptr, RustBuffer passphrase, RustBuffer base64_variant,
     RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_method_sqlitestorebuilder_journal_size_limit(
@@ -1993,9 +2043,6 @@ uniffi_matrix_sdk_ffi_fn_method_syncservicebuilder_with_offline_mode(
 uniffi_matrix_sdk_ffi_fn_method_syncservicebuilder_with_parent_span(
     /*handle*/ uint64_t ptr,
     /*handle*/ uint64_t span, RustCallStatus *uniffi_out_err);
-/*handle*/ uint64_t
-uniffi_matrix_sdk_ffi_fn_method_syncservicebuilder_with_profiles_extension(
-    /*handle*/ uint64_t ptr, RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_method_syncservicebuilder_with_room_list_connection_id(
     /*handle*/ uint64_t ptr, RustBuffer connection_id,
@@ -2044,7 +2091,7 @@ uniffi_matrix_sdk_ffi_fn_method_sendattachmentjoinhandle_join(
 void uniffi_matrix_sdk_ffi_fn_free_sendhandle(
     /*handle*/ uint64_t handle, RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_sendhandle_abort(
-    /*handle*/ uint64_t ptr);
+    /*handle*/ uint64_t ptr, RustBuffer reason);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_sendhandle_try_resend(
     /*handle*/ uint64_t ptr);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_clone_timeline(
@@ -2062,6 +2109,8 @@ RustBuffer uniffi_matrix_sdk_ffi_fn_method_timeline_create_message_content(
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_timeline_edit(
     /*handle*/ uint64_t ptr, RustBuffer event_or_transaction_id,
     RustBuffer new_content);
+/*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_timeline_edit_revisions(
+    /*handle*/ uint64_t ptr, RustBuffer event_id);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_timeline_end_poll(
     /*handle*/ uint64_t ptr, RustBuffer poll_start_event_id, RustBuffer text);
 /*handle*/ uint64_t
@@ -2129,6 +2178,10 @@ uniffi_matrix_sdk_ffi_fn_method_timeline_subscribe_to_back_pagination_status(
     /*handle*/ uint64_t ptr, uint64_t listener);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_timeline_toggle_reaction(
     /*handle*/ uint64_t ptr, RustBuffer item_id, RustBuffer key);
+/*handle*/ uint64_t
+uniffi_matrix_sdk_ffi_fn_method_timeline_toggle_reaction_with_extra_content(
+    /*handle*/ uint64_t ptr, RustBuffer item_id, RustBuffer key,
+    RustBuffer extra_content_json);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_timeline_unpin_event(
     /*handle*/ uint64_t ptr, RustBuffer event_id);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_timeline_send_gallery(
@@ -2146,22 +2199,6 @@ RustBuffer uniffi_matrix_sdk_ffi_fn_method_timelineitem_fmt_debug(
     /*handle*/ uint64_t ptr, RustCallStatus *uniffi_out_err);
 RustBuffer uniffi_matrix_sdk_ffi_fn_method_timelineitem_unique_id(
     /*handle*/ uint64_t ptr, RustCallStatus *uniffi_out_err);
-/*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_clone_timelineeventfilter(
-    /*handle*/ uint64_t handle, RustCallStatus *uniffi_out_err);
-void uniffi_matrix_sdk_ffi_fn_free_timelineeventfilter(
-    /*handle*/ uint64_t handle, RustCallStatus *uniffi_out_err);
-/*handle*/ uint64_t
-uniffi_matrix_sdk_ffi_fn_constructor_timelineeventfilter_exclude(
-    RustBuffer conditions, RustCallStatus *uniffi_out_err);
-/*handle*/ uint64_t
-uniffi_matrix_sdk_ffi_fn_constructor_timelineeventfilter_exclude_event_types(
-    RustBuffer event_types, RustCallStatus *uniffi_out_err);
-/*handle*/ uint64_t
-uniffi_matrix_sdk_ffi_fn_constructor_timelineeventfilter_include(
-    RustBuffer conditions, RustCallStatus *uniffi_out_err);
-/*handle*/ uint64_t
-uniffi_matrix_sdk_ffi_fn_constructor_timelineeventfilter_include_event_types(
-    RustBuffer event_types, RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_clone_sendgalleryjoinhandle(
     /*handle*/ uint64_t handle, RustCallStatus *uniffi_out_err);
 void uniffi_matrix_sdk_ffi_fn_free_sendgalleryjoinhandle(
@@ -2217,8 +2254,8 @@ void uniffi_matrix_sdk_ffi_fn_free_widgetdriverhandle(
     /*handle*/ uint64_t handle, RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_widgetdriverhandle_recv(
     /*handle*/ uint64_t ptr);
-/*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_widgetdriverhandle_send(
-    /*handle*/ uint64_t ptr, RustBuffer msg);
+int8_t uniffi_matrix_sdk_ffi_fn_method_widgetdriverhandle_send(
+    /*handle*/ uint64_t ptr, RustBuffer msg, RustCallStatus *uniffi_out_err);
 void uniffi_matrix_sdk_ffi_fn_init_callback_vtable_accountdatalistener(
     UniffiVTableCallbackInterfaceAccountDataListener *vtable);
 void uniffi_matrix_sdk_ffi_fn_init_callback_vtable_beaconinfolistener(
@@ -2388,6 +2425,8 @@ RustBuffer uniffi_matrix_sdk_ffi_fn_func_parse_matrix_entity_from(
 RustBuffer uniffi_matrix_sdk_ffi_fn_func_create_caption_edit(
     RustBuffer caption, RustBuffer formatted_caption, RustBuffer mentions,
     RustCallStatus *uniffi_out_err);
+RustBuffer uniffi_matrix_sdk_ffi_fn_func_server_name_from_user_id(
+    RustBuffer user_id, RustCallStatus *uniffi_out_err);
 /*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_func_generate_webview_url(RustBuffer widget_settings,
                                                    /*handle*/ uint64_t room,
@@ -2544,6 +2583,7 @@ uniffi_matrix_sdk_ffi_checksum_func_message_event_content_from_markdown_as_emote
 uint16_t uniffi_matrix_sdk_ffi_checksum_func_message_event_content_new();
 uint16_t uniffi_matrix_sdk_ffi_checksum_func_parse_matrix_entity_from();
 uint16_t uniffi_matrix_sdk_ffi_checksum_func_create_caption_edit();
+uint16_t uniffi_matrix_sdk_ffi_checksum_func_server_name_from_user_id();
 uint16_t uniffi_matrix_sdk_ffi_checksum_func_generate_webview_url();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_func_get_element_call_required_permissions();
@@ -2581,10 +2621,10 @@ uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_custom_login_with_jwt();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_deactivate_account();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_delete_pusher();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_device_id();
+uint16_t
+uniffi_matrix_sdk_ffi_checksum_method_client_disable_well_known_lookup();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_display_name();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_enable_all_send_queues();
-uint16_t
-uniffi_matrix_sdk_ffi_checksum_method_client_enable_automatic_backpagination();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_client_enable_automatic_call_status();
 uint16_t
@@ -2617,6 +2657,7 @@ uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_client_get_session_verification_controller();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_get_store_sizes();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_get_url();
+uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_get_url_preview();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_homeserver();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_homeserver_capabilities();
 uint16_t
@@ -2627,6 +2668,8 @@ uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_client_is_livekit_rtc_supported();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_client_is_login_with_qr_code_supported();
+uint16_t
+uniffi_matrix_sdk_ffi_checksum_method_client_is_profiles_sliding_sync_extension_supported();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_client_is_report_room_api_supported();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_is_room_alias_available();
@@ -2647,6 +2690,8 @@ uniffi_matrix_sdk_ffi_checksum_method_client_new_grant_login_with_qr_code_handle
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_client_new_login_with_qr_code_handler();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_notification_client();
+uint16_t
+uniffi_matrix_sdk_ffi_checksum_method_client_notification_client_with_timeouts();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_client_observe_account_data_event();
 uint16_t
@@ -2709,6 +2754,8 @@ uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_sync_service();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_sync_v2();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_tile_server();
 uint16_t
+uniffi_matrix_sdk_ffi_checksum_method_client_total_unread_notifications();
+uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_client_track_recently_visited_room();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_unignore_user();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_client_upload_avatar();
@@ -2756,7 +2803,11 @@ uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_disable_built_in_root_certif
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_disable_ssl_verification();
 uint16_t
+uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_disable_well_known_lookup();
+uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_dm_room_definition();
+uint16_t
+uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_enable_automatic_back_pagination();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_enable_share_history_on_invite();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_homeserver_url();
@@ -2766,6 +2817,8 @@ uint16_t uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_request_config();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_room_key_recipient_strategy();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_server_name();
+uint16_t
+uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_server_name_from_user_id();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_server_name_or_homeserver_url();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_session_paths();
@@ -2778,7 +2831,6 @@ uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_system_is_memory_constrained();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_threads_enabled();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_user_agent();
-uint16_t uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_username();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_with_search_index_store();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_contentscanner_scan();
@@ -2855,6 +2907,7 @@ uniffi_matrix_sdk_ffi_checksum_method_notificationclient_get_notification();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_notificationclient_get_notifications();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_notificationclient_get_room();
+uint16_t uniffi_matrix_sdk_ffi_checksum_method_notificationclient_timeouts();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_notificationsettings_can_homeserver_push_encrypted_event_to_device();
 uint16_t
@@ -2928,6 +2981,9 @@ uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_knockrequestactions_decline_and_ban();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_knockrequestactions_mark_as_seen();
+uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_active_human_member_ids();
+uint16_t
+uniffi_matrix_sdk_ffi_checksum_method_room_active_human_member_ids_no_sync();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_active_members_count();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_room_active_room_call_participants();
@@ -2937,6 +2993,7 @@ uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_avatar_url();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_ban_user();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_canonical_alias();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_clear_composer_draft();
+uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_clear_event_cache();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_decline_call();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_discard_room_key();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_display_name();
@@ -2971,6 +3028,8 @@ uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_leave();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_live_locations_observer();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_load_composer_draft();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_load_or_fetch_event();
+uint16_t
+uniffi_matrix_sdk_ffi_checksum_method_room_load_or_fetch_event_with_relations();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_room_load_user_receipt();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_room_mark_as_fully_read_unchecked();
@@ -3106,10 +3165,14 @@ uniffi_matrix_sdk_ffi_checksum_method_roomlistentrieswithdynamicadaptersresult_c
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_roomlistentrieswithdynamicadaptersresult_entries_stream();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_all_rooms();
-uint16_t uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_room();
-uint16_t uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_state();
 uint16_t
-uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_subscribe_to_rooms();
+uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_remove_room_subscriptions();
+uint16_t
+uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_reset_and_add_room_subscriptions();
+uint16_t uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_room();
+uint16_t
+uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_set_room_subscriptions();
+uint16_t uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_state();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_sync_indicator();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_unreadnotificationscount_has_notifications();
@@ -3172,6 +3235,8 @@ uniffi_matrix_sdk_ffi_checksum_method_spaceservice_add_child_to_space();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_spaceservice_editable_spaces();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_spaceservice_get_space_room();
 uint16_t
+uniffi_matrix_sdk_ffi_checksum_method_spaceservice_joined_parent_ids_of_child();
+uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_spaceservice_joined_parents_of_child();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_spaceservice_leave_space();
 uint16_t
@@ -3183,8 +3248,12 @@ uniffi_matrix_sdk_ffi_checksum_method_spaceservice_subscribe_to_space_filters();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_spaceservice_subscribe_to_top_level_joined_spaces();
 uint16_t
+uniffi_matrix_sdk_ffi_checksum_method_spaceservice_top_level_ancestors_of();
+uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_spaceservice_top_level_joined_spaces();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_sqlitestorebuilder_cache_size();
+uint16_t
+uniffi_matrix_sdk_ffi_checksum_method_sqlitestorebuilder_high_entropy_passphrase();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_sqlitestorebuilder_journal_size_limit();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_sqlitestorebuilder_key();
@@ -3203,8 +3272,6 @@ uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_syncservicebuilder_with_offline_mode();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_syncservicebuilder_with_parent_span();
-uint16_t
-uniffi_matrix_sdk_ffi_checksum_method_syncservicebuilder_with_profiles_extension();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_syncservicebuilder_with_room_list_connection_id();
 uint16_t
@@ -3233,6 +3300,7 @@ uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_timeline_create_message_content();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_timeline_create_poll();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_timeline_edit();
+uint16_t uniffi_matrix_sdk_ffi_checksum_method_timeline_edit_revisions();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_timeline_end_poll();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_timeline_fetch_details_for_event();
@@ -3262,6 +3330,8 @@ uniffi_matrix_sdk_ffi_checksum_method_timeline_send_with_extra_content();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_timeline_subscribe_to_back_pagination_status();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_timeline_toggle_reaction();
+uint16_t
+uniffi_matrix_sdk_ffi_checksum_method_timeline_toggle_reaction_with_extra_content();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_timeline_unpin_event();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_timeline_send_gallery();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_timelineitem_as_event();
@@ -3305,14 +3375,6 @@ uint16_t uniffi_matrix_sdk_ffi_checksum_constructor_qrcodedata_from_bytes();
 uint16_t uniffi_matrix_sdk_ffi_checksum_constructor_mediasource_from_json();
 uint16_t uniffi_matrix_sdk_ffi_checksum_constructor_mediasource_from_url();
 uint16_t uniffi_matrix_sdk_ffi_checksum_constructor_sqlitestorebuilder_new();
-uint16_t
-uniffi_matrix_sdk_ffi_checksum_constructor_timelineeventfilter_exclude();
-uint16_t
-uniffi_matrix_sdk_ffi_checksum_constructor_timelineeventfilter_exclude_event_types();
-uint16_t
-uniffi_matrix_sdk_ffi_checksum_constructor_timelineeventfilter_include();
-uint16_t
-uniffi_matrix_sdk_ffi_checksum_constructor_timelineeventfilter_include_event_types();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_accountdatalistener_on_change();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_beaconinfolistener_on_update();
 uint16_t
@@ -27179,17 +27241,21 @@ using namespace facebook;
 
 // We need to store a lambda in a global so we can call it from
 // a function pointer. The function pointer is passed to Rust.
-static std::function<void(uint64_t, RustBuffer, RustBuffer *, RustCallStatus *)>
+static std::function<void(uint64_t, RustBuffer,
+                          UniffiForeignFutureCompleteRustBuffer, uint64_t,
+                          UniffiForeignFutureDroppedCallbackStruct *)>
     rsLambda = nullptr;
 
 // This is the main body of the callback. It's called from the lambda,
 // which itself is called from the callback function which is passed to Rust.
-static void body(jsi::Runtime &rt,
-                 std::shared_ptr<uniffi_runtime::UniffiCallInvoker> callInvoker,
-                 std::shared_ptr<jsi::Value> callbackValue,
-                 uint64_t rs_uniffiHandle, RustBuffer rs_capabilities,
-                 RustBuffer *rs_uniffiOutReturn,
-                 RustCallStatus *uniffi_call_status) {
+static void
+body(jsi::Runtime &rt,
+     std::shared_ptr<uniffi_runtime::UniffiCallInvoker> callInvoker,
+     std::shared_ptr<jsi::Value> callbackValue, uint64_t rs_uniffiHandle,
+     RustBuffer rs_capabilities,
+     UniffiForeignFutureCompleteRustBuffer rs_uniffiFutureCallback,
+     uint64_t rs_uniffiCallbackData,
+     UniffiForeignFutureDroppedCallbackStruct *rs_uniffiOutDroppedCallback) {
 
   // Convert the arguments from Rust, into jsi::Values.
   // We'll use the Bridging class to do this…
@@ -27197,6 +27263,11 @@ static void body(jsi::Runtime &rt,
       uniffi_jsi::Bridging<uint64_t>::toJs(rt, callInvoker, rs_uniffiHandle);
   auto js_capabilities = uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::toJs(
       rt, callInvoker, rs_capabilities);
+  auto js_uniffiFutureCallback = uniffi::matrix_sdk_ffi::Bridging<
+      UniffiForeignFutureCompleteRustBuffer>::toJs(rt, callInvoker,
+                                                   rs_uniffiFutureCallback);
+  auto js_uniffiCallbackData = uniffi_jsi::Bridging<uint64_t>::toJs(
+      rt, callInvoker, rs_uniffiCallbackData);
 
   // Now we are ready to call the callback.
   // We are already on the JS thread, because this `body` function was
@@ -27204,24 +27275,14 @@ static void body(jsi::Runtime &rt,
   try {
     // Getting the callback function
     auto cb = callbackValue->asObject(rt).asFunction(rt);
-    auto uniffiResult = cb.call(rt, js_uniffiHandle, js_capabilities);
+    auto uniffiResult = cb.call(rt, js_uniffiHandle, js_capabilities,
+                                js_uniffiFutureCallback, js_uniffiCallbackData);
 
-    // Now copy the result back from JS into the RustCallStatus object.
-    uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyFromJs(
-        rt, callInvoker, uniffiResult, uniffi_call_status);
-
-    if (uniffi_call_status->code != UNIFFI_CALL_STATUS_OK) {
-      // The JS callback finished abnormally, so we cannot retrieve the return
-      // value.
-      return;
-    }
-
-    // return type is RustBuffer(Some(ExternalFfiMetadata { name:
-    // "WidgetCapabilities", module_path: "matrix_sdk_ffi::widget" })) Finally,
-    // we need to copy the return value back into the Rust pointer.
-    *rs_uniffiOutReturn =
-        uniffi::matrix_sdk_ffi::Bridging<ReferenceHolder<RustBuffer>>::fromJs(
-            rt, callInvoker, uniffiResult);
+    // return type is Struct("ForeignFutureDroppedCallbackStruct")
+    // Finally, we need to copy the return value back into the Rust pointer.
+    *rs_uniffiOutDroppedCallback = uniffi::matrix_sdk_ffi::Bridging<
+        UniffiForeignFutureDroppedCallbackStruct>::fromJs(rt, callInvoker,
+                                                          uniffiResult);
   } catch (const jsi::JSError &error) {
     std::cout << "Error in callback "
                  "UniffiCallbackInterfaceWidgetCapabilitiesProviderMethod0: "
@@ -27230,9 +27291,11 @@ static void body(jsi::Runtime &rt,
   }
 }
 
-static void callback(uint64_t rs_uniffiHandle, RustBuffer rs_capabilities,
-                     RustBuffer *rs_uniffiOutReturn,
-                     RustCallStatus *uniffi_call_status) {
+static void callback(
+    uint64_t rs_uniffiHandle, RustBuffer rs_capabilities,
+    UniffiForeignFutureCompleteRustBuffer rs_uniffiFutureCallback,
+    uint64_t rs_uniffiCallbackData,
+    UniffiForeignFutureDroppedCallbackStruct *rs_uniffiOutDroppedCallback) {
   // If the runtime has shutdown, then there is no point in trying to
   // call into Javascript. BUT how do we tell if the runtime has shutdown?
   //
@@ -27248,8 +27311,8 @@ static void callback(uint64_t rs_uniffiHandle, RustBuffer rs_capabilities,
 
   // The runtime, the actual callback jsi::funtion, and the callInvoker
   // are all in the lambda.
-  rsLambda(rs_uniffiHandle, rs_capabilities, rs_uniffiOutReturn,
-           uniffi_call_status);
+  rsLambda(rs_uniffiHandle, rs_capabilities, rs_uniffiFutureCallback,
+           rs_uniffiCallbackData, rs_uniffiOutDroppedCallback);
 }
 
 [[maybe_unused]] static UniffiCallbackInterfaceWidgetCapabilitiesProviderMethod0
@@ -27273,15 +27336,19 @@ makeCallbackFunction( // uniffi::matrix_sdk_ffi::cb::callbackinterfacewidgetcapa
   auto callbackValue = std::make_shared<jsi::Value>(rt, callbackFunction);
   rsLambda = [&rt, callInvoker, callbackValue](
                  uint64_t rs_uniffiHandle, RustBuffer rs_capabilities,
-                 RustBuffer *rs_uniffiOutReturn,
-                 RustCallStatus *uniffi_call_status) {
+                 UniffiForeignFutureCompleteRustBuffer rs_uniffiFutureCallback,
+                 uint64_t rs_uniffiCallbackData,
+                 UniffiForeignFutureDroppedCallbackStruct
+                     *rs_uniffiOutDroppedCallback) {
     // We immediately make a lambda which will do the work of transforming the
     // arguments into JSI values and calling the callback.
     uniffi_runtime::UniffiCallFunc jsLambda =
         [callInvoker, callbackValue, rs_uniffiHandle, rs_capabilities,
-         rs_uniffiOutReturn, uniffi_call_status](jsi::Runtime &rt) mutable {
+         rs_uniffiFutureCallback, rs_uniffiCallbackData,
+         rs_uniffiOutDroppedCallback](jsi::Runtime &rt) mutable {
           body(rt, callInvoker, callbackValue, rs_uniffiHandle, rs_capabilities,
-               rs_uniffiOutReturn, uniffi_call_status);
+               rs_uniffiFutureCallback, rs_uniffiCallbackData,
+               rs_uniffiOutDroppedCallback);
         };
     // We'll then call that lambda from the callInvoker which will
     // look after calling it on the correct thread.
@@ -27802,6 +27869,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             return this->cpp_uniffi_matrix_sdk_ffi_fn_method_client_device_id(
                 rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_client_disable_well_known_"
+        "lookup"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
+                                    "client_disable_well_known_lookup"),
+      2,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_client_disable_well_known_lookup(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_client_display_name"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -27826,18 +27905,6 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_fn_method_client_enable_all_send_queues(
                     rt, thisVal, args, count);
           });
-  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_client_enable_automatic_"
-        "backpagination"] = jsi::Function::createFromHostFunction(
-      rt,
-      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
-                                    "client_enable_automatic_backpagination"),
-      1,
-      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-             const jsi::Value *args, size_t count) -> jsi::Value {
-        return this
-            ->cpp_uniffi_matrix_sdk_ffi_fn_method_client_enable_automatic_backpagination(
-                rt, thisVal, args, count);
-      });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_client_enable_automatic_call_"
         "status"] = jsi::Function::createFromHostFunction(
       rt,
@@ -28088,6 +28155,19 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             return this->cpp_uniffi_matrix_sdk_ffi_fn_method_client_get_url(
                 rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_client_get_url_preview"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_matrix_sdk_ffi_fn_method_client_get_url_preview"),
+          3,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_fn_method_client_get_url_preview(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_client_homeserver"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -28151,7 +28231,7 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
       rt,
       jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
                                     "client_is_livekit_rtc_supported"),
-      2,
+      1,
       [this](jsi::Runtime &rt, const jsi::Value &thisVal,
              const jsi::Value *args, size_t count) -> jsi::Value {
         return this
@@ -28168,6 +28248,19 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
              const jsi::Value *args, size_t count) -> jsi::Value {
         return this
             ->cpp_uniffi_matrix_sdk_ffi_fn_method_client_is_login_with_qr_code_supported(
+                rt, thisVal, args, count);
+      });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_client_is_profiles_sliding_sync_"
+        "extension_supported"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt,
+                                "ubrn_uniffi_matrix_sdk_ffi_fn_method_client_"
+                                "is_profiles_sliding_sync_extension_supported"),
+      1,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_client_is_profiles_sliding_sync_extension_supported(
                 rt, thisVal, args, count);
       });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_client_is_report_room_api_"
@@ -28338,6 +28431,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_fn_method_client_notification_client(
                     rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_client_notification_client_with_"
+        "timeouts"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
+                                    "client_notification_client_with_timeouts"),
+      3,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_client_notification_client_with_timeouts(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_client_observe_account_data_"
         "event"] = jsi::Function::createFromHostFunction(
       rt,
@@ -28907,6 +29012,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             return this->cpp_uniffi_matrix_sdk_ffi_fn_method_client_tile_server(
                 rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_client_total_unread_"
+        "notifications"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
+                                    "client_total_unread_notifications"),
+      1,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_client_total_unread_notifications(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_client_track_recently_visited_"
         "room"] = jsi::Function::createFromHostFunction(
       rt,
@@ -29358,6 +29475,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             ->cpp_uniffi_matrix_sdk_ffi_fn_method_clientbuilder_disable_ssl_verification(
                 rt, thisVal, args, count);
       });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_clientbuilder_disable_well_known_"
+        "lookup"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
+                                    "clientbuilder_disable_well_known_lookup"),
+      2,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_clientbuilder_disable_well_known_lookup(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_clientbuilder_dm_room_"
         "definition"] = jsi::Function::createFromHostFunction(
       rt,
@@ -29368,6 +29497,19 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
              const jsi::Value *args, size_t count) -> jsi::Value {
         return this
             ->cpp_uniffi_matrix_sdk_ffi_fn_method_clientbuilder_dm_room_definition(
+                rt, thisVal, args, count);
+      });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_clientbuilder_enable_automatic_"
+        "back_pagination"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(
+          rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_clientbuilder_enable_"
+              "automatic_back_pagination"),
+      2,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_clientbuilder_enable_automatic_back_pagination(
                 rt, thisVal, args, count);
       });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_clientbuilder_enable_share_"
@@ -29457,6 +29599,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_fn_method_clientbuilder_server_name(
                     rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_clientbuilder_server_name_from_"
+        "user_id"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
+                                    "clientbuilder_server_name_from_user_id"),
+      2,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_clientbuilder_server_name_from_user_id(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_clientbuilder_server_name_or_"
         "homeserver_url"] = jsi::Function::createFromHostFunction(
       rt,
@@ -29555,19 +29709,6 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                  const jsi::Value *args, size_t count) -> jsi::Value {
             return this
                 ->cpp_uniffi_matrix_sdk_ffi_fn_method_clientbuilder_user_agent(
-                    rt, thisVal, args, count);
-          });
-  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_clientbuilder_username"] =
-      jsi::Function::createFromHostFunction(
-          rt,
-          jsi::PropNameID::forAscii(
-              rt,
-              "ubrn_uniffi_matrix_sdk_ffi_fn_method_clientbuilder_username"),
-          2,
-          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-                 const jsi::Value *args, size_t count) -> jsi::Value {
-            return this
-                ->cpp_uniffi_matrix_sdk_ffi_fn_method_clientbuilder_username(
                     rt, thisVal, args, count);
           });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_clientbuilder_with_search_index_"
@@ -30417,6 +30558,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_fn_method_notificationclient_get_room(
                     rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_notificationclient_timeouts"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
+                                        "notificationclient_timeouts"),
+          1,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_fn_method_notificationclient_timeouts(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_clone_notificationsettings"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -31255,6 +31408,30 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             return this->cpp_uniffi_matrix_sdk_ffi_fn_free_room(rt, thisVal,
                                                                 args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_room_active_human_member_ids"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
+                                        "room_active_human_member_ids"),
+          1,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_fn_method_room_active_human_member_ids(
+                    rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_room_active_human_member_ids_no_"
+        "sync"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_room_"
+                                    "active_human_member_ids_no_sync"),
+      1,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_room_active_human_member_ids_no_sync(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_room_active_members_count"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -31350,6 +31527,19 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                  const jsi::Value *args, size_t count) -> jsi::Value {
             return this
                 ->cpp_uniffi_matrix_sdk_ffi_fn_method_room_clear_composer_draft(
+                    rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_room_clear_event_cache"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_matrix_sdk_ffi_fn_method_room_clear_event_cache"),
+          1,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_fn_method_room_clear_event_cache(
                     rt, thisVal, args, count);
           });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_room_decline_call"] =
@@ -31740,6 +31930,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_fn_method_room_load_or_fetch_event(
                     rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_room_load_or_fetch_event_with_"
+        "relations"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_room_"
+                                    "load_or_fetch_event_with_relations"),
+      3,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_room_load_or_fetch_event_with_relations(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_room_load_user_receipt"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -33074,6 +33276,32 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_fn_method_roomlistservice_all_rooms(
                     rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_roomlistservice_remove_room_"
+        "subscriptions"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt,
+                                "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
+                                "roomlistservice_remove_room_subscriptions"),
+      2,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_roomlistservice_remove_room_subscriptions(
+                rt, thisVal, args, count);
+      });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_roomlistservice_reset_and_add_"
+        "room_subscriptions"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(
+          rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_roomlistservice_reset_and_"
+              "add_room_subscriptions"),
+      2,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_roomlistservice_reset_and_add_room_subscriptions(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_roomlistservice_room"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -33086,6 +33314,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_fn_method_roomlistservice_room(
                     rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_roomlistservice_set_room_"
+        "subscriptions"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
+                                    "roomlistservice_set_room_subscriptions"),
+      2,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_roomlistservice_set_room_subscriptions(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_roomlistservice_state"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -33098,18 +33338,6 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_fn_method_roomlistservice_state(
                     rt, thisVal, args, count);
           });
-  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_roomlistservice_subscribe_to_"
-        "rooms"] = jsi::Function::createFromHostFunction(
-      rt,
-      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
-                                    "roomlistservice_subscribe_to_rooms"),
-      2,
-      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-             const jsi::Value *args, size_t count) -> jsi::Value {
-        return this
-            ->cpp_uniffi_matrix_sdk_ffi_fn_method_roomlistservice_subscribe_to_rooms(
-                rt, thisVal, args, count);
-      });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_roomlistservice_sync_indicator"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -33837,6 +34065,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_fn_method_spaceservice_get_space_room(
                     rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_spaceservice_joined_parent_ids_"
+        "of_child"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
+                                    "spaceservice_joined_parent_ids_of_child"),
+      2,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_spaceservice_joined_parent_ids_of_child(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_spaceservice_joined_parents_of_"
         "child"] = jsi::Function::createFromHostFunction(
       rt,
@@ -33923,6 +34163,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             ->cpp_uniffi_matrix_sdk_ffi_fn_method_spaceservice_subscribe_to_top_level_joined_spaces(
                 rt, thisVal, args, count);
       });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_spaceservice_top_level_ancestors_"
+        "of"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
+                                    "spaceservice_top_level_ancestors_of"),
+      2,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_spaceservice_top_level_ancestors_of(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_spaceservice_top_level_joined_"
         "spaces"] = jsi::Function::createFromHostFunction(
       rt,
@@ -33981,6 +34233,19 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_fn_method_sqlitestorebuilder_cache_size(
                     rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_sqlitestorebuilder_high_entropy_"
+        "passphrase"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt,
+                                "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
+                                "sqlitestorebuilder_high_entropy_passphrase"),
+      3,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_sqlitestorebuilder_high_entropy_passphrase(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_sqlitestorebuilder_journal_size_"
         "limit"] = jsi::Function::createFromHostFunction(
       rt,
@@ -34179,19 +34444,6 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
              const jsi::Value *args, size_t count) -> jsi::Value {
         return this
             ->cpp_uniffi_matrix_sdk_ffi_fn_method_syncservicebuilder_with_parent_span(
-                rt, thisVal, args, count);
-      });
-  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_syncservicebuilder_with_profiles_"
-        "extension"] = jsi::Function::createFromHostFunction(
-      rt,
-      jsi::PropNameID::forAscii(rt,
-                                "ubrn_uniffi_matrix_sdk_ffi_fn_method_"
-                                "syncservicebuilder_with_profiles_extension"),
-      1,
-      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-             const jsi::Value *args, size_t count) -> jsi::Value {
-        return this
-            ->cpp_uniffi_matrix_sdk_ffi_fn_method_syncservicebuilder_with_profiles_extension(
                 rt, thisVal, args, count);
       });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_syncservicebuilder_with_room_"
@@ -34442,7 +34694,7 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
           rt,
           jsi::PropNameID::forAscii(
               rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_sendhandle_abort"),
-          1,
+          2,
           [this](jsi::Runtime &rt, const jsi::Value &thisVal,
                  const jsi::Value *args, size_t count) -> jsi::Value {
             return this->cpp_uniffi_matrix_sdk_ffi_fn_method_sendhandle_abort(
@@ -34528,6 +34780,19 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                  const jsi::Value *args, size_t count) -> jsi::Value {
             return this->cpp_uniffi_matrix_sdk_ffi_fn_method_timeline_edit(
                 rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_timeline_edit_revisions"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_matrix_sdk_ffi_fn_method_timeline_edit_revisions"),
+          2,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_fn_method_timeline_edit_revisions(
+                    rt, thisVal, args, count);
           });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_timeline_end_poll"] =
       jsi::Function::createFromHostFunction(
@@ -34832,6 +35097,19 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_fn_method_timeline_toggle_reaction(
                     rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_timeline_toggle_reaction_with_"
+        "extra_content"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt,
+                                "ubrn_uniffi_matrix_sdk_ffi_fn_method_timeline_"
+                                "toggle_reaction_with_extra_content"),
+      4,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_fn_method_timeline_toggle_reaction_with_extra_content(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_timeline_unpin_event"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -34929,76 +35207,6 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_fn_method_timelineitem_unique_id(
                     rt, thisVal, args, count);
           });
-  props["ubrn_uniffi_matrix_sdk_ffi_fn_clone_timelineeventfilter"] =
-      jsi::Function::createFromHostFunction(
-          rt,
-          jsi::PropNameID::forAscii(
-              rt, "ubrn_uniffi_matrix_sdk_ffi_fn_clone_timelineeventfilter"),
-          1,
-          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-                 const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_matrix_sdk_ffi_fn_clone_timelineeventfilter(
-                rt, thisVal, args, count);
-          });
-  props["ubrn_uniffi_matrix_sdk_ffi_fn_free_timelineeventfilter"] =
-      jsi::Function::createFromHostFunction(
-          rt,
-          jsi::PropNameID::forAscii(
-              rt, "ubrn_uniffi_matrix_sdk_ffi_fn_free_timelineeventfilter"),
-          1,
-          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-                 const jsi::Value *args, size_t count) -> jsi::Value {
-            return this->cpp_uniffi_matrix_sdk_ffi_fn_free_timelineeventfilter(
-                rt, thisVal, args, count);
-          });
-  props["ubrn_uniffi_matrix_sdk_ffi_fn_constructor_timelineeventfilter_"
-        "exclude"] = jsi::Function::createFromHostFunction(
-      rt,
-      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_constructor_"
-                                    "timelineeventfilter_exclude"),
-      1,
-      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-             const jsi::Value *args, size_t count) -> jsi::Value {
-        return this
-            ->cpp_uniffi_matrix_sdk_ffi_fn_constructor_timelineeventfilter_exclude(
-                rt, thisVal, args, count);
-      });
-  props["ubrn_uniffi_matrix_sdk_ffi_fn_constructor_timelineeventfilter_exclude_"
-        "event_types"] = jsi::Function::createFromHostFunction(
-      rt,
-      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_constructor_"
-                                    "timelineeventfilter_exclude_event_types"),
-      1,
-      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-             const jsi::Value *args, size_t count) -> jsi::Value {
-        return this
-            ->cpp_uniffi_matrix_sdk_ffi_fn_constructor_timelineeventfilter_exclude_event_types(
-                rt, thisVal, args, count);
-      });
-  props["ubrn_uniffi_matrix_sdk_ffi_fn_constructor_timelineeventfilter_"
-        "include"] = jsi::Function::createFromHostFunction(
-      rt,
-      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_constructor_"
-                                    "timelineeventfilter_include"),
-      1,
-      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-             const jsi::Value *args, size_t count) -> jsi::Value {
-        return this
-            ->cpp_uniffi_matrix_sdk_ffi_fn_constructor_timelineeventfilter_include(
-                rt, thisVal, args, count);
-      });
-  props["ubrn_uniffi_matrix_sdk_ffi_fn_constructor_timelineeventfilter_include_"
-        "event_types"] = jsi::Function::createFromHostFunction(
-      rt,
-      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_fn_constructor_"
-                                    "timelineeventfilter_include_event_types"),
-      1,
-      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-             const jsi::Value *args, size_t count) -> jsi::Value {
-        return this
-            ->cpp_uniffi_matrix_sdk_ffi_fn_constructor_timelineeventfilter_include_event_types(
-                rt, thisVal, args, count);
-      });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_clone_sendgalleryjoinhandle"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -36307,6 +36515,19 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             return this->cpp_uniffi_matrix_sdk_ffi_fn_func_create_caption_edit(
                 rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_func_server_name_from_user_id"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_matrix_sdk_ffi_fn_func_server_name_from_user_id"),
+          1,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_fn_func_server_name_from_user_id(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_func_generate_webview_url"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -37134,6 +37355,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_checksum_func_create_caption_edit(
                     rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_func_server_name_from_user_id"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_"
+                                        "func_server_name_from_user_id"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_checksum_func_server_name_from_user_id(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_func_generate_webview_url"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -37499,6 +37732,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_device_id(
                     rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_disable_well_known_"
+        "lookup"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_"
+                                    "method_client_disable_well_known_lookup"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_disable_well_known_lookup(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_display_name"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -37522,19 +37767,6 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
              const jsi::Value *args, size_t count) -> jsi::Value {
         return this
             ->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_enable_all_send_queues(
-                rt, thisVal, args, count);
-      });
-  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_enable_automatic_"
-        "backpagination"] = jsi::Function::createFromHostFunction(
-      rt,
-      jsi::PropNameID::forAscii(rt,
-                                "ubrn_uniffi_matrix_sdk_ffi_checksum_method_"
-                                "client_enable_automatic_backpagination"),
-      0,
-      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-             const jsi::Value *args, size_t count) -> jsi::Value {
-        return this
-            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_enable_automatic_backpagination(
                 rt, thisVal, args, count);
       });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_enable_automatic_"
@@ -37800,6 +38032,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_get_url(
                     rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_get_url_preview"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_"
+                                        "method_client_get_url_preview"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_get_url_preview(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_homeserver"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -37885,6 +38129,19 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
              const jsi::Value *args, size_t count) -> jsi::Value {
         return this
             ->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_is_login_with_qr_code_supported(
+                rt, thisVal, args, count);
+      });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_is_profiles_sliding_"
+        "sync_extension_supported"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(
+          rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_is_profiles_"
+              "sliding_sync_extension_supported"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_is_profiles_sliding_sync_extension_supported(
                 rt, thisVal, args, count);
       });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_is_report_room_api_"
@@ -38054,6 +38311,19 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
              const jsi::Value *args, size_t count) -> jsi::Value {
         return this
             ->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_notification_client(
+                rt, thisVal, args, count);
+      });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_notification_client_"
+        "with_timeouts"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt,
+                                "ubrn_uniffi_matrix_sdk_ffi_checksum_method_"
+                                "client_notification_client_with_timeouts"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_notification_client_with_timeouts(
                 rt, thisVal, args, count);
       });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_observe_account_"
@@ -38634,6 +38904,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_tile_server(
                     rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_total_unread_"
+        "notifications"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_"
+                                    "method_client_total_unread_notifications"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_client_total_unread_notifications(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_track_recently_"
         "visited_room"] = jsi::Function::createFromHostFunction(
       rt,
@@ -39011,6 +39293,19 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             ->cpp_uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_disable_ssl_verification(
                 rt, thisVal, args, count);
       });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_disable_well_"
+        "known_lookup"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt,
+                                "ubrn_uniffi_matrix_sdk_ffi_checksum_method_"
+                                "clientbuilder_disable_well_known_lookup"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_disable_well_known_lookup(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_dm_room_"
         "definition"] = jsi::Function::createFromHostFunction(
       rt,
@@ -39021,6 +39316,19 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
              const jsi::Value *args, size_t count) -> jsi::Value {
         return this
             ->cpp_uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_dm_room_definition(
+                rt, thisVal, args, count);
+      });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_enable_"
+        "automatic_back_pagination"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(
+          rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_enable_"
+              "automatic_back_pagination"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_enable_automatic_back_pagination(
                 rt, thisVal, args, count);
       });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_enable_share_"
@@ -39108,6 +39416,19 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
              const jsi::Value *args, size_t count) -> jsi::Value {
         return this
             ->cpp_uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_server_name(
+                rt, thisVal, args, count);
+      });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_server_name_"
+        "from_user_id"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt,
+                                "ubrn_uniffi_matrix_sdk_ffi_checksum_method_"
+                                "clientbuilder_server_name_from_user_id"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_server_name_from_user_id(
                 rt, thisVal, args, count);
       });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_server_name_"
@@ -39208,18 +39529,6 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                  const jsi::Value *args, size_t count) -> jsi::Value {
             return this
                 ->cpp_uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_user_agent(
-                    rt, thisVal, args, count);
-          });
-  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_username"] =
-      jsi::Function::createFromHostFunction(
-          rt,
-          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_"
-                                        "method_clientbuilder_username"),
-          0,
-          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-                 const jsi::Value *args, size_t count) -> jsi::Value {
-            return this
-                ->cpp_uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_username(
                     rt, thisVal, args, count);
           });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_with_search_"
@@ -39858,6 +40167,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             ->cpp_uniffi_matrix_sdk_ffi_checksum_method_notificationclient_get_room(
                 rt, thisVal, args, count);
       });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_notificationclient_"
+        "timeouts"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_"
+                                    "method_notificationclient_timeouts"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_notificationclient_timeouts(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_notificationsettings_can_"
         "homeserver_push_encrypted_event_to_device"] =
       jsi::Function::createFromHostFunction(
@@ -40393,6 +40714,31 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             ->cpp_uniffi_matrix_sdk_ffi_checksum_method_knockrequestactions_mark_as_seen(
                 rt, thisVal, args, count);
       });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_room_active_human_member_"
+        "ids"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_"
+                                    "method_room_active_human_member_ids"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_room_active_human_member_ids(
+                rt, thisVal, args, count);
+      });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_room_active_human_member_"
+        "ids_no_sync"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt,
+                                "ubrn_uniffi_matrix_sdk_ffi_checksum_method_"
+                                "room_active_human_member_ids_no_sync"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_room_active_human_member_ids_no_sync(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_room_active_members_"
         "count"] = jsi::Function::createFromHostFunction(
       rt,
@@ -40490,6 +40836,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             ->cpp_uniffi_matrix_sdk_ffi_checksum_method_room_clear_composer_draft(
                 rt, thisVal, args, count);
       });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_room_clear_event_cache"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_"
+                                        "method_room_clear_event_cache"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_checksum_method_room_clear_event_cache(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_room_decline_call"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -40885,6 +41243,19 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_checksum_method_room_load_or_fetch_event(
                     rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_room_load_or_fetch_event_"
+        "with_relations"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt,
+                                "ubrn_uniffi_matrix_sdk_ffi_checksum_method_"
+                                "room_load_or_fetch_event_with_relations"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_room_load_or_fetch_event_with_relations(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_room_load_user_receipt"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -42088,6 +42459,32 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             ->cpp_uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_all_rooms(
                 rt, thisVal, args, count);
       });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_remove_"
+        "room_subscriptions"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt,
+                                "ubrn_uniffi_matrix_sdk_ffi_checksum_method_"
+                                "roomlistservice_remove_room_subscriptions"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_remove_room_subscriptions(
+                rt, thisVal, args, count);
+      });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_reset_and_"
+        "add_room_subscriptions"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(
+          rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_"
+              "reset_and_add_room_subscriptions"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_reset_and_add_room_subscriptions(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_room"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -42100,6 +42497,19 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_room(
                     rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_set_room_"
+        "subscriptions"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt,
+                                "ubrn_uniffi_matrix_sdk_ffi_checksum_method_"
+                                "roomlistservice_set_room_subscriptions"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_set_room_subscriptions(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_state"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -42112,19 +42522,6 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_state(
                     rt, thisVal, args, count);
           });
-  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_subscribe_"
-        "to_rooms"] = jsi::Function::createFromHostFunction(
-      rt,
-      jsi::PropNameID::forAscii(rt,
-                                "ubrn_uniffi_matrix_sdk_ffi_checksum_method_"
-                                "roomlistservice_subscribe_to_rooms"),
-      0,
-      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-             const jsi::Value *args, size_t count) -> jsi::Value {
-        return this
-            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_subscribe_to_rooms(
-                rt, thisVal, args, count);
-      });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_sync_"
         "indicator"] = jsi::Function::createFromHostFunction(
       rt,
@@ -42642,6 +43039,19 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             ->cpp_uniffi_matrix_sdk_ffi_checksum_method_spaceservice_get_space_room(
                 rt, thisVal, args, count);
       });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_spaceservice_joined_parent_"
+        "ids_of_child"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt,
+                                "ubrn_uniffi_matrix_sdk_ffi_checksum_method_"
+                                "spaceservice_joined_parent_ids_of_child"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_spaceservice_joined_parent_ids_of_child(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_spaceservice_joined_"
         "parents_of_child"] = jsi::Function::createFromHostFunction(
       rt,
@@ -42731,6 +43141,19 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 rt, thisVal, args, count);
       });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_spaceservice_top_level_"
+        "ancestors_of"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt,
+                                "ubrn_uniffi_matrix_sdk_ffi_checksum_method_"
+                                "spaceservice_top_level_ancestors_of"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_spaceservice_top_level_ancestors_of(
+                rt, thisVal, args, count);
+      });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_spaceservice_top_level_"
         "joined_spaces"] = jsi::Function::createFromHostFunction(
       rt,
       jsi::PropNameID::forAscii(rt,
@@ -42753,6 +43176,19 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
              const jsi::Value *args, size_t count) -> jsi::Value {
         return this
             ->cpp_uniffi_matrix_sdk_ffi_checksum_method_sqlitestorebuilder_cache_size(
+                rt, thisVal, args, count);
+      });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_sqlitestorebuilder_high_"
+        "entropy_passphrase"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt,
+                                "ubrn_uniffi_matrix_sdk_ffi_checksum_method_"
+                                "sqlitestorebuilder_high_entropy_passphrase"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_sqlitestorebuilder_high_entropy_passphrase(
                 rt, thisVal, args, count);
       });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_sqlitestorebuilder_journal_"
@@ -42916,19 +43352,6 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
              const jsi::Value *args, size_t count) -> jsi::Value {
         return this
             ->cpp_uniffi_matrix_sdk_ffi_checksum_method_syncservicebuilder_with_parent_span(
-                rt, thisVal, args, count);
-      });
-  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_syncservicebuilder_with_"
-        "profiles_extension"] = jsi::Function::createFromHostFunction(
-      rt,
-      jsi::PropNameID::forAscii(rt,
-                                "ubrn_uniffi_matrix_sdk_ffi_checksum_method_"
-                                "syncservicebuilder_with_profiles_extension"),
-      0,
-      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-             const jsi::Value *args, size_t count) -> jsi::Value {
-        return this
-            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_syncservicebuilder_with_profiles_extension(
                 rt, thisVal, args, count);
       });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_syncservicebuilder_with_"
@@ -43154,6 +43577,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                  const jsi::Value *args, size_t count) -> jsi::Value {
             return this
                 ->cpp_uniffi_matrix_sdk_ffi_checksum_method_timeline_edit(
+                    rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_timeline_edit_revisions"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_"
+                                        "method_timeline_edit_revisions"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_checksum_method_timeline_edit_revisions(
                     rt, thisVal, args, count);
           });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_timeline_end_poll"] =
@@ -43465,6 +43900,19 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_checksum_method_timeline_toggle_reaction(
                     rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_timeline_toggle_reaction_"
+        "with_extra_content"] = jsi::Function::createFromHostFunction(
+      rt,
+      jsi::PropNameID::forAscii(rt,
+                                "ubrn_uniffi_matrix_sdk_ffi_checksum_method_"
+                                "timeline_toggle_reaction_with_extra_content"),
+      0,
+      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+             const jsi::Value *args, size_t count) -> jsi::Value {
+        return this
+            ->cpp_uniffi_matrix_sdk_ffi_checksum_method_timeline_toggle_reaction_with_extra_content(
+                rt, thisVal, args, count);
+      });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_timeline_unpin_event"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -43897,56 +44345,6 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
              const jsi::Value *args, size_t count) -> jsi::Value {
         return this
             ->cpp_uniffi_matrix_sdk_ffi_checksum_constructor_sqlitestorebuilder_new(
-                rt, thisVal, args, count);
-      });
-  props["ubrn_uniffi_matrix_sdk_ffi_checksum_constructor_timelineeventfilter_"
-        "exclude"] = jsi::Function::createFromHostFunction(
-      rt,
-      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_"
-                                    "constructor_timelineeventfilter_exclude"),
-      0,
-      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-             const jsi::Value *args, size_t count) -> jsi::Value {
-        return this
-            ->cpp_uniffi_matrix_sdk_ffi_checksum_constructor_timelineeventfilter_exclude(
-                rt, thisVal, args, count);
-      });
-  props["ubrn_uniffi_matrix_sdk_ffi_checksum_constructor_timelineeventfilter_"
-        "exclude_event_types"] = jsi::Function::createFromHostFunction(
-      rt,
-      jsi::PropNameID::forAscii(
-          rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_constructor_"
-              "timelineeventfilter_exclude_event_types"),
-      0,
-      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-             const jsi::Value *args, size_t count) -> jsi::Value {
-        return this
-            ->cpp_uniffi_matrix_sdk_ffi_checksum_constructor_timelineeventfilter_exclude_event_types(
-                rt, thisVal, args, count);
-      });
-  props["ubrn_uniffi_matrix_sdk_ffi_checksum_constructor_timelineeventfilter_"
-        "include"] = jsi::Function::createFromHostFunction(
-      rt,
-      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_"
-                                    "constructor_timelineeventfilter_include"),
-      0,
-      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-             const jsi::Value *args, size_t count) -> jsi::Value {
-        return this
-            ->cpp_uniffi_matrix_sdk_ffi_checksum_constructor_timelineeventfilter_include(
-                rt, thisVal, args, count);
-      });
-  props["ubrn_uniffi_matrix_sdk_ffi_checksum_constructor_timelineeventfilter_"
-        "include_event_types"] = jsi::Function::createFromHostFunction(
-      rt,
-      jsi::PropNameID::forAscii(
-          rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_constructor_"
-              "timelineeventfilter_include_event_types"),
-      0,
-      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-             const jsi::Value *args, size_t count) -> jsi::Value {
-        return this
-            ->cpp_uniffi_matrix_sdk_ffi_checksum_constructor_timelineeventfilter_include_event_types(
                 rt, thisVal, args, count);
       });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_accountdatalistener_on_"
@@ -45380,18 +45778,6 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_internal_fn_method_timelineitem_ffi__bless_pointer(
                     rt, thisVal, args, count);
           });
-  props["ubrn_uniffi_internal_fn_method_timelineeventfilter_ffi__bless_"
-        "pointer"] = jsi::Function::createFromHostFunction(
-      rt,
-      jsi::PropNameID::forAscii(rt, "ubrn_uniffi_internal_fn_method_"
-                                    "timelineeventfilter_ffi__bless_pointer"),
-      1,
-      [this](jsi::Runtime &rt, const jsi::Value &thisVal,
-             const jsi::Value *args, size_t count) -> jsi::Value {
-        return this
-            ->cpp_uniffi_internal_fn_method_timelineeventfilter_ffi__bless_pointer(
-                rt, thisVal, args, count);
-      });
   props["ubrn_uniffi_internal_fn_method_sendgalleryjoinhandle_ffi__bless_"
         "pointer"] = jsi::Function::createFromHostFunction(
       rt,
@@ -46697,21 +47083,6 @@ jsi::Value NativeMatrixSdkFfi::
   return jsi::Value(rt, obj);
 }
 jsi::Value NativeMatrixSdkFfi::
-    cpp_uniffi_internal_fn_method_timelineeventfilter_ffi__bless_pointer(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
-  auto pointer =
-      uniffi_jsi::Bridging<uint64_t>::fromJs(rt, callInvoker, args[0]);
-  auto static destructor = [](uint64_t p) {
-    RustCallStatus status = {0};
-    uniffi_matrix_sdk_ffi_fn_free_timelineeventfilter(p, &status);
-  };
-  auto ptrObj =
-      std::make_shared<uniffi_jsi::DestructibleObject>(pointer, destructor);
-  auto obj = jsi::Object::createFromHostObject(rt, ptrObj);
-  return jsi::Value(rt, obj);
-}
-jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_internal_fn_method_sendgalleryjoinhandle_ffi__bless_pointer(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
@@ -47279,6 +47650,21 @@ NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_client_device_id(
   return uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::toJs(rt, callInvoker,
                                                             value);
 }
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_client_disable_well_known_lookup(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  RustCallStatus status =
+      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+  uniffi_matrix_sdk_ffi_fn_method_client_disable_well_known_lookup(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]),
+      uniffi_jsi::Bridging<int8_t>::fromJs(rt, callInvoker, args[1]), &status);
+  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
+      rt, callInvoker, status, args[count - 1]);
+
+  return jsi::Value::undefined();
+}
 jsi::Value
 NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_client_display_name(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
@@ -47301,21 +47687,6 @@ jsi::Value NativeMatrixSdkFfi::
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
-}
-jsi::Value NativeMatrixSdkFfi::
-    cpp_uniffi_matrix_sdk_ffi_fn_method_client_enable_automatic_backpagination(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
-  RustCallStatus status =
-      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-  uniffi_matrix_sdk_ffi_fn_method_client_enable_automatic_backpagination(
-      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
-                                                        args[0]),
-      &status);
-  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
-
-  return jsi::Value::undefined();
 }
 jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_fn_method_client_enable_automatic_call_status(
@@ -47615,6 +47986,21 @@ NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_client_get_url(
                                                          value);
 }
 jsi::Value
+NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_client_get_url_preview(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_fn_method_client_get_url_preview(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]),
+      uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                           args[1]),
+      uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                           args[2]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value
 NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_client_homeserver(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
     size_t count) {
@@ -47687,8 +48073,7 @@ jsi::Value NativeMatrixSdkFfi::
         size_t count) {
   auto value = uniffi_matrix_sdk_ffi_fn_method_client_is_livekit_rtc_supported(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
-                                                        args[0]),
-      uniffi_jsi::Bridging<int8_t>::fromJs(rt, callInvoker, args[1]));
+                                                        args[0]));
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -47699,6 +48084,18 @@ jsi::Value NativeMatrixSdkFfi::
         size_t count) {
   auto value =
       uniffi_matrix_sdk_ffi_fn_method_client_is_login_with_qr_code_supported(
+          uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                            args[0]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_client_is_profiles_sliding_sync_extension_supported(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_fn_method_client_is_profiles_sliding_sync_extension_supported(
           uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                             args[0]));
 
@@ -47902,6 +48299,22 @@ jsi::Value NativeMatrixSdkFfi::
                                                         args[0]),
       uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
                                                            args[1]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_client_notification_client_with_timeouts(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_fn_method_client_notification_client_with_timeouts(
+          uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                            args[0]),
+          uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                               args[1]),
+          uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                               args[2]));
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -48587,6 +49000,22 @@ NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_client_tile_server(
                                                          value);
 }
 jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_client_total_unread_notifications(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  RustCallStatus status =
+      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+  auto value =
+      uniffi_matrix_sdk_ffi_fn_method_client_total_unread_notifications(
+          uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                            args[0]),
+          &status);
+  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
+      rt, callInvoker, status, args[count - 1]);
+
+  return uniffi_jsi::Bridging<uint64_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_fn_method_client_track_recently_visited_room(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
@@ -49145,6 +49574,24 @@ jsi::Value NativeMatrixSdkFfi::
                                                          value);
 }
 jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_clientbuilder_disable_well_known_lookup(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  RustCallStatus status =
+      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+  auto value =
+      uniffi_matrix_sdk_ffi_fn_method_clientbuilder_disable_well_known_lookup(
+          uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                            args[0]),
+          uniffi_jsi::Bridging<int8_t>::fromJs(rt, callInvoker, args[1]),
+          &status);
+  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
+      rt, callInvoker, status, args[count - 1]);
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_fn_method_clientbuilder_dm_room_definition(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
@@ -49156,6 +49603,24 @@ jsi::Value NativeMatrixSdkFfi::
       uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
                                                            args[1]),
       &status);
+  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
+      rt, callInvoker, status, args[count - 1]);
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_clientbuilder_enable_automatic_back_pagination(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  RustCallStatus status =
+      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+  auto value =
+      uniffi_matrix_sdk_ffi_fn_method_clientbuilder_enable_automatic_back_pagination(
+          uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                            args[0]),
+          uniffi_jsi::Bridging<int8_t>::fromJs(rt, callInvoker, args[1]),
+          &status);
   uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
       rt, callInvoker, status, args[count - 1]);
 
@@ -49281,6 +49746,25 @@ jsi::Value NativeMatrixSdkFfi::
       uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
                                                            args[1]),
       &status);
+  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
+      rt, callInvoker, status, args[count - 1]);
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_clientbuilder_server_name_from_user_id(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  RustCallStatus status =
+      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+  auto value =
+      uniffi_matrix_sdk_ffi_fn_method_clientbuilder_server_name_from_user_id(
+          uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                            args[0]),
+          uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                               args[1]),
+          &status);
   uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
       rt, callInvoker, status, args[count - 1]);
 
@@ -49422,24 +49906,6 @@ jsi::Value NativeMatrixSdkFfi::
   RustCallStatus status =
       uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
   auto value = uniffi_matrix_sdk_ffi_fn_method_clientbuilder_user_agent(
-      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
-                                                        args[0]),
-      uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
-                                                           args[1]),
-      &status);
-  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
-
-  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
-                                                         value);
-}
-jsi::Value
-NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_clientbuilder_username(
-    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-    size_t count) {
-  RustCallStatus status =
-      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-  auto value = uniffi_matrix_sdk_ffi_fn_method_clientbuilder_username(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
@@ -50481,6 +50947,22 @@ jsi::Value NativeMatrixSdkFfi::
   return uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::toJs(rt, callInvoker,
                                                             value);
 }
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_notificationclient_timeouts(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  RustCallStatus status =
+      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+  auto value = uniffi_matrix_sdk_ffi_fn_method_notificationclient_timeouts(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]),
+      &status);
+  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
+      rt, callInvoker, status, args[count - 1]);
+
+  return uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::toJs(rt, callInvoker,
+                                                            value);
+}
 jsi::Value
 NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_clone_notificationsettings(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
@@ -51491,6 +51973,29 @@ jsi::Value NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_free_room(
   return jsi::Value::undefined();
 }
 jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_room_active_human_member_ids(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_fn_method_room_active_human_member_ids(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_room_active_human_member_ids_no_sync(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_fn_method_room_active_human_member_ids_no_sync(
+          uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                            args[0]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_fn_method_room_active_members_count(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
@@ -51607,6 +52112,17 @@ jsi::Value NativeMatrixSdkFfi::
                                                         args[0]),
       uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
                                                            args[1]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value
+NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_room_clear_event_cache(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_fn_method_room_clear_event_cache(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]));
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -52032,6 +52548,22 @@ jsi::Value NativeMatrixSdkFfi::
                                                         args[0]),
       uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
                                                            args[1]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_room_load_or_fetch_event_with_relations(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_fn_method_room_load_or_fetch_event_with_relations(
+          uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                            args[0]),
+          uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                               args[1]),
+          uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                               args[2]));
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -53682,6 +54214,37 @@ jsi::Value NativeMatrixSdkFfi::
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
 }
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_roomlistservice_remove_room_subscriptions(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  RustCallStatus status =
+      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+  uniffi_matrix_sdk_ffi_fn_method_roomlistservice_remove_room_subscriptions(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]),
+      uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                           args[1]),
+      &status);
+  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
+      rt, callInvoker, status, args[count - 1]);
+
+  return jsi::Value::undefined();
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_roomlistservice_reset_and_add_room_subscriptions(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_fn_method_roomlistservice_reset_and_add_room_subscriptions(
+          uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                            args[0]),
+          uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                               args[1]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
 jsi::Value
 NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_roomlistservice_room(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
@@ -53700,6 +54263,20 @@ NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_roomlistservice_room(
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
 }
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_roomlistservice_set_room_subscriptions(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_fn_method_roomlistservice_set_room_subscriptions(
+          uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                            args[0]),
+          uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                               args[1]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
 jsi::Value
 NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_roomlistservice_state(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
@@ -53713,20 +54290,6 @@ NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_roomlistservice_state(
       &status);
   uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
       rt, callInvoker, status, args[count - 1]);
-
-  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
-                                                         value);
-}
-jsi::Value NativeMatrixSdkFfi::
-    cpp_uniffi_matrix_sdk_ffi_fn_method_roomlistservice_subscribe_to_rooms(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
-  auto value =
-      uniffi_matrix_sdk_ffi_fn_method_roomlistservice_subscribe_to_rooms(
-          uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
-                                                            args[0]),
-          uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
-                                                               args[1]));
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -54598,6 +55161,20 @@ jsi::Value NativeMatrixSdkFfi::
                                                          value);
 }
 jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_spaceservice_joined_parent_ids_of_child(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_fn_method_spaceservice_joined_parent_ids_of_child(
+          uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                            args[0]),
+          uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                               args[1]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_fn_method_spaceservice_joined_parents_of_child(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
@@ -54691,6 +55268,20 @@ jsi::Value NativeMatrixSdkFfi::
                                                          value);
 }
 jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_spaceservice_top_level_ancestors_of(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_fn_method_spaceservice_top_level_ancestors_of(
+          uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                            args[0]),
+          uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                               args[1]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_fn_method_spaceservice_top_level_joined_spaces(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
@@ -54763,6 +55354,27 @@ jsi::Value NativeMatrixSdkFfi::
       uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
                                                            args[1]),
       &status);
+  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
+      rt, callInvoker, status, args[count - 1]);
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_sqlitestorebuilder_high_entropy_passphrase(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  RustCallStatus status =
+      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+  auto value =
+      uniffi_matrix_sdk_ffi_fn_method_sqlitestorebuilder_high_entropy_passphrase(
+          uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                            args[0]),
+          uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                               args[1]),
+          uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                               args[2]),
+          &status);
   uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
       rt, callInvoker, status, args[count - 1]);
 
@@ -55025,23 +55637,6 @@ jsi::Value NativeMatrixSdkFfi::
                                                             args[0]),
           uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                             args[1]),
-          &status);
-  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
-
-  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
-                                                         value);
-}
-jsi::Value NativeMatrixSdkFfi::
-    cpp_uniffi_matrix_sdk_ffi_fn_method_syncservicebuilder_with_profiles_extension(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
-  RustCallStatus status =
-      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-  auto value =
-      uniffi_matrix_sdk_ffi_fn_method_syncservicebuilder_with_profiles_extension(
-          uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
-                                                            args[0]),
           &status);
   uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
       rt, callInvoker, status, args[count - 1]);
@@ -55371,7 +55966,9 @@ NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_sendhandle_abort(
     size_t count) {
   auto value = uniffi_matrix_sdk_ffi_fn_method_sendhandle_abort(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
-                                                        args[0]));
+                                                        args[0]),
+      uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                           args[1]));
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -55475,6 +56072,19 @@ NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_timeline_edit(
                                                            args[1]),
       uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
                                                            args[2]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value
+NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_timeline_edit_revisions(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_fn_method_timeline_edit_revisions(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]),
+      uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                           args[1]));
 
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
@@ -55870,6 +56480,24 @@ jsi::Value NativeMatrixSdkFfi::
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
 }
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_fn_method_timeline_toggle_reaction_with_extra_content(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_fn_method_timeline_toggle_reaction_with_extra_content(
+          uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                            args[0]),
+          uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                               args[1]),
+          uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                               args[2]),
+          uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                               args[3]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
 jsi::Value
 NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_timeline_unpin_event(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
@@ -55995,103 +56623,6 @@ NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_timelineitem_unique_id(
 
   return uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::toJs(rt, callInvoker,
                                                             value);
-}
-jsi::Value
-NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_clone_timelineeventfilter(
-    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-    size_t count) {
-  RustCallStatus status =
-      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-  auto value = uniffi_matrix_sdk_ffi_fn_clone_timelineeventfilter(
-      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
-                                                        args[0]),
-      &status);
-  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
-
-  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
-                                                         value);
-}
-jsi::Value
-NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_free_timelineeventfilter(
-    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-    size_t count) {
-  RustCallStatus status =
-      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-  uniffi_matrix_sdk_ffi_fn_free_timelineeventfilter(
-      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
-                                                        args[0]),
-      &status);
-  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
-
-  return jsi::Value::undefined();
-}
-jsi::Value NativeMatrixSdkFfi::
-    cpp_uniffi_matrix_sdk_ffi_fn_constructor_timelineeventfilter_exclude(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
-  RustCallStatus status =
-      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-  auto value = uniffi_matrix_sdk_ffi_fn_constructor_timelineeventfilter_exclude(
-      uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
-                                                           args[0]),
-      &status);
-  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
-
-  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
-                                                         value);
-}
-jsi::Value NativeMatrixSdkFfi::
-    cpp_uniffi_matrix_sdk_ffi_fn_constructor_timelineeventfilter_exclude_event_types(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
-  RustCallStatus status =
-      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-  auto value =
-      uniffi_matrix_sdk_ffi_fn_constructor_timelineeventfilter_exclude_event_types(
-          uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
-                                                               args[0]),
-          &status);
-  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
-
-  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
-                                                         value);
-}
-jsi::Value NativeMatrixSdkFfi::
-    cpp_uniffi_matrix_sdk_ffi_fn_constructor_timelineeventfilter_include(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
-  RustCallStatus status =
-      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-  auto value = uniffi_matrix_sdk_ffi_fn_constructor_timelineeventfilter_include(
-      uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
-                                                           args[0]),
-      &status);
-  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
-
-  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
-                                                         value);
-}
-jsi::Value NativeMatrixSdkFfi::
-    cpp_uniffi_matrix_sdk_ffi_fn_constructor_timelineeventfilter_include_event_types(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
-  RustCallStatus status =
-      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
-  auto value =
-      uniffi_matrix_sdk_ffi_fn_constructor_timelineeventfilter_include_event_types(
-          uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
-                                                               args[0]),
-          &status);
-  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
-      rt, callInvoker, status, args[count - 1]);
-
-  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
-                                                         value);
 }
 jsi::Value
 NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_clone_sendgalleryjoinhandle(
@@ -56484,14 +57015,18 @@ jsi::Value
 NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_widgetdriverhandle_send(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
     size_t count) {
+  RustCallStatus status =
+      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
   auto value = uniffi_matrix_sdk_ffi_fn_method_widgetdriverhandle_send(
       uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
                                                         args[0]),
       uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
-                                                           args[1]));
+                                                           args[1]),
+      &status);
+  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
+      rt, callInvoker, status, args[count - 1]);
 
-  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
-                                                         value);
+  return uniffi_jsi::Bridging<int8_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_fn_init_callback_vtable_accountdatalistener(
@@ -57770,6 +58305,22 @@ NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_func_create_caption_edit(
                                                             value);
 }
 jsi::Value
+NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_func_server_name_from_user_id(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  RustCallStatus status =
+      uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::rustSuccess(rt);
+  auto value = uniffi_matrix_sdk_ffi_fn_func_server_name_from_user_id(
+      uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                           args[0]),
+      &status);
+  uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyIntoJs(
+      rt, callInvoker, status, args[count - 1]);
+
+  return uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::toJs(rt, callInvoker,
+                                                            value);
+}
+jsi::Value
 NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_func_generate_webview_url(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
     size_t count) {
@@ -58574,6 +59125,14 @@ NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_checksum_func_create_caption_edit(
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_func_server_name_from_user_id(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_checksum_func_server_name_from_user_id();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_checksum_func_generate_webview_url(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
@@ -58820,6 +59379,15 @@ NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_checksum_method_client_device_id(
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_client_disable_well_known_lookup(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_client_disable_well_known_lookup();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_checksum_method_client_display_name(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
@@ -58833,15 +59401,6 @@ jsi::Value NativeMatrixSdkFfi::
         size_t count) {
   auto value =
       uniffi_matrix_sdk_ffi_checksum_method_client_enable_all_send_queues();
-
-  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
-}
-jsi::Value NativeMatrixSdkFfi::
-    cpp_uniffi_matrix_sdk_ffi_checksum_method_client_enable_automatic_backpagination(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
-  auto value =
-      uniffi_matrix_sdk_ffi_checksum_method_client_enable_automatic_backpagination();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -59025,6 +59584,14 @@ NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_checksum_method_client_get_url(
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_client_get_url_preview(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_checksum_method_client_get_url_preview();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
 jsi::Value
 NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_checksum_method_client_homeserver(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
@@ -59082,6 +59649,15 @@ jsi::Value NativeMatrixSdkFfi::
         size_t count) {
   auto value =
       uniffi_matrix_sdk_ffi_checksum_method_client_is_login_with_qr_code_supported();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_client_is_profiles_sliding_sync_extension_supported(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_client_is_profiles_sliding_sync_extension_supported();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -59203,6 +59779,15 @@ jsi::Value NativeMatrixSdkFfi::
         size_t count) {
   auto value =
       uniffi_matrix_sdk_ffi_checksum_method_client_notification_client();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_client_notification_client_with_timeouts(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_client_notification_client_with_timeouts();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -59605,6 +60190,15 @@ jsi::Value NativeMatrixSdkFfi::
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_client_total_unread_notifications(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_client_total_unread_notifications();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_checksum_method_client_track_recently_visited_room(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
@@ -59864,11 +60458,29 @@ jsi::Value NativeMatrixSdkFfi::
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_disable_well_known_lookup(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_disable_well_known_lookup();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_dm_room_definition(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
   auto value =
       uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_dm_room_definition();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_enable_automatic_back_pagination(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_enable_automatic_back_pagination();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -59931,6 +60543,15 @@ jsi::Value NativeMatrixSdkFfi::
         size_t count) {
   auto value =
       uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_server_name();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_server_name_from_user_id(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_server_name_from_user_id();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -60002,14 +60623,6 @@ jsi::Value NativeMatrixSdkFfi::
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
   auto value = uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_user_agent();
-
-  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
-}
-jsi::Value NativeMatrixSdkFfi::
-    cpp_uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_username(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
-  auto value = uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_username();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -60461,6 +61074,15 @@ jsi::Value NativeMatrixSdkFfi::
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_notificationclient_timeouts(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_notificationclient_timeouts();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_checksum_method_notificationsettings_can_homeserver_push_encrypted_event_to_device(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
@@ -60831,6 +61453,24 @@ jsi::Value NativeMatrixSdkFfi::
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_room_active_human_member_ids(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_room_active_human_member_ids();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_room_active_human_member_ids_no_sync(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_room_active_human_member_ids_no_sync();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_checksum_method_room_active_members_count(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
@@ -60895,6 +61535,14 @@ jsi::Value NativeMatrixSdkFfi::
         size_t count) {
   auto value =
       uniffi_matrix_sdk_ffi_checksum_method_room_clear_composer_draft();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_room_clear_event_cache(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_checksum_method_room_clear_event_cache();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -61167,6 +61815,15 @@ jsi::Value NativeMatrixSdkFfi::
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
   auto value = uniffi_matrix_sdk_ffi_checksum_method_room_load_or_fetch_event();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_room_load_or_fetch_event_with_relations(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_room_load_or_fetch_event_with_relations();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -62003,6 +62660,24 @@ jsi::Value NativeMatrixSdkFfi::
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_remove_room_subscriptions(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_remove_room_subscriptions();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_reset_and_add_room_subscriptions(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_reset_and_add_room_subscriptions();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_room(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
@@ -62011,19 +62686,19 @@ jsi::Value NativeMatrixSdkFfi::
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeMatrixSdkFfi::
-    cpp_uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_state(
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_set_room_subscriptions(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
-  auto value = uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_state();
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_set_room_subscriptions();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeMatrixSdkFfi::
-    cpp_uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_subscribe_to_rooms(
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_state(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
-  auto value =
-      uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_subscribe_to_rooms();
+  auto value = uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_state();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -62374,6 +63049,15 @@ jsi::Value NativeMatrixSdkFfi::
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_spaceservice_joined_parent_ids_of_child(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_spaceservice_joined_parent_ids_of_child();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_checksum_method_spaceservice_joined_parents_of_child(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
@@ -62436,6 +63120,15 @@ jsi::Value NativeMatrixSdkFfi::
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_spaceservice_top_level_ancestors_of(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_spaceservice_top_level_ancestors_of();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_checksum_method_spaceservice_top_level_joined_spaces(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
@@ -62450,6 +63143,15 @@ jsi::Value NativeMatrixSdkFfi::
         size_t count) {
   auto value =
       uniffi_matrix_sdk_ffi_checksum_method_sqlitestorebuilder_cache_size();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_sqlitestorebuilder_high_entropy_passphrase(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_sqlitestorebuilder_high_entropy_passphrase();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -62563,15 +63265,6 @@ jsi::Value NativeMatrixSdkFfi::
         size_t count) {
   auto value =
       uniffi_matrix_sdk_ffi_checksum_method_syncservicebuilder_with_parent_span();
-
-  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
-}
-jsi::Value NativeMatrixSdkFfi::
-    cpp_uniffi_matrix_sdk_ffi_checksum_method_syncservicebuilder_with_profiles_extension(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
-  auto value =
-      uniffi_matrix_sdk_ffi_checksum_method_syncservicebuilder_with_profiles_extension();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -62727,6 +63420,14 @@ NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_checksum_method_timeline_edit(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
     size_t count) {
   auto value = uniffi_matrix_sdk_ffi_checksum_method_timeline_edit();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_timeline_edit_revisions(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_checksum_method_timeline_edit_revisions();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -62938,6 +63639,15 @@ jsi::Value NativeMatrixSdkFfi::
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
   auto value = uniffi_matrix_sdk_ffi_checksum_method_timeline_toggle_reaction();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_timeline_toggle_reaction_with_extra_content(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value =
+      uniffi_matrix_sdk_ffi_checksum_method_timeline_toggle_reaction_with_extra_content();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
@@ -63237,42 +63947,6 @@ jsi::Value NativeMatrixSdkFfi::
         size_t count) {
   auto value =
       uniffi_matrix_sdk_ffi_checksum_constructor_sqlitestorebuilder_new();
-
-  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
-}
-jsi::Value NativeMatrixSdkFfi::
-    cpp_uniffi_matrix_sdk_ffi_checksum_constructor_timelineeventfilter_exclude(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
-  auto value =
-      uniffi_matrix_sdk_ffi_checksum_constructor_timelineeventfilter_exclude();
-
-  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
-}
-jsi::Value NativeMatrixSdkFfi::
-    cpp_uniffi_matrix_sdk_ffi_checksum_constructor_timelineeventfilter_exclude_event_types(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
-  auto value =
-      uniffi_matrix_sdk_ffi_checksum_constructor_timelineeventfilter_exclude_event_types();
-
-  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
-}
-jsi::Value NativeMatrixSdkFfi::
-    cpp_uniffi_matrix_sdk_ffi_checksum_constructor_timelineeventfilter_include(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
-  auto value =
-      uniffi_matrix_sdk_ffi_checksum_constructor_timelineeventfilter_include();
-
-  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
-}
-jsi::Value NativeMatrixSdkFfi::
-    cpp_uniffi_matrix_sdk_ffi_checksum_constructor_timelineeventfilter_include_event_types(
-        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
-        size_t count) {
-  auto value =
-      uniffi_matrix_sdk_ffi_checksum_constructor_timelineeventfilter_include_event_types();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }

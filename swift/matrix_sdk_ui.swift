@@ -771,6 +771,181 @@ public func FfiConverterTypeMembershipChangeFilter_lower(_ value: MembershipChan
 // Note that we don't yet support `indirect` for enums.
 // See https://github.com/mozilla/uniffi-rs/issues/396 for further discussion.
 /**
+ * An enum to represent whether a room is about “people” (strictly 2 users) or
+ * “group” (1 or more than 2 users).
+ *
+ * Ideally, we would only want to rely on the
+ * [`matrix_sdk::BaseRoom::is_direct`] method, but the rules are a little bit
+ * different for this high-level UI API.
+ *
+ * This is implemented this way so that it's impossible to filter by “group”
+ * and by “people” at the same time: these criteria are mutually
+ * exclusive by design per filter.
+ */
+
+public enum RoomListFilterCategory: Equatable, Hashable {
+    
+    case group
+    case people
+
+
+
+
+
+}
+
+#if compiler(>=6)
+extension RoomListFilterCategory: Sendable {}
+#endif
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+public struct FfiConverterTypeRoomListFilterCategory: FfiConverterRustBuffer {
+    typealias SwiftType = RoomListFilterCategory
+
+    public static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> RoomListFilterCategory {
+        let variant: Int32 = try readInt(&buf)
+        switch variant {
+        
+        case 1: return .group
+        
+        case 2: return .people
+        
+        default: throw UniffiInternalError.unexpectedEnumCase
+        }
+    }
+
+    public static func write(_ value: RoomListFilterCategory, into buf: inout [UInt8]) {
+        switch value {
+        
+        
+        case .group:
+            writeInt(&buf, Int32(1))
+        
+        
+        case .people:
+            writeInt(&buf, Int32(2))
+        
+        }
+    }
+}
+
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+public func FfiConverterTypeRoomListFilterCategory_lift(_ buf: RustBuffer) throws -> RoomListFilterCategory {
+    return try FfiConverterTypeRoomListFilterCategory.lift(buf)
+}
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+public func FfiConverterTypeRoomListFilterCategory_lower(_ value: RoomListFilterCategory) -> RustBuffer {
+    return FfiConverterTypeRoomListFilterCategory.lower(value)
+}
+
+
+// Note that we don't yet support `indirect` for enums.
+// See https://github.com/mozilla/uniffi-rs/issues/396 for further discussion.
+/**
+ * Filter read receipts by…
+ *
+ * This type decides which fields to reach in [`ReadReceipts`].
+ *
+ * [`ReadReceipts`]: matrix_sdk_base::read_receipts::ReadReceipts
+ */
+
+public enum RoomListFilterReadReceipts: Equatable, Hashable {
+    
+    /**
+     * Filter by mentions, i.e. [`ReadReceipts::num_mentions`].
+     *
+     * [`ReadReceipts::num_mentions`]: matrix_sdk_base::read_receipts::ReadReceipts::num_mentions
+     */
+    case mentions
+    /**
+     * Filter by notifications, i.e. [`ReadReceipts::num_notifications`].
+     *
+     * [`ReadReceipts::num_notifications`]: matrix_sdk_base::read_receipts::ReadReceipts::num_notifications
+     */
+    case notifications
+    /**
+     * Filter by messages, i.e. [`ReadReceipts::num_unread`].
+     *
+     * [`ReadReceipts::num_unread`]: matrix_sdk_base::read_receipts::ReadReceipts::num_unread
+     */
+    case messages
+
+
+
+
+
+}
+
+#if compiler(>=6)
+extension RoomListFilterReadReceipts: Sendable {}
+#endif
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+public struct FfiConverterTypeRoomListFilterReadReceipts: FfiConverterRustBuffer {
+    typealias SwiftType = RoomListFilterReadReceipts
+
+    public static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> RoomListFilterReadReceipts {
+        let variant: Int32 = try readInt(&buf)
+        switch variant {
+        
+        case 1: return .mentions
+        
+        case 2: return .notifications
+        
+        case 3: return .messages
+        
+        default: throw UniffiInternalError.unexpectedEnumCase
+        }
+    }
+
+    public static func write(_ value: RoomListFilterReadReceipts, into buf: inout [UInt8]) {
+        switch value {
+        
+        
+        case .mentions:
+            writeInt(&buf, Int32(1))
+        
+        
+        case .notifications:
+            writeInt(&buf, Int32(2))
+        
+        
+        case .messages:
+            writeInt(&buf, Int32(3))
+        
+        }
+    }
+}
+
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+public func FfiConverterTypeRoomListFilterReadReceipts_lift(_ buf: RustBuffer) throws -> RoomListFilterReadReceipts {
+    return try FfiConverterTypeRoomListFilterReadReceipts.lift(buf)
+}
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+public func FfiConverterTypeRoomListFilterReadReceipts_lower(_ value: RoomListFilterReadReceipts) -> RustBuffer {
+    return FfiConverterTypeRoomListFilterReadReceipts.lower(value)
+}
+
+
+// Note that we don't yet support `indirect` for enums.
+// See https://github.com/mozilla/uniffi-rs/issues/396 for further discussion.
+/**
  * The type of change between the previous and current pinned events.
  */
 
@@ -1090,6 +1265,204 @@ public func FfiConverterTypeThreadListPaginationState_lower(_ value: ThreadListP
 // Note that we don't yet support `indirect` for enums.
 // See https://github.com/mozilla/uniffi-rs/issues/396 for further discussion.
 /**
+ * A condition that matches on an event's type or content.
+ */
+
+public enum TimelineEventCondition: Equatable, Hashable {
+    
+    /**
+     * The event has the specified event type.
+     */
+    case eventType(TimelineEventType
+    )
+    /**
+     * The event is an `m.room.member` event that represents a membership
+     * change (join, leave, etc.).
+     */
+    case membershipChange(MembershipChangeFilter
+    )
+    /**
+     * The event is an `m.room.member` event that represents a profile
+     * change (displayname or avatar URL).
+     */
+    case profileChange
+    /**
+     * The event is a custom message-like event type.
+     */
+    case anyCustomMessageLikeEvent
+    /**
+     * The event is a custom state event type.
+     */
+    case anyCustomStateEvent
+
+
+
+
+
+}
+
+#if compiler(>=6)
+extension TimelineEventCondition: Sendable {}
+#endif
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+public struct FfiConverterTypeTimelineEventCondition: FfiConverterRustBuffer {
+    typealias SwiftType = TimelineEventCondition
+
+    public static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> TimelineEventCondition {
+        let variant: Int32 = try readInt(&buf)
+        switch variant {
+        
+        case 1: return .eventType(try FfiConverterTypeTimelineEventType.read(from: &buf)
+        )
+        
+        case 2: return .membershipChange(try FfiConverterTypeMembershipChangeFilter.read(from: &buf)
+        )
+        
+        case 3: return .profileChange
+        
+        case 4: return .anyCustomMessageLikeEvent
+        
+        case 5: return .anyCustomStateEvent
+        
+        default: throw UniffiInternalError.unexpectedEnumCase
+        }
+    }
+
+    public static func write(_ value: TimelineEventCondition, into buf: inout [UInt8]) {
+        switch value {
+        
+        
+        case let .eventType(v1):
+            writeInt(&buf, Int32(1))
+            FfiConverterTypeTimelineEventType.write(v1, into: &buf)
+            
+        
+        case let .membershipChange(v1):
+            writeInt(&buf, Int32(2))
+            FfiConverterTypeMembershipChangeFilter.write(v1, into: &buf)
+            
+        
+        case .profileChange:
+            writeInt(&buf, Int32(3))
+        
+        
+        case .anyCustomMessageLikeEvent:
+            writeInt(&buf, Int32(4))
+        
+        
+        case .anyCustomStateEvent:
+            writeInt(&buf, Int32(5))
+        
+        }
+    }
+}
+
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+public func FfiConverterTypeTimelineEventCondition_lift(_ buf: RustBuffer) throws -> TimelineEventCondition {
+    return try FfiConverterTypeTimelineEventCondition.lift(buf)
+}
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+public func FfiConverterTypeTimelineEventCondition_lower(_ value: TimelineEventCondition) -> RustBuffer {
+    return FfiConverterTypeTimelineEventCondition.lower(value)
+}
+
+
+// Note that we don't yet support `indirect` for enums.
+// See https://github.com/mozilla/uniffi-rs/issues/396 for further discussion.
+/**
+ * A timeline filter that in- or excludes events based on their type or
+ * content.
+ */
+
+public enum TimelineEventFilter: Equatable, Hashable {
+    
+    /**
+     * Only return items whose event matches any of the conditions in the list.
+     */
+    case include([TimelineEventCondition]
+    )
+    /**
+     * Return all items except the ones whose event matches any of the
+     * conditions in the list
+     */
+    case exclude([TimelineEventCondition]
+    )
+
+
+
+
+
+}
+
+#if compiler(>=6)
+extension TimelineEventFilter: Sendable {}
+#endif
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+public struct FfiConverterTypeTimelineEventFilter: FfiConverterRustBuffer {
+    typealias SwiftType = TimelineEventFilter
+
+    public static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> TimelineEventFilter {
+        let variant: Int32 = try readInt(&buf)
+        switch variant {
+        
+        case 1: return .include(try FfiConverterSequenceTypeTimelineEventCondition.read(from: &buf)
+        )
+        
+        case 2: return .exclude(try FfiConverterSequenceTypeTimelineEventCondition.read(from: &buf)
+        )
+        
+        default: throw UniffiInternalError.unexpectedEnumCase
+        }
+    }
+
+    public static func write(_ value: TimelineEventFilter, into buf: inout [UInt8]) {
+        switch value {
+        
+        
+        case let .include(v1):
+            writeInt(&buf, Int32(1))
+            FfiConverterSequenceTypeTimelineEventCondition.write(v1, into: &buf)
+            
+        
+        case let .exclude(v1):
+            writeInt(&buf, Int32(2))
+            FfiConverterSequenceTypeTimelineEventCondition.write(v1, into: &buf)
+            
+        }
+    }
+}
+
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+public func FfiConverterTypeTimelineEventFilter_lift(_ buf: RustBuffer) throws -> TimelineEventFilter {
+    return try FfiConverterTypeTimelineEventFilter.lift(buf)
+}
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+public func FfiConverterTypeTimelineEventFilter_lower(_ value: TimelineEventFilter) -> RustBuffer {
+    return FfiConverterTypeTimelineEventFilter.lower(value)
+}
+
+
+// Note that we don't yet support `indirect` for enums.
+// See https://github.com/mozilla/uniffi-rs/issues/396 for further discussion.
+/**
  * Options for controlling the behaviour of [`TimelineFocus::Event`]
  * for threaded events.
  */
@@ -1398,6 +1771,31 @@ public func FfiConverterTypeTimelineReadReceiptTracking_lower(_ value: TimelineR
 }
 
 
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+fileprivate struct FfiConverterSequenceTypeTimelineEventCondition: FfiConverterRustBuffer {
+    typealias SwiftType = [TimelineEventCondition]
+
+    public static func write(_ value: [TimelineEventCondition], into buf: inout [UInt8]) {
+        let len = Int32(value.count)
+        writeInt(&buf, len)
+        for item in value {
+            FfiConverterTypeTimelineEventCondition.write(item, into: &buf)
+        }
+    }
+
+    public static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> [TimelineEventCondition] {
+        let len: Int32 = try readInt(&buf)
+        var seq = [TimelineEventCondition]()
+        seq.reserveCapacity(Int(len))
+        for _ in 0 ..< len {
+            seq.append(try FfiConverterTypeTimelineEventCondition.read(from: &buf))
+        }
+        return seq
+    }
+}
+
 private enum InitializationResult {
     case ok
     case contractVersionMismatch
@@ -1414,6 +1812,7 @@ private let initializationResult: InitializationResult = {
         return InitializationResult.contractVersionMismatch
     }
 
+    uniffiEnsureRumaEventsInitialized()
     return InitializationResult.ok
 }()
 

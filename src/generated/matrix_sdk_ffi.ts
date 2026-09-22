@@ -113,14 +113,17 @@ import {
   QrCodeIntent,
   UtdCause,
 } from './matrix_sdk_crypto';
+import { Base64Variant } from './matrix_sdk_sqlite';
 import {
   EventItemOrigin,
   LatestEventValueLocalState,
-  MembershipChangeFilter,
+  RoomListFilterCategory,
+  RoomListFilterReadReceipts,
   RoomPinnedEventsChange,
   SearchServicePaginationState,
   SpaceRoomListPaginationState,
   ThreadListPaginationState,
+  TimelineEventFilter,
   TimelineEventFocusThreadMode,
   TimelineEventShieldStateCode,
   TimelineReadReceiptTracking,
@@ -169,6 +172,7 @@ import {
   uniffiCreateRecord,
   uniffiRustCallAsync,
   uniffiTraitInterfaceCall,
+  uniffiTraitInterfaceCallAsync,
   uniffiTraitInterfaceCallWithError,
   uniffiTypeNameSymbol,
   variantOrdinalSymbol,
@@ -180,6 +184,7 @@ import uniffiMatrixSdkBaseModule from './matrix_sdk_base';
 import uniffiMatrixSdkCommonModule from './matrix_sdk_common';
 import uniffiMatrixSdkContentscannerModule from './matrix_sdk_contentscanner';
 import uniffiMatrixSdkCryptoModule from './matrix_sdk_crypto';
+import uniffiMatrixSdkSqliteModule from './matrix_sdk_sqlite';
 import uniffiMatrixSdkUiModule from './matrix_sdk_ui';
 import uniffiRumaEventsModule from './ruma_events';
 const {
@@ -209,14 +214,18 @@ const {
   FfiConverterTypeQrCodeIntent,
   FfiConverterTypeUtdCause,
 } = uniffiMatrixSdkCryptoModule.converters;
+const { FfiConverterTypeBase64Variant } =
+  uniffiMatrixSdkSqliteModule.converters;
 const {
   FfiConverterTypeEventItemOrigin,
   FfiConverterTypeLatestEventValueLocalState,
-  FfiConverterTypeMembershipChangeFilter,
+  FfiConverterTypeRoomListFilterCategory,
+  FfiConverterTypeRoomListFilterReadReceipts,
   FfiConverterTypeRoomPinnedEventsChange,
   FfiConverterTypeSearchServicePaginationState,
   FfiConverterTypeSpaceRoomListPaginationState,
   FfiConverterTypeThreadListPaginationState,
+  FfiConverterTypeTimelineEventFilter,
   FfiConverterTypeTimelineEventFocusThreadMode,
   FfiConverterTypeTimelineEventShieldStateCode,
   FfiConverterTypeTimelineReadReceiptTracking,
@@ -673,6 +682,28 @@ export function createCaptionEdit(
           FfiConverterOptionalString.lower(caption),
           FfiConverterOptionalTypeFormattedBody.lower(formattedCaption),
           FfiConverterOptionalTypeMentions.lower(mentions),
+          callStatus
+        );
+      },
+      /*liftString:*/ FfiConverterString.lift
+    )
+  );
+}
+/**
+ * The server name part of the given user ID, including the port when the
+ * server name has one.
+ *
+ * Returns an error if the user ID is invalid.
+ */
+export function serverNameFromUserId(userId: string): string /*throws*/ {
+  return FfiConverterString.lift(
+    uniffiCaller.rustCallWithError(
+      /*liftError:*/ FfiConverterTypeClientError.lift.bind(
+        FfiConverterTypeClientError
+      ),
+      /*caller:*/ (callStatus) => {
+        return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_func_server_name_from_user_id(
+          FfiConverterString.lower(userId),
           callStatus
         );
       },
@@ -3788,7 +3819,10 @@ const FfiConverterTypeVerificationStateListener =
   new FfiConverterCallback<VerificationStateListener>();
 
 export interface WidgetCapabilitiesProvider {
-  acquireCapabilities(capabilities: WidgetCapabilities): WidgetCapabilities;
+  acquireCapabilities(
+    capabilities: WidgetCapabilities,
+    asyncOpts_?: { signal: AbortSignal }
+  ): Promise<WidgetCapabilities>;
 }
 
 // Put the implementation in a struct so we don't pollute the top-level namespace
@@ -3799,31 +3833,50 @@ const uniffiCallbackInterfaceWidgetCapabilitiesProvider: {
   // Create the VTable using a series of closures.
   // ts automatically converts these into C callback functions.
   vtable: {
-    acquireCapabilities: (uniffiHandle: bigint, capabilities: Uint8Array) => {
-      const uniffiMakeCall = (): WidgetCapabilities => {
+    acquireCapabilities: (
+      uniffiHandle: bigint,
+      capabilities: Uint8Array,
+      uniffiFutureCallback: UniffiForeignFutureCompleteRustBuffer,
+      uniffiCallbackData: bigint
+    ) => {
+      const uniffiMakeCall = async (
+        signal: AbortSignal
+      ): Promise<WidgetCapabilities> => {
         const jsCallback =
           FfiConverterTypeWidgetCapabilitiesProvider.lift(uniffiHandle);
-        return jsCallback.acquireCapabilities(
-          FfiConverterTypeWidgetCapabilities.lift(capabilities)
+        return await jsCallback.acquireCapabilities(
+          FfiConverterTypeWidgetCapabilities.lift(capabilities),
+          { signal }
         );
       };
-      const uniffiResult = UniffiResult.ready<Uint8Array>();
-      const uniffiHandleSuccess = (obj: any) => {
-        UniffiResult.writeSuccess(
-          uniffiResult,
-          FfiConverterTypeWidgetCapabilities.lower(obj)
+      const uniffiHandleSuccess = (returnValue: WidgetCapabilities) => {
+        uniffiFutureCallback.call(
+          uniffiFutureCallback,
+          uniffiCallbackData,
+          /* UniffiForeignFutureResultRustBuffer */ {
+            returnValue: FfiConverterTypeWidgetCapabilities.lower(returnValue),
+            callStatus: uniffiCaller.createCallStatus(),
+          }
         );
       };
-      const uniffiHandleError = (code: number, errBuf: UniffiByteArray) => {
-        UniffiResult.writeError(uniffiResult, code, errBuf);
+      const uniffiHandleError = (code: number, errorBuf: UniffiByteArray) => {
+        uniffiFutureCallback.call(
+          uniffiFutureCallback,
+          uniffiCallbackData,
+          /* UniffiForeignFutureResultRustBuffer */ {
+            returnValue: /*empty*/ new Uint8Array(0),
+            // TODO create callstatus with error.
+            callStatus: uniffiCaller.createErrorStatus(code, errorBuf),
+          }
+        );
       };
-      uniffiTraitInterfaceCall(
+      const uniffiForeignFuture = uniffiTraitInterfaceCallAsync(
         /*makeCall:*/ uniffiMakeCall,
         /*handleSuccess:*/ uniffiHandleSuccess,
         /*handleError:*/ uniffiHandleError,
         /*lowerString:*/ FfiConverterString.lower
       );
-      return uniffiResult;
+      return uniffiForeignFuture;
     },
     uniffiFree: (uniffiHandle: UniffiHandle): void => {
       // WidgetCapabilitiesProvider: this will throw a stale handle error if the handle isn't found.
@@ -4582,6 +4635,51 @@ const FfiConverterTypeDuplicateOneTimeKeyErrorMessage = (() => {
   return new FFIConverter();
 })();
 
+export type EditRevisionRecord = {
+  content: TimelineItemContent;
+  timestamp?: /*u64*/ bigint;
+};
+
+/**
+ * Generated factory for {@link EditRevisionRecord} record objects.
+ */
+export const EditRevisionRecord = (() => {
+  const defaults = () => ({});
+  const create = (() => {
+    return uniffiCreateRecord<EditRevisionRecord, ReturnType<typeof defaults>>(
+      defaults
+    );
+  })();
+  return Object.freeze({
+    create,
+    new: create,
+    defaults: () => Object.freeze(defaults()) as Partial<EditRevisionRecord>,
+  });
+})();
+
+const FfiConverterTypeEditRevisionRecord = (() => {
+  type TypeName = EditRevisionRecord;
+  class FFIConverter extends AbstractFfiConverterByteArray<TypeName> {
+    read(from: RustBuffer): TypeName {
+      return {
+        content: FfiConverterTypeTimelineItemContent.read(from),
+        timestamp: FfiConverterOptionalUInt64.read(from),
+      };
+    }
+    write(value: TypeName, into: RustBuffer): void {
+      FfiConverterTypeTimelineItemContent.write(value.content, into);
+      FfiConverterOptionalUInt64.write(value.timestamp, into);
+    }
+    allocationSize(value: TypeName): number {
+      return (
+        FfiConverterTypeTimelineItemContent.allocationSize(value.content) +
+        FfiConverterOptionalUInt64.allocationSize(value.timestamp)
+      );
+    }
+  }
+  return new FFIConverter();
+})();
+
 export type EmoteMessageContent = {
   body: string;
   formatted?: FormattedBody;
@@ -4798,6 +4896,62 @@ const FfiConverterTypeEventTimelineItemDebugInfo = (() => {
         FfiConverterString.allocationSize(value.model) +
         FfiConverterOptionalString.allocationSize(value.originalJson) +
         FfiConverterOptionalString.allocationSize(value.latestEditJson)
+      );
+    }
+  }
+  return new FFIConverter();
+})();
+
+/**
+ * An event and the events related to it, as returned by
+ * [`Room::load_or_fetch_event_with_relations`].
+ */
+export type EventWithRelations = {
+  /**
+   * The event itself.
+   */
+  event: TimelineEventLike;
+  /**
+   * The events related to it, directly or (recursively) through other
+   * related events.
+   */
+  relatedEvents: Array<TimelineEventLike>;
+};
+
+/**
+ * Generated factory for {@link EventWithRelations} record objects.
+ */
+export const EventWithRelations = (() => {
+  const defaults = () => ({});
+  const create = (() => {
+    return uniffiCreateRecord<EventWithRelations, ReturnType<typeof defaults>>(
+      defaults
+    );
+  })();
+  return Object.freeze({
+    create,
+    new: create,
+    defaults: () => Object.freeze(defaults()) as Partial<EventWithRelations>,
+  });
+})();
+
+const FfiConverterTypeEventWithRelations = (() => {
+  type TypeName = EventWithRelations;
+  class FFIConverter extends AbstractFfiConverterByteArray<TypeName> {
+    read(from: RustBuffer): TypeName {
+      return {
+        event: FfiConverterTypeTimelineEvent.read(from),
+        relatedEvents: FfiConverterArrayTypeTimelineEvent.read(from),
+      };
+    }
+    write(value: TypeName, into: RustBuffer): void {
+      FfiConverterTypeTimelineEvent.write(value.event, into);
+      FfiConverterArrayTypeTimelineEvent.write(value.relatedEvents, into);
+    }
+    allocationSize(value: TypeName): number {
+      return (
+        FfiConverterTypeTimelineEvent.allocationSize(value.event) +
+        FfiConverterArrayTypeTimelineEvent.allocationSize(value.relatedEvents)
       );
     }
   }
@@ -6362,6 +6516,102 @@ const FfiConverterTypeNoticeMessageContent = (() => {
       return (
         FfiConverterString.allocationSize(value.body) +
         FfiConverterOptionalTypeFormattedBody.allocationSize(value.formatted)
+      );
+    }
+  }
+  return new FFIConverter();
+})();
+
+/**
+ * Timeouts applied by a `NotificationClient` while fetching the content of
+ * notifications.
+ */
+export type NotificationClientTimeouts = {
+  /**
+   * Long-poll timeout of the sliding sync request retrieving the notified
+   * events, i.e. how long the homeserver waits for the events to be
+   * available before answering.
+   */
+  syncPollTimeout: UniffiDuration;
+  /**
+   * Extra time allowed for the network round trip of the sliding sync
+   * request retrieving the notified events, on top of `sync_poll_timeout`.
+   */
+  syncNetworkTimeout: UniffiDuration;
+  /**
+   * Maximum time spent waiting for a missing room key, when an event in a
+   * notification can't be decrypted.
+   *
+   * This bounds both the encryption sync the notification client runs
+   * itself, after a minimum number of iterations, and the wait for the app's
+   * own encryption sync to receive the key when that sync is already running
+   * in the same process. In both cases the wait ends as soon as the event
+   * can be decrypted, and the event is returned undecrypted once the
+   * deadline has passed.
+   */
+  decryptionDeadline: UniffiDuration;
+  /**
+   * Long-poll timeout of each request of the encryption sync run to obtain a
+   * missing room key, i.e. how long the homeserver waits for a to-device
+   * message to arrive before answering.
+   *
+   * Together with `decryption_deadline`, this determines how many
+   * iterations are run when the homeserver has nothing to return.
+   */
+  encryptionSyncPollTimeout: UniffiDuration;
+  /**
+   * Extra time allowed for the network round trip of each request of the
+   * encryption sync, on top of `encryption_sync_poll_timeout`. This is an
+   * upper bound on how long a request may take.
+   */
+  encryptionSyncNetworkTimeout: UniffiDuration;
+};
+
+/**
+ * Generated factory for {@link NotificationClientTimeouts} record objects.
+ */
+export const NotificationClientTimeouts = (() => {
+  const defaults = () => ({});
+  const create = (() => {
+    return uniffiCreateRecord<
+      NotificationClientTimeouts,
+      ReturnType<typeof defaults>
+    >(defaults);
+  })();
+  return Object.freeze({
+    create,
+    new: create,
+    defaults: () =>
+      Object.freeze(defaults()) as Partial<NotificationClientTimeouts>,
+  });
+})();
+
+const FfiConverterTypeNotificationClientTimeouts = (() => {
+  type TypeName = NotificationClientTimeouts;
+  class FFIConverter extends AbstractFfiConverterByteArray<TypeName> {
+    read(from: RustBuffer): TypeName {
+      return {
+        syncPollTimeout: FfiConverterDuration.read(from),
+        syncNetworkTimeout: FfiConverterDuration.read(from),
+        decryptionDeadline: FfiConverterDuration.read(from),
+        encryptionSyncPollTimeout: FfiConverterDuration.read(from),
+        encryptionSyncNetworkTimeout: FfiConverterDuration.read(from),
+      };
+    }
+    write(value: TypeName, into: RustBuffer): void {
+      FfiConverterDuration.write(value.syncPollTimeout, into);
+      FfiConverterDuration.write(value.syncNetworkTimeout, into);
+      FfiConverterDuration.write(value.decryptionDeadline, into);
+      FfiConverterDuration.write(value.encryptionSyncPollTimeout, into);
+      FfiConverterDuration.write(value.encryptionSyncNetworkTimeout, into);
+    }
+    allocationSize(value: TypeName): number {
+      return (
+        FfiConverterDuration.allocationSize(value.syncPollTimeout) +
+        FfiConverterDuration.allocationSize(value.syncNetworkTimeout) +
+        FfiConverterDuration.allocationSize(value.decryptionDeadline) +
+        FfiConverterDuration.allocationSize(value.encryptionSyncPollTimeout) +
+        FfiConverterDuration.allocationSize(value.encryptionSyncNetworkTimeout)
       );
     }
   }
@@ -13774,6 +14024,7 @@ const FfiConverterTypeBundleExportError = (() => {
 // Flat error type: ClientBuildError
 export enum ClientBuildError_Tags {
   InvalidServerName = 'InvalidServerName',
+  WellKnownLookupDisabled = 'WellKnownLookupDisabled',
   ServerUnreachable = 'ServerUnreachable',
   WellKnownLookupFailed = 'WellKnownLookupFailed',
   WellKnownDeserializationError = 'WellKnownDeserializationError',
@@ -13781,7 +14032,6 @@ export enum ClientBuildError_Tags {
   SlidingSyncVersion = 'SlidingSyncVersion',
   Sdk = 'Sdk',
   EventCache = 'EventCache',
-  InvalidRawKey = 'InvalidRawKey',
   Generic = 'Generic',
 }
 export const ClientBuildError = (() => {
@@ -13807,7 +14057,7 @@ export const ClientBuildError = (() => {
       return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 1;
     }
   }
-  class ServerUnreachable extends UniffiError {
+  class WellKnownLookupDisabled extends UniffiError {
     /**
      * @private
      * This field is private and should not be used.
@@ -13819,6 +14069,28 @@ export const ClientBuildError = (() => {
      */
     readonly [variantOrdinalSymbol] = 2;
 
+    readonly tag = ClientBuildError_Tags.WellKnownLookupDisabled;
+
+    constructor(message: string) {
+      super('ClientBuildError', 'WellKnownLookupDisabled', message);
+    }
+
+    static instanceOf(e: any): e is WellKnownLookupDisabled {
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 2;
+    }
+  }
+  class ServerUnreachable extends UniffiError {
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [uniffiTypeNameSymbol]: string = 'ClientBuildError';
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [variantOrdinalSymbol] = 3;
+
     readonly tag = ClientBuildError_Tags.ServerUnreachable;
 
     constructor(message: string) {
@@ -13826,7 +14098,7 @@ export const ClientBuildError = (() => {
     }
 
     static instanceOf(e: any): e is ServerUnreachable {
-      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 2;
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 3;
     }
   }
   class WellKnownLookupFailed extends UniffiError {
@@ -13839,7 +14111,7 @@ export const ClientBuildError = (() => {
      * @private
      * This field is private and should not be used.
      */
-    readonly [variantOrdinalSymbol] = 3;
+    readonly [variantOrdinalSymbol] = 4;
 
     readonly tag = ClientBuildError_Tags.WellKnownLookupFailed;
 
@@ -13848,7 +14120,7 @@ export const ClientBuildError = (() => {
     }
 
     static instanceOf(e: any): e is WellKnownLookupFailed {
-      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 3;
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 4;
     }
   }
   class WellKnownDeserializationError extends UniffiError {
@@ -13861,7 +14133,7 @@ export const ClientBuildError = (() => {
      * @private
      * This field is private and should not be used.
      */
-    readonly [variantOrdinalSymbol] = 4;
+    readonly [variantOrdinalSymbol] = 5;
 
     readonly tag = ClientBuildError_Tags.WellKnownDeserializationError;
 
@@ -13870,7 +14142,7 @@ export const ClientBuildError = (() => {
     }
 
     static instanceOf(e: any): e is WellKnownDeserializationError {
-      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 4;
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 5;
     }
   }
   class SlidingSync extends UniffiError {
@@ -13883,7 +14155,7 @@ export const ClientBuildError = (() => {
      * @private
      * This field is private and should not be used.
      */
-    readonly [variantOrdinalSymbol] = 5;
+    readonly [variantOrdinalSymbol] = 6;
 
     readonly tag = ClientBuildError_Tags.SlidingSync;
 
@@ -13892,7 +14164,7 @@ export const ClientBuildError = (() => {
     }
 
     static instanceOf(e: any): e is SlidingSync {
-      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 5;
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 6;
     }
   }
   class SlidingSyncVersion extends UniffiError {
@@ -13905,7 +14177,7 @@ export const ClientBuildError = (() => {
      * @private
      * This field is private and should not be used.
      */
-    readonly [variantOrdinalSymbol] = 6;
+    readonly [variantOrdinalSymbol] = 7;
 
     readonly tag = ClientBuildError_Tags.SlidingSyncVersion;
 
@@ -13914,7 +14186,7 @@ export const ClientBuildError = (() => {
     }
 
     static instanceOf(e: any): e is SlidingSyncVersion {
-      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 6;
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 7;
     }
   }
   class Sdk extends UniffiError {
@@ -13927,7 +14199,7 @@ export const ClientBuildError = (() => {
      * @private
      * This field is private and should not be used.
      */
-    readonly [variantOrdinalSymbol] = 7;
+    readonly [variantOrdinalSymbol] = 8;
 
     readonly tag = ClientBuildError_Tags.Sdk;
 
@@ -13936,7 +14208,7 @@ export const ClientBuildError = (() => {
     }
 
     static instanceOf(e: any): e is Sdk {
-      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 7;
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 8;
     }
   }
   class EventCache extends UniffiError {
@@ -13949,7 +14221,7 @@ export const ClientBuildError = (() => {
      * @private
      * This field is private and should not be used.
      */
-    readonly [variantOrdinalSymbol] = 8;
+    readonly [variantOrdinalSymbol] = 9;
 
     readonly tag = ClientBuildError_Tags.EventCache;
 
@@ -13958,28 +14230,6 @@ export const ClientBuildError = (() => {
     }
 
     static instanceOf(e: any): e is EventCache {
-      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 8;
-    }
-  }
-  class InvalidRawKey extends UniffiError {
-    /**
-     * @private
-     * This field is private and should not be used.
-     */
-    readonly [uniffiTypeNameSymbol]: string = 'ClientBuildError';
-    /**
-     * @private
-     * This field is private and should not be used.
-     */
-    readonly [variantOrdinalSymbol] = 9;
-
-    readonly tag = ClientBuildError_Tags.InvalidRawKey;
-
-    constructor(message: string) {
-      super('ClientBuildError', 'InvalidRawKey', message);
-    }
-
-    static instanceOf(e: any): e is InvalidRawKey {
       return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 9;
     }
   }
@@ -14012,6 +14262,7 @@ export const ClientBuildError = (() => {
   }
   return {
     InvalidServerName,
+    WellKnownLookupDisabled,
     ServerUnreachable,
     WellKnownLookupFailed,
     WellKnownDeserializationError,
@@ -14019,7 +14270,6 @@ export const ClientBuildError = (() => {
     SlidingSyncVersion,
     Sdk,
     EventCache,
-    InvalidRawKey,
     Generic,
     instanceOf,
   };
@@ -14043,40 +14293,40 @@ const FfiConverterTypeClientBuildError = (() => {
           );
 
         case 2:
-          return new ClientBuildError.ServerUnreachable(
+          return new ClientBuildError.WellKnownLookupDisabled(
             FfiConverterString.read(from)
           );
 
         case 3:
-          return new ClientBuildError.WellKnownLookupFailed(
+          return new ClientBuildError.ServerUnreachable(
             FfiConverterString.read(from)
           );
 
         case 4:
-          return new ClientBuildError.WellKnownDeserializationError(
+          return new ClientBuildError.WellKnownLookupFailed(
             FfiConverterString.read(from)
           );
 
         case 5:
-          return new ClientBuildError.SlidingSync(
+          return new ClientBuildError.WellKnownDeserializationError(
             FfiConverterString.read(from)
           );
 
         case 6:
-          return new ClientBuildError.SlidingSyncVersion(
+          return new ClientBuildError.SlidingSync(
             FfiConverterString.read(from)
           );
 
         case 7:
-          return new ClientBuildError.Sdk(FfiConverterString.read(from));
-
-        case 8:
-          return new ClientBuildError.EventCache(FfiConverterString.read(from));
-
-        case 9:
-          return new ClientBuildError.InvalidRawKey(
+          return new ClientBuildError.SlidingSyncVersion(
             FfiConverterString.read(from)
           );
+
+        case 8:
+          return new ClientBuildError.Sdk(FfiConverterString.read(from));
+
+        case 9:
+          return new ClientBuildError.EventCache(FfiConverterString.read(from));
 
         case 10:
           return new ClientBuildError.Generic(FfiConverterString.read(from));
@@ -19835,346 +20085,6 @@ const FfiConverterTypeFfiTimelineEventType = (() => {
   return new FFIConverter();
 })();
 
-// Enum: FilterTimelineEventCondition
-export enum FilterTimelineEventCondition_Tags {
-  EventType = 'EventType',
-  MembershipChange = 'MembershipChange',
-  ProfileChange = 'ProfileChange',
-}
-/**
- * A condition that matches on an event's type or content.
- */
-export const FilterTimelineEventCondition = (() => {
-  type EventType__interface = {
-    tag: FilterTimelineEventCondition_Tags.EventType;
-    inner: Readonly<{ eventType: FilterTimelineEventType }>;
-  };
-
-  /**
-   * The event has the specified event type.
-   */
-  class EventType_ extends UniffiEnum implements EventType__interface {
-    /**
-     * @private
-     * This field is private and should not be used, use `tag` instead.
-     */
-    readonly [uniffiTypeNameSymbol] = 'FilterTimelineEventCondition';
-    readonly tag = FilterTimelineEventCondition_Tags.EventType;
-    readonly inner: Readonly<{ eventType: FilterTimelineEventType }>;
-    constructor(inner: { eventType: FilterTimelineEventType }) {
-      super('FilterTimelineEventCondition', 'EventType');
-      this.inner = Object.freeze(inner);
-    }
-
-    static new(inner: { eventType: FilterTimelineEventType }): EventType_ {
-      return new EventType_(inner);
-    }
-
-    static instanceOf(obj: any): obj is EventType_ {
-      return obj.tag === FilterTimelineEventCondition_Tags.EventType;
-    }
-  }
-
-  type MembershipChange__interface = {
-    tag: FilterTimelineEventCondition_Tags.MembershipChange;
-    inner: Readonly<{ filter: MembershipChangeFilter }>;
-  };
-
-  /**
-   * The event is an `m.room.member` event that represents a membership
-   * change (join, leave, etc.).
-   */
-  class MembershipChange_
-    extends UniffiEnum
-    implements MembershipChange__interface
-  {
-    /**
-     * @private
-     * This field is private and should not be used, use `tag` instead.
-     */
-    readonly [uniffiTypeNameSymbol] = 'FilterTimelineEventCondition';
-    readonly tag = FilterTimelineEventCondition_Tags.MembershipChange;
-    readonly inner: Readonly<{ filter: MembershipChangeFilter }>;
-    constructor(inner: { filter: MembershipChangeFilter }) {
-      super('FilterTimelineEventCondition', 'MembershipChange');
-      this.inner = Object.freeze(inner);
-    }
-
-    static new(inner: { filter: MembershipChangeFilter }): MembershipChange_ {
-      return new MembershipChange_(inner);
-    }
-
-    static instanceOf(obj: any): obj is MembershipChange_ {
-      return obj.tag === FilterTimelineEventCondition_Tags.MembershipChange;
-    }
-  }
-
-  type ProfileChange__interface = {
-    tag: FilterTimelineEventCondition_Tags.ProfileChange;
-  };
-
-  /**
-   * The event is an `m.room.member` event that represents a profile
-   * change (displayname or avatar URL).
-   */
-  class ProfileChange_ extends UniffiEnum implements ProfileChange__interface {
-    /**
-     * @private
-     * This field is private and should not be used, use `tag` instead.
-     */
-    readonly [uniffiTypeNameSymbol] = 'FilterTimelineEventCondition';
-    readonly tag = FilterTimelineEventCondition_Tags.ProfileChange;
-    constructor() {
-      super('FilterTimelineEventCondition', 'ProfileChange');
-    }
-
-    static new(): ProfileChange_ {
-      return new ProfileChange_();
-    }
-
-    static instanceOf(obj: any): obj is ProfileChange_ {
-      return obj.tag === FilterTimelineEventCondition_Tags.ProfileChange;
-    }
-  }
-
-  function instanceOf(obj: any): obj is FilterTimelineEventCondition {
-    return obj[uniffiTypeNameSymbol] === 'FilterTimelineEventCondition';
-  }
-
-  return Object.freeze({
-    instanceOf,
-    EventType: EventType_,
-    MembershipChange: MembershipChange_,
-    ProfileChange: ProfileChange_,
-  });
-})();
-
-/**
- * A condition that matches on an event's type or content.
- */
-
-export type FilterTimelineEventCondition = InstanceType<
-  (typeof FilterTimelineEventCondition)[keyof Omit<
-    typeof FilterTimelineEventCondition,
-    'instanceOf'
-  >]
->;
-
-// FfiConverter for enum FilterTimelineEventCondition
-const FfiConverterTypeFilterTimelineEventCondition = (() => {
-  const ordinalConverter = FfiConverterInt32;
-  type TypeName = FilterTimelineEventCondition;
-  class FFIConverter extends AbstractFfiConverterByteArray<TypeName> {
-    read(from: RustBuffer): TypeName {
-      switch (ordinalConverter.read(from)) {
-        case 1:
-          return new FilterTimelineEventCondition.EventType({
-            eventType: FfiConverterTypeFilterTimelineEventType.read(from),
-          });
-        case 2:
-          return new FilterTimelineEventCondition.MembershipChange({
-            filter: FfiConverterTypeMembershipChangeFilter.read(from),
-          });
-        case 3:
-          return new FilterTimelineEventCondition.ProfileChange();
-        default:
-          throw new UniffiInternalError.UnexpectedEnumCase();
-      }
-    }
-    write(value: TypeName, into: RustBuffer): void {
-      switch (value.tag) {
-        case FilterTimelineEventCondition_Tags.EventType: {
-          ordinalConverter.write(1, into);
-          const inner = value.inner;
-          FfiConverterTypeFilterTimelineEventType.write(inner.eventType, into);
-          return;
-        }
-        case FilterTimelineEventCondition_Tags.MembershipChange: {
-          ordinalConverter.write(2, into);
-          const inner = value.inner;
-          FfiConverterTypeMembershipChangeFilter.write(inner.filter, into);
-          return;
-        }
-        case FilterTimelineEventCondition_Tags.ProfileChange: {
-          ordinalConverter.write(3, into);
-          return;
-        }
-        default:
-          // Throwing from here means that FilterTimelineEventCondition_Tags hasn't matched an ordinal.
-          throw new UniffiInternalError.UnexpectedEnumCase();
-      }
-    }
-    allocationSize(value: TypeName): number {
-      switch (value.tag) {
-        case FilterTimelineEventCondition_Tags.EventType: {
-          const inner = value.inner;
-          let size = ordinalConverter.allocationSize(1);
-          size += FfiConverterTypeFilterTimelineEventType.allocationSize(
-            inner.eventType
-          );
-          return size;
-        }
-        case FilterTimelineEventCondition_Tags.MembershipChange: {
-          const inner = value.inner;
-          let size = ordinalConverter.allocationSize(2);
-          size += FfiConverterTypeMembershipChangeFilter.allocationSize(
-            inner.filter
-          );
-          return size;
-        }
-        case FilterTimelineEventCondition_Tags.ProfileChange: {
-          return ordinalConverter.allocationSize(3);
-        }
-        default:
-          throw new UniffiInternalError.UnexpectedEnumCase();
-      }
-    }
-  }
-  return new FFIConverter();
-})();
-
-// Enum: FilterTimelineEventType
-export enum FilterTimelineEventType_Tags {
-  MessageLike = 'MessageLike',
-  State = 'State',
-}
-export const FilterTimelineEventType = (() => {
-  type MessageLike__interface = {
-    tag: FilterTimelineEventType_Tags.MessageLike;
-    inner: Readonly<{ eventType: MessageLikeEventType }>;
-  };
-
-  class MessageLike_ extends UniffiEnum implements MessageLike__interface {
-    /**
-     * @private
-     * This field is private and should not be used, use `tag` instead.
-     */
-    readonly [uniffiTypeNameSymbol] = 'FilterTimelineEventType';
-    readonly tag = FilterTimelineEventType_Tags.MessageLike;
-    readonly inner: Readonly<{ eventType: MessageLikeEventType }>;
-    constructor(inner: { eventType: MessageLikeEventType }) {
-      super('FilterTimelineEventType', 'MessageLike');
-      this.inner = Object.freeze(inner);
-    }
-
-    static new(inner: { eventType: MessageLikeEventType }): MessageLike_ {
-      return new MessageLike_(inner);
-    }
-
-    static instanceOf(obj: any): obj is MessageLike_ {
-      return obj.tag === FilterTimelineEventType_Tags.MessageLike;
-    }
-  }
-
-  type State__interface = {
-    tag: FilterTimelineEventType_Tags.State;
-    inner: Readonly<{ eventType: StateEventType }>;
-  };
-
-  class State_ extends UniffiEnum implements State__interface {
-    /**
-     * @private
-     * This field is private and should not be used, use `tag` instead.
-     */
-    readonly [uniffiTypeNameSymbol] = 'FilterTimelineEventType';
-    readonly tag = FilterTimelineEventType_Tags.State;
-    readonly inner: Readonly<{ eventType: StateEventType }>;
-    constructor(inner: { eventType: StateEventType }) {
-      super('FilterTimelineEventType', 'State');
-      this.inner = Object.freeze(inner);
-    }
-
-    static new(inner: { eventType: StateEventType }): State_ {
-      return new State_(inner);
-    }
-
-    static instanceOf(obj: any): obj is State_ {
-      return obj.tag === FilterTimelineEventType_Tags.State;
-    }
-  }
-
-  function instanceOf(obj: any): obj is FilterTimelineEventType {
-    return obj[uniffiTypeNameSymbol] === 'FilterTimelineEventType';
-  }
-
-  return Object.freeze({
-    instanceOf,
-    MessageLike: MessageLike_,
-    State: State_,
-  });
-})();
-
-export type FilterTimelineEventType = InstanceType<
-  (typeof FilterTimelineEventType)[keyof Omit<
-    typeof FilterTimelineEventType,
-    'instanceOf'
-  >]
->;
-
-// FfiConverter for enum FilterTimelineEventType
-const FfiConverterTypeFilterTimelineEventType = (() => {
-  const ordinalConverter = FfiConverterInt32;
-  type TypeName = FilterTimelineEventType;
-  class FFIConverter extends AbstractFfiConverterByteArray<TypeName> {
-    read(from: RustBuffer): TypeName {
-      switch (ordinalConverter.read(from)) {
-        case 1:
-          return new FilterTimelineEventType.MessageLike({
-            eventType: FfiConverterTypeMessageLikeEventType.read(from),
-          });
-        case 2:
-          return new FilterTimelineEventType.State({
-            eventType: FfiConverterTypeStateEventType.read(from),
-          });
-        default:
-          throw new UniffiInternalError.UnexpectedEnumCase();
-      }
-    }
-    write(value: TypeName, into: RustBuffer): void {
-      switch (value.tag) {
-        case FilterTimelineEventType_Tags.MessageLike: {
-          ordinalConverter.write(1, into);
-          const inner = value.inner;
-          FfiConverterTypeMessageLikeEventType.write(inner.eventType, into);
-          return;
-        }
-        case FilterTimelineEventType_Tags.State: {
-          ordinalConverter.write(2, into);
-          const inner = value.inner;
-          FfiConverterTypeStateEventType.write(inner.eventType, into);
-          return;
-        }
-        default:
-          // Throwing from here means that FilterTimelineEventType_Tags hasn't matched an ordinal.
-          throw new UniffiInternalError.UnexpectedEnumCase();
-      }
-    }
-    allocationSize(value: TypeName): number {
-      switch (value.tag) {
-        case FilterTimelineEventType_Tags.MessageLike: {
-          const inner = value.inner;
-          let size = ordinalConverter.allocationSize(1);
-          size += FfiConverterTypeMessageLikeEventType.allocationSize(
-            inner.eventType
-          );
-          return size;
-        }
-        case FilterTimelineEventType_Tags.State: {
-          const inner = value.inner;
-          let size = ordinalConverter.allocationSize(2);
-          size += FfiConverterTypeStateEventType.allocationSize(
-            inner.eventType
-          );
-          return size;
-        }
-        default:
-          throw new UniffiInternalError.UnexpectedEnumCase();
-      }
-    }
-  }
-  return new FFIConverter();
-})();
-
 // Error type: FocusEventError
 
 // Enum: FocusEventError
@@ -24196,6 +24106,7 @@ export const LatestEventValue = (() => {
   type Remote__interface = {
     tag: LatestEventValue_Tags.Remote;
     inner: Readonly<{
+      eventId: string | undefined;
       timestamp: Timestamp;
       sender: string;
       isOwn: boolean;
@@ -24212,6 +24123,7 @@ export const LatestEventValue = (() => {
     readonly [uniffiTypeNameSymbol] = 'LatestEventValue';
     readonly tag = LatestEventValue_Tags.Remote;
     readonly inner: Readonly<{
+      eventId: string | undefined;
       timestamp: Timestamp;
       sender: string;
       isOwn: boolean;
@@ -24219,6 +24131,11 @@ export const LatestEventValue = (() => {
       content: TimelineItemContent;
     }>;
     constructor(inner: {
+      /**
+       * The ID of the event, absent only for a malformed event that carries
+       * none. Lets a client correlate this value with per-event data it holds
+       * elsewhere (read receipts, for instance) without opening a timeline.
+       */ eventId: string | undefined;
       timestamp: Timestamp;
       sender: string;
       isOwn: boolean;
@@ -24230,6 +24147,11 @@ export const LatestEventValue = (() => {
     }
 
     static new(inner: {
+      /**
+       * The ID of the event, absent only for a malformed event that carries
+       * none. Lets a client correlate this value with per-event data it holds
+       * elsewhere (read receipts, for instance) without opening a timeline.
+       */ eventId: string | undefined;
       timestamp: Timestamp;
       sender: string;
       isOwn: boolean;
@@ -24290,6 +24212,7 @@ export const LatestEventValue = (() => {
   type Local__interface = {
     tag: LatestEventValue_Tags.Local;
     inner: Readonly<{
+      eventId: string | undefined;
       timestamp: Timestamp;
       sender: string;
       profile: ProfileDetails;
@@ -24306,6 +24229,7 @@ export const LatestEventValue = (() => {
     readonly [uniffiTypeNameSymbol] = 'LatestEventValue';
     readonly tag = LatestEventValue_Tags.Local;
     readonly inner: Readonly<{
+      eventId: string | undefined;
       timestamp: Timestamp;
       sender: string;
       profile: ProfileDetails;
@@ -24313,6 +24237,10 @@ export const LatestEventValue = (() => {
       state: LatestEventValueLocalState;
     }>;
     constructor(inner: {
+      /**
+       * The ID of the event, set only once it has been sent and acknowledged
+       * by the server (see [`LatestEventValueLocalState::HasBeenSent`]).
+       */ eventId: string | undefined;
       timestamp: Timestamp;
       sender: string;
       profile: ProfileDetails;
@@ -24324,6 +24252,10 @@ export const LatestEventValue = (() => {
     }
 
     static new(inner: {
+      /**
+       * The ID of the event, set only once it has been sent and acknowledged
+       * by the server (see [`LatestEventValueLocalState::HasBeenSent`]).
+       */ eventId: string | undefined;
       timestamp: Timestamp;
       sender: string;
       profile: ProfileDetails;
@@ -24370,6 +24302,7 @@ const FfiConverterTypeLatestEventValue = (() => {
           return new LatestEventValue.None();
         case 2:
           return new LatestEventValue.Remote({
+            eventId: FfiConverterOptionalString.read(from),
             timestamp: FfiConverterTypeTimestamp.read(from),
             sender: FfiConverterString.read(from),
             isOwn: FfiConverterBool.read(from),
@@ -24384,6 +24317,7 @@ const FfiConverterTypeLatestEventValue = (() => {
           });
         case 4:
           return new LatestEventValue.Local({
+            eventId: FfiConverterOptionalString.read(from),
             timestamp: FfiConverterTypeTimestamp.read(from),
             sender: FfiConverterString.read(from),
             profile: FfiConverterTypeProfileDetails.read(from),
@@ -24403,6 +24337,7 @@ const FfiConverterTypeLatestEventValue = (() => {
         case LatestEventValue_Tags.Remote: {
           ordinalConverter.write(2, into);
           const inner = value.inner;
+          FfiConverterOptionalString.write(inner.eventId, into);
           FfiConverterTypeTimestamp.write(inner.timestamp, into);
           FfiConverterString.write(inner.sender, into);
           FfiConverterBool.write(inner.isOwn, into);
@@ -24421,6 +24356,7 @@ const FfiConverterTypeLatestEventValue = (() => {
         case LatestEventValue_Tags.Local: {
           ordinalConverter.write(4, into);
           const inner = value.inner;
+          FfiConverterOptionalString.write(inner.eventId, into);
           FfiConverterTypeTimestamp.write(inner.timestamp, into);
           FfiConverterString.write(inner.sender, into);
           FfiConverterTypeProfileDetails.write(inner.profile, into);
@@ -24441,6 +24377,7 @@ const FfiConverterTypeLatestEventValue = (() => {
         case LatestEventValue_Tags.Remote: {
           const inner = value.inner;
           let size = ordinalConverter.allocationSize(2);
+          size += FfiConverterOptionalString.allocationSize(inner.eventId);
           size += FfiConverterTypeTimestamp.allocationSize(inner.timestamp);
           size += FfiConverterString.allocationSize(inner.sender);
           size += FfiConverterBool.allocationSize(inner.isOwn);
@@ -24463,6 +24400,7 @@ const FfiConverterTypeLatestEventValue = (() => {
         case LatestEventValue_Tags.Local: {
           const inner = value.inner;
           let size = ordinalConverter.allocationSize(4);
+          size += FfiConverterOptionalString.allocationSize(inner.eventId);
           size += FfiConverterTypeTimestamp.allocationSize(inner.timestamp);
           size += FfiConverterString.allocationSize(inner.sender);
           size += FfiConverterTypeProfileDetails.allocationSize(inner.profile);
@@ -33378,6 +33316,66 @@ const FfiConverterTypeRecoveryState = (() => {
   return new FFIConverter();
 })();
 
+/**
+ * The relation types that can be used to filter related events when calling
+ * [`Room::load_or_fetch_event_with_relations`].
+ */
+export enum RelationType {
+  /**
+   * An annotation to an event (e.g. a reaction), `m.annotation`.
+   */
+  Annotation,
+  /**
+   * A reference to another event, `m.reference`.
+   */
+  Reference,
+  /**
+   * An event that replaces another event (e.g. an edit), `m.replace`.
+   */
+  Replacement,
+  /**
+   * An event that belongs to a thread, `m.thread`.
+   */
+  Thread,
+}
+
+const FfiConverterTypeRelationType = (() => {
+  const ordinalConverter = FfiConverterInt32;
+  type TypeName = RelationType;
+  class FFIConverter extends AbstractFfiConverterByteArray<TypeName> {
+    read(from: RustBuffer): TypeName {
+      switch (ordinalConverter.read(from)) {
+        case 1:
+          return RelationType.Annotation;
+        case 2:
+          return RelationType.Reference;
+        case 3:
+          return RelationType.Replacement;
+        case 4:
+          return RelationType.Thread;
+        default:
+          throw new UniffiInternalError.UnexpectedEnumCase();
+      }
+    }
+    write(value: TypeName, into: RustBuffer): void {
+      switch (value) {
+        case RelationType.Annotation:
+          return ordinalConverter.write(1, into);
+        case RelationType.Reference:
+          return ordinalConverter.write(2, into);
+        case RelationType.Replacement:
+          return ordinalConverter.write(3, into);
+        case RelationType.Thread:
+          return ordinalConverter.write(4, into);
+      }
+    }
+    allocationSize(value: TypeName): number {
+      return ordinalConverter.allocationSize(0);
+    }
+  }
+  return new FFIConverter();
+})();
+
 // Enum: RoomAccountDataEvent
 export enum RoomAccountDataEvent_Tags {
   FullyReadEvent = 'FullyReadEvent',
@@ -34695,7 +34693,7 @@ export enum RoomListEntriesDynamicFilterKind_Tags {
   Space = 'Space',
   NonLeft = 'NonLeft',
   Joined = 'Joined',
-  Unread = 'Unread',
+  ReadReceipts = 'ReadReceipts',
   Favourite = 'Favourite',
   LowPriority = 'LowPriority',
   NonLowPriority = 'NonLowPriority',
@@ -34893,27 +34891,30 @@ export const RoomListEntriesDynamicFilterKind = (() => {
     }
   }
 
-  type Unread__interface = {
-    tag: RoomListEntriesDynamicFilterKind_Tags.Unread;
+  type ReadReceipts__interface = {
+    tag: RoomListEntriesDynamicFilterKind_Tags.ReadReceipts;
+    inner: Readonly<{ expect: RoomListFilterReadReceipts }>;
   };
 
-  class Unread_ extends UniffiEnum implements Unread__interface {
+  class ReadReceipts_ extends UniffiEnum implements ReadReceipts__interface {
     /**
      * @private
      * This field is private and should not be used, use `tag` instead.
      */
     readonly [uniffiTypeNameSymbol] = 'RoomListEntriesDynamicFilterKind';
-    readonly tag = RoomListEntriesDynamicFilterKind_Tags.Unread;
-    constructor() {
-      super('RoomListEntriesDynamicFilterKind', 'Unread');
+    readonly tag = RoomListEntriesDynamicFilterKind_Tags.ReadReceipts;
+    readonly inner: Readonly<{ expect: RoomListFilterReadReceipts }>;
+    constructor(inner: { expect: RoomListFilterReadReceipts }) {
+      super('RoomListEntriesDynamicFilterKind', 'ReadReceipts');
+      this.inner = Object.freeze(inner);
     }
 
-    static new(): Unread_ {
-      return new Unread_();
+    static new(inner: { expect: RoomListFilterReadReceipts }): ReadReceipts_ {
+      return new ReadReceipts_(inner);
     }
 
-    static instanceOf(obj: any): obj is Unread_ {
-      return obj.tag === RoomListEntriesDynamicFilterKind_Tags.Unread;
+    static instanceOf(obj: any): obj is ReadReceipts_ {
+      return obj.tag === RoomListEntriesDynamicFilterKind_Tags.ReadReceipts;
     }
   }
 
@@ -35199,7 +35200,7 @@ export const RoomListEntriesDynamicFilterKind = (() => {
     Space: Space_,
     NonLeft: NonLeft_,
     Joined: Joined_,
-    Unread: Unread_,
+    ReadReceipts: ReadReceipts_,
     Favourite: Favourite_,
     LowPriority: LowPriority_,
     NonLowPriority: NonLowPriority_,
@@ -35250,7 +35251,9 @@ const FfiConverterTypeRoomListEntriesDynamicFilterKind = (() => {
         case 7:
           return new RoomListEntriesDynamicFilterKind.Joined();
         case 8:
-          return new RoomListEntriesDynamicFilterKind.Unread();
+          return new RoomListEntriesDynamicFilterKind.ReadReceipts({
+            expect: FfiConverterTypeRoomListFilterReadReceipts.read(from),
+          });
         case 9:
           return new RoomListEntriesDynamicFilterKind.Favourite();
         case 10:
@@ -35323,8 +35326,10 @@ const FfiConverterTypeRoomListEntriesDynamicFilterKind = (() => {
           ordinalConverter.write(7, into);
           return;
         }
-        case RoomListEntriesDynamicFilterKind_Tags.Unread: {
+        case RoomListEntriesDynamicFilterKind_Tags.ReadReceipts: {
           ordinalConverter.write(8, into);
+          const inner = value.inner;
+          FfiConverterTypeRoomListFilterReadReceipts.write(inner.expect, into);
           return;
         }
         case RoomListEntriesDynamicFilterKind_Tags.Favourite: {
@@ -35416,8 +35421,13 @@ const FfiConverterTypeRoomListEntriesDynamicFilterKind = (() => {
         case RoomListEntriesDynamicFilterKind_Tags.Joined: {
           return ordinalConverter.allocationSize(7);
         }
-        case RoomListEntriesDynamicFilterKind_Tags.Unread: {
-          return ordinalConverter.allocationSize(8);
+        case RoomListEntriesDynamicFilterKind_Tags.ReadReceipts: {
+          const inner = value.inner;
+          let size = ordinalConverter.allocationSize(8);
+          size += FfiConverterTypeRoomListFilterReadReceipts.allocationSize(
+            inner.expect
+          );
+          return size;
         }
         case RoomListEntriesDynamicFilterKind_Tags.Favourite: {
           return ordinalConverter.allocationSize(9);
@@ -36405,40 +36415,6 @@ const FfiConverterTypeRoomListError = (() => {
         default:
           throw new UniffiInternalError.UnexpectedEnumCase();
       }
-    }
-  }
-  return new FFIConverter();
-})();
-
-export enum RoomListFilterCategory {
-  Group,
-  People,
-}
-
-const FfiConverterTypeRoomListFilterCategory = (() => {
-  const ordinalConverter = FfiConverterInt32;
-  type TypeName = RoomListFilterCategory;
-  class FFIConverter extends AbstractFfiConverterByteArray<TypeName> {
-    read(from: RustBuffer): TypeName {
-      switch (ordinalConverter.read(from)) {
-        case 1:
-          return RoomListFilterCategory.Group;
-        case 2:
-          return RoomListFilterCategory.People;
-        default:
-          throw new UniffiInternalError.UnexpectedEnumCase();
-      }
-    }
-    write(value: TypeName, into: RustBuffer): void {
-      switch (value) {
-        case RoomListFilterCategory.Group:
-          return ordinalConverter.write(1, into);
-        case RoomListFilterCategory.People:
-          return ordinalConverter.write(2, into);
-      }
-    }
-    allocationSize(value: TypeName): number {
-      return ordinalConverter.allocationSize(0);
     }
   }
   return new FFIConverter();
@@ -43453,7 +43429,7 @@ export const TimelineFilter = (() => {
 
   type EventFilter__interface = {
     tag: TimelineFilter_Tags.EventFilter;
-    inner: Readonly<{ filter: TimelineEventFilterLike }>;
+    inner: Readonly<{ filter: TimelineEventFilter }>;
   };
 
   /**
@@ -43466,13 +43442,13 @@ export const TimelineFilter = (() => {
      */
     readonly [uniffiTypeNameSymbol] = 'TimelineFilter';
     readonly tag = TimelineFilter_Tags.EventFilter;
-    readonly inner: Readonly<{ filter: TimelineEventFilterLike }>;
-    constructor(inner: { filter: TimelineEventFilterLike }) {
+    readonly inner: Readonly<{ filter: TimelineEventFilter }>;
+    constructor(inner: { filter: TimelineEventFilter }) {
       super('TimelineFilter', 'EventFilter');
       this.inner = Object.freeze(inner);
     }
 
-    static new(inner: { filter: TimelineEventFilterLike }): EventFilter_ {
+    static new(inner: { filter: TimelineEventFilter }): EventFilter_ {
       return new EventFilter_(inner);
     }
 
@@ -45744,6 +45720,17 @@ export interface ClientLike {
     asyncOpts_?: { signal: AbortSignal }
   ) /*throws*/ : Promise<void>;
   deviceId() /*throws*/ : string;
+  /**
+   * Change whether this client is allowed to look up the homeserver's
+   * `/.well-known/matrix/client` file.
+   *
+   * Some deployments must not emit any request to the well-known URI of
+   * their domain. When disabled, [`Client::tile_server`] returns `None`,
+   * [`Client::well_known_rtc_transports`] returns an empty list, and
+   * [`Client::discover_rtc_transports`] doesn't fall back to the well-known
+   * `m.rtc_foci`, relying only on the MSC4143 discovery endpoint.
+   */
+  disableWellKnownLookup(disable: boolean): void;
   displayName(asyncOpts_?: {
     signal: AbortSignal;
   }) /*throws*/ : Promise<string>;
@@ -45760,17 +45747,6 @@ export interface ClientLike {
     enable: boolean,
     asyncOpts_?: { signal: AbortSignal }
   ): Promise<void>;
-  /**
-   * Whether to enable automatic backpagination under certain conditions
-   * (e.g. when processing read receipts).
-   *
-   * This is an experimental feature, and might cause performance issues on
-   * large accounts. Use with caution.
-   *
-   * This must be called after creating a client, but before subscribing to
-   * the event cache (so, before spawning a sync service or a timeline).
-   */
-  enableAutomaticBackpagination(): void;
   /**
    * Enable or disable automatic mirroring of this device's MatrixRTC
    * participation into the MSC4426 `m.call` profile field.
@@ -45907,6 +45883,21 @@ export interface ClientLike {
     asyncOpts_?: { signal: AbortSignal }
   ) /*throws*/ : Promise<ArrayBuffer>;
   /**
+   * Get the homeserver-generated preview for a URL, as OpenGraph JSON.
+   *
+   * # Arguments
+   *
+   * * `url` - The URL to generate a preview for.
+   *
+   * * `ts` - The preferred point in time to return a preview for, as a Unix
+   * timestamp in milliseconds. Deprecated since Matrix 1.11; pass `None`.
+   */
+  getUrlPreview(
+    url: string,
+    ts: /*u64*/ bigint | undefined,
+    asyncOpts_?: { signal: AbortSignal }
+  ) /*throws*/ : Promise<string | undefined>;
+  /**
    * The homeserver this client is configured to use.
    */
   homeserver(): string;
@@ -45929,17 +45920,24 @@ export interface ClientLike {
    *
    * Transports are discovered through the authenticated
    * `GET /_matrix/client/v1/rtc/transports` endpoint (MSC4143). If the
-   * homeserver doesn't implement it and `fallback_to_well_known` is `true`,
-   * then the well-known will be queried.
+   * homeserver doesn't implement it, the well-known `m.rtc_foci` are used as
+   * a fallback, unless well-known discovery was disabled with
+   * [`ClientBuilder::disable_well_known_lookup`] or
+   * [`Client::disable_well_known_lookup`].
    */
-  isLivekitRtcSupported(
-    fallbackToWellKnown: boolean,
-    asyncOpts_?: { signal: AbortSignal }
-  ) /*throws*/ : Promise<boolean>;
+  isLivekitRtcSupported(asyncOpts_?: {
+    signal: AbortSignal;
+  }) /*throws*/ : Promise<boolean>;
   /**
    * Checks if the server supports login using a QR code.
    */
   isLoginWithQrCodeSupported(asyncOpts_?: {
+    signal: AbortSignal;
+  }) /*throws*/ : Promise<boolean>;
+  /**
+   * Checks if the server supports the Profiles sliding sync extension.
+   */
+  isProfilesSlidingSyncExtensionSupported(asyncOpts_?: {
     signal: AbortSignal;
   }) /*throws*/ : Promise<boolean>;
   /**
@@ -46062,8 +46060,25 @@ export interface ClientLike {
   newLoginWithQrCodeHandler(
     oauthConfiguration: OAuthConfiguration
   ): LoginWithQrCodeHandlerLike;
+  /**
+   * Creates a client specialised in fetching the content of push
+   * notifications, using the default `NotificationClientTimeouts`.
+   *
+   * See `Client::notification_client_with_timeouts` to override them.
+   */
   notificationClient(
     processSetup: NotificationProcessSetup,
+    asyncOpts_?: { signal: AbortSignal }
+  ) /*throws*/ : Promise<NotificationClientLike>;
+  /**
+   * Creates a client specialised in fetching the content of push
+   * notifications, with custom `NotificationClientTimeouts`.
+   *
+   * The timeouts are fixed for the lifetime of the returned client.
+   */
+  notificationClientWithTimeouts(
+    processSetup: NotificationProcessSetup,
+    timeouts: NotificationClientTimeouts,
     asyncOpts_?: { signal: AbortSignal }
   ) /*throws*/ : Promise<NotificationClientLike>;
   /**
@@ -46454,6 +46469,11 @@ export interface ClientLike {
   tileServer(asyncOpts_?: {
     signal: AbortSignal;
   }): Promise<TileServerInfo | undefined>;
+  /**
+   * The total number of client-side computed unread notifications across all
+   * joined rooms.
+   */
+  totalUnreadNotifications(): /*u64*/ bigint;
   trackRecentlyVisitedRoom(
     room: string,
     asyncOpts_?: { signal: AbortSignal }
@@ -47200,6 +47220,29 @@ export class Client extends UniffiAbstractObject implements ClientLike {
     );
   }
 
+  /**
+   * Change whether this client is allowed to look up the homeserver's
+   * `/.well-known/matrix/client` file.
+   *
+   * Some deployments must not emit any request to the well-known URI of
+   * their domain. When disabled, [`Client::tile_server`] returns `None`,
+   * [`Client::well_known_rtc_transports`] returns an empty list, and
+   * [`Client::discover_rtc_transports`] doesn't fall back to the well-known
+   * `m.rtc_foci`, relying only on the MSC4143 discovery endpoint.
+   */
+  disableWellKnownLookup(disable: boolean): void {
+    uniffiCaller.rustCall(
+      /*caller:*/ (callStatus) => {
+        nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_client_disable_well_known_lookup(
+          uniffiTypeClientObjectFactory.clonePointer(this),
+          FfiConverterBool.lower(disable),
+          callStatus
+        );
+      },
+      /*liftString:*/ FfiConverterString.lift
+    );
+  }
+
   async displayName(asyncOpts_?: {
     signal: AbortSignal;
   }): Promise<string> /*throws*/ {
@@ -47276,28 +47319,6 @@ export class Client extends UniffiAbstractObject implements ClientLike {
       }
       throw __error;
     }
-  }
-
-  /**
-   * Whether to enable automatic backpagination under certain conditions
-   * (e.g. when processing read receipts).
-   *
-   * This is an experimental feature, and might cause performance issues on
-   * large accounts. Use with caution.
-   *
-   * This must be called after creating a client, but before subscribing to
-   * the event cache (so, before spawning a sync service or a timeline).
-   */
-  enableAutomaticBackpagination(): void {
-    uniffiCaller.rustCall(
-      /*caller:*/ (callStatus) => {
-        nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_client_enable_automatic_backpagination(
-          uniffiTypeClientObjectFactory.clonePointer(this),
-          callStatus
-        );
-      },
-      /*liftString:*/ FfiConverterString.lift
-    );
   }
 
   /**
@@ -48043,6 +48064,57 @@ export class Client extends UniffiAbstractObject implements ClientLike {
   }
 
   /**
+   * Get the homeserver-generated preview for a URL, as OpenGraph JSON.
+   *
+   * # Arguments
+   *
+   * * `url` - The URL to generate a preview for.
+   *
+   * * `ts` - The preferred point in time to return a preview for, as a Unix
+   * timestamp in milliseconds. Deprecated since Matrix 1.11; pass `None`.
+   */
+  async getUrlPreview(
+    url: string,
+    ts: /*u64*/ bigint | undefined,
+    asyncOpts_?: { signal: AbortSignal }
+  ): Promise<string | undefined> /*throws*/ {
+    const __stack = uniffiIsDebug ? new Error().stack : undefined;
+    try {
+      return await uniffiRustCallAsync(
+        /*rustCaller:*/ uniffiCaller,
+        /*rustFutureFunc:*/ () => {
+          return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_client_get_url_preview(
+            uniffiTypeClientObjectFactory.clonePointer(this),
+            FfiConverterString.lower(url),
+            FfiConverterOptionalUInt64.lower(ts)
+          );
+        },
+        /*pollFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_poll_rust_buffer,
+        /*cancelFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_cancel_rust_buffer,
+        /*completeFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_complete_rust_buffer,
+        /*freeFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_free_rust_buffer,
+        /*liftFunc:*/ FfiConverterOptionalString.lift.bind(
+          FfiConverterOptionalString
+        ),
+        /*liftString:*/ FfiConverterString.lift,
+        /*asyncOpts:*/ asyncOpts_,
+        /*errorHandler:*/ FfiConverterTypeClientError.lift.bind(
+          FfiConverterTypeClientError
+        )
+      );
+    } catch (__error: any) {
+      if (uniffiIsDebug && __error instanceof Error) {
+        __error.stack = __stack;
+      }
+      throw __error;
+    }
+  }
+
+  /**
    * The homeserver this client is configured to use.
    */
   homeserver(): string {
@@ -48189,21 +48261,21 @@ export class Client extends UniffiAbstractObject implements ClientLike {
    *
    * Transports are discovered through the authenticated
    * `GET /_matrix/client/v1/rtc/transports` endpoint (MSC4143). If the
-   * homeserver doesn't implement it and `fallback_to_well_known` is `true`,
-   * then the well-known will be queried.
+   * homeserver doesn't implement it, the well-known `m.rtc_foci` are used as
+   * a fallback, unless well-known discovery was disabled with
+   * [`ClientBuilder::disable_well_known_lookup`] or
+   * [`Client::disable_well_known_lookup`].
    */
-  async isLivekitRtcSupported(
-    fallbackToWellKnown: boolean = false,
-    asyncOpts_?: { signal: AbortSignal }
-  ): Promise<boolean> /*throws*/ {
+  async isLivekitRtcSupported(asyncOpts_?: {
+    signal: AbortSignal;
+  }): Promise<boolean> /*throws*/ {
     const __stack = uniffiIsDebug ? new Error().stack : undefined;
     try {
       return await uniffiRustCallAsync(
         /*rustCaller:*/ uniffiCaller,
         /*rustFutureFunc:*/ () => {
           return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_client_is_livekit_rtc_supported(
-            uniffiTypeClientObjectFactory.clonePointer(this),
-            FfiConverterBool.lower(fallbackToWellKnown)
+            uniffiTypeClientObjectFactory.clonePointer(this)
           );
         },
         /*pollFunc:*/ nativeModule()
@@ -48241,6 +48313,44 @@ export class Client extends UniffiAbstractObject implements ClientLike {
         /*rustCaller:*/ uniffiCaller,
         /*rustFutureFunc:*/ () => {
           return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_client_is_login_with_qr_code_supported(
+            uniffiTypeClientObjectFactory.clonePointer(this)
+          );
+        },
+        /*pollFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_poll_i8,
+        /*cancelFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_cancel_i8,
+        /*completeFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_complete_i8,
+        /*freeFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_free_i8,
+        /*liftFunc:*/ FfiConverterBool.lift.bind(FfiConverterBool),
+        /*liftString:*/ FfiConverterString.lift,
+        /*asyncOpts:*/ asyncOpts_,
+        /*errorHandler:*/ FfiConverterTypeClientError.lift.bind(
+          FfiConverterTypeClientError
+        )
+      );
+    } catch (__error: any) {
+      if (uniffiIsDebug && __error instanceof Error) {
+        __error.stack = __stack;
+      }
+      throw __error;
+    }
+  }
+
+  /**
+   * Checks if the server supports the Profiles sliding sync extension.
+   */
+  async isProfilesSlidingSyncExtensionSupported(asyncOpts_?: {
+    signal: AbortSignal;
+  }): Promise<boolean> /*throws*/ {
+    const __stack = uniffiIsDebug ? new Error().stack : undefined;
+    try {
+      return await uniffiRustCallAsync(
+        /*rustCaller:*/ uniffiCaller,
+        /*rustFutureFunc:*/ () => {
+          return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_client_is_profiles_sliding_sync_extension_supported(
             uniffiTypeClientObjectFactory.clonePointer(this)
           );
         },
@@ -48782,6 +48892,12 @@ export class Client extends UniffiAbstractObject implements ClientLike {
     );
   }
 
+  /**
+   * Creates a client specialised in fetching the content of push
+   * notifications, using the default `NotificationClientTimeouts`.
+   *
+   * See `Client::notification_client_with_timeouts` to override them.
+   */
   async notificationClient(
     processSetup: NotificationProcessSetup,
     asyncOpts_?: { signal: AbortSignal }
@@ -48794,6 +48910,53 @@ export class Client extends UniffiAbstractObject implements ClientLike {
           return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_client_notification_client(
             uniffiTypeClientObjectFactory.clonePointer(this),
             FfiConverterTypeNotificationProcessSetup.lower(processSetup)
+          );
+        },
+        /*pollFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_poll_u64,
+        /*cancelFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_cancel_u64,
+        /*completeFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_complete_u64,
+        /*freeFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_free_u64,
+        /*liftFunc:*/ FfiConverterTypeNotificationClient.lift.bind(
+          FfiConverterTypeNotificationClient
+        ),
+        /*liftString:*/ FfiConverterString.lift,
+        /*asyncOpts:*/ asyncOpts_,
+        /*errorHandler:*/ FfiConverterTypeClientError.lift.bind(
+          FfiConverterTypeClientError
+        )
+      );
+    } catch (__error: any) {
+      if (uniffiIsDebug && __error instanceof Error) {
+        __error.stack = __stack;
+      }
+      throw __error;
+    }
+  }
+
+  /**
+   * Creates a client specialised in fetching the content of push
+   * notifications, with custom `NotificationClientTimeouts`.
+   *
+   * The timeouts are fixed for the lifetime of the returned client.
+   */
+  async notificationClientWithTimeouts(
+    processSetup: NotificationProcessSetup,
+    timeouts: NotificationClientTimeouts,
+    asyncOpts_?: { signal: AbortSignal }
+  ): Promise<NotificationClientLike> /*throws*/ {
+    const __stack = uniffiIsDebug ? new Error().stack : undefined;
+    try {
+      return await uniffiRustCallAsync(
+        /*rustCaller:*/ uniffiCaller,
+        /*rustFutureFunc:*/ () => {
+          return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_client_notification_client_with_timeouts(
+            uniffiTypeClientObjectFactory.clonePointer(this),
+            FfiConverterTypeNotificationProcessSetup.lower(processSetup),
+            FfiConverterTypeNotificationClientTimeouts.lower(timeouts)
           );
         },
         /*pollFunc:*/ nativeModule()
@@ -50504,6 +50667,24 @@ export class Client extends UniffiAbstractObject implements ClientLike {
     }
   }
 
+  /**
+   * The total number of client-side computed unread notifications across all
+   * joined rooms.
+   */
+  totalUnreadNotifications(): /*u64*/ bigint {
+    return FfiConverterUInt64.lift(
+      uniffiCaller.rustCall(
+        /*caller:*/ (callStatus) => {
+          return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_client_total_unread_notifications(
+            uniffiTypeClientObjectFactory.clonePointer(this),
+            callStatus
+          );
+        },
+        /*liftString:*/ FfiConverterString.lift
+      )
+    );
+  }
+
   async trackRecentlyVisitedRoom(
     room: string,
     asyncOpts_?: { signal: AbortSignal }
@@ -50997,7 +51178,36 @@ export interface ClientBuilderLike {
    */
   disableBuiltInRootCertificates(): ClientBuilderLike;
   disableSslVerification(): ClientBuilderLike;
+  /**
+   * Disable all the `.well-known/matrix/client` lookups, both the one
+   * performed by `ClientBuilder::build` to discover the homeserver, and all
+   * the ones performed later by the built client.
+   *
+   * Some deployments must not emit any request to the well-known URI of
+   * their domain. When disabled, `Client::tile_server` returns `None` and
+   * RTC transport discovery doesn't fall back to the well-known
+   * `m.rtc_foci`, meaning `Client::is_livekit_rtc_supported` only relies on
+   * the MSC4143 discovery endpoint.
+   *
+   * The homeserver must then be resolvable without a well-known lookup, so
+   * `ClientBuilder::homeserver_url` must be used.
+   * `ClientBuilder::server_name` and
+   * `ClientBuilder::server_name_from_user_id` can only be resolved through
+   * the well-known, and `ClientBuilder::build` fails with
+   * `ClientBuildError::WellKnownLookupDisabled` in that case.
+   * `ClientBuilder::server_name_or_homeserver_url` skips the well-known step
+   * and works only when given a homeserver URL.
+   */
+  disableWellKnownLookup(disableWellKnownLookup: boolean): ClientBuilderLike;
   dmRoomDefinition(dmRoomDefinition: DmRoomDefinition): ClientBuilderLike;
+  /**
+   * Set whether to automatically back-paginate a room's history in the
+   * background, under certain conditions (search backfill, latest-event
+   * resolution, read-receipt finding). Off by default.
+   */
+  enableAutomaticBackPagination(
+    enableAutomaticBackPagination: boolean
+  ): ClientBuilderLike;
   /**
    * Set whether to enable the experimental support for sending and receiving
    * encrypted room history on invite, per [MSC4268].
@@ -51007,6 +51217,18 @@ export interface ClientBuilderLike {
   enableShareHistoryOnInvite(
     enableShareHistoryOnInvite: boolean
   ): ClientBuilderLike;
+  /**
+   * Set the homeserver URL to use.
+   *
+   * The following methods are mutually exclusive: [`Self::homeserver_url`],
+   * [`Self::server_name`], [`Self::server_name_or_homeserver_url`] and
+   * [`Self::server_name_from_user_id`]. If you set more than one, then
+   * whichever was set last will be used.
+   *
+   * This is the only one of them that never performs a
+   * `.well-known/matrix/client` lookup, so it is the one to use together
+   * with [`Self::disable_well_known_lookup`].
+   */
   homeserverUrl(url: string): ClientBuilderLike;
   /**
    * Use in-memory session storage.
@@ -51022,7 +51244,55 @@ export interface ClientBuilderLike {
    * an encrypted message.
    */
   roomKeyRecipientStrategy(strategy: CollectStrategy): ClientBuilderLike;
+  /**
+   * Set the server name to discover the homeserver from.
+   *
+   * The following methods are mutually exclusive: [`Self::homeserver_url`],
+   * [`Self::server_name`], [`Self::server_name_or_homeserver_url`] and
+   * [`Self::server_name_from_user_id`]. If you set more than one, then
+   * whichever was set last will be used.
+   *
+   * This performs a `.well-known/matrix/client` lookup, and is therefore
+   * incompatible with [`Self::disable_well_known_lookup`]: [`Self::build`]
+   * then fails with [`ClientBuildError::WellKnownLookupDisabled`].
+   */
   serverName(serverName: string): ClientBuilderLike;
+  /**
+   * Uses the server name from the supplied the user ID to discover the
+   * homeserver.
+   *
+   * When building a client for restoration, prefer to use
+   * [`Self::homeserver_url`] as the restoration will pick up the user ID
+   * from the [`Session`], and using this will result in a needless request
+   * to re-discover the homeserver.
+   *
+   * The following methods are mutually exclusive: [`Self::homeserver_url`],
+   * [`Self::server_name`], [`Self::server_name_or_homeserver_url`] and
+   * [`Self::server_name_from_user_id`]. If you set more than one, then
+   * whichever was set last will be used.
+   *
+   * This performs a `.well-known/matrix/client` lookup, and is therefore
+   * incompatible with [`Self::disable_well_known_lookup`]: [`Self::build`]
+   * then fails with [`ClientBuildError::WellKnownLookupDisabled`].
+   */
+  serverNameFromUserId(userId: string): ClientBuilderLike;
+  /**
+   * Set the server name to discover the homeserver from, falling back to
+   * using it as a homeserver URL if discovery fails. When falling back to a
+   * homeserver URL, a check is made to ensure that the server exists (unlike
+   * [`Self::homeserver_url`], so you can guarantee that the client is ready
+   * to use.
+   *
+   * The following methods are mutually exclusive: [`Self::homeserver_url`],
+   * [`Self::server_name`], [`Self::server_name_or_homeserver_url`] and
+   * [`Self::server_name_from_user_id`]. If you set more than one, then
+   * whichever was set last will be used.
+   *
+   * With [`Self::disable_well_known_lookup`], the discovery step is skipped
+   * and only the homeserver URL check is performed, so a homeserver URL
+   * still works while a delegating server name fails with
+   * [`ClientBuildError::InvalidServerName`].
+   */
   serverNameOrHomeserverUrl(serverNameOrUrl: string): ClientBuilderLike;
   /**
    * Sets the paths that the client will use to store its data and caches
@@ -51060,7 +51330,6 @@ export interface ClientBuilderLike {
     threadSubscriptions: boolean
   ): ClientBuilderLike;
   userAgent(userAgent: string): ClientBuilderLike;
-  username(username: string): ClientBuilderLike;
   /**
    * Set up the search index store for this client, which is used to store
    * the message search index locally.
@@ -51300,6 +51569,41 @@ export class ClientBuilder
     );
   }
 
+  /**
+   * Disable all the `.well-known/matrix/client` lookups, both the one
+   * performed by `ClientBuilder::build` to discover the homeserver, and all
+   * the ones performed later by the built client.
+   *
+   * Some deployments must not emit any request to the well-known URI of
+   * their domain. When disabled, `Client::tile_server` returns `None` and
+   * RTC transport discovery doesn't fall back to the well-known
+   * `m.rtc_foci`, meaning `Client::is_livekit_rtc_supported` only relies on
+   * the MSC4143 discovery endpoint.
+   *
+   * The homeserver must then be resolvable without a well-known lookup, so
+   * `ClientBuilder::homeserver_url` must be used.
+   * `ClientBuilder::server_name` and
+   * `ClientBuilder::server_name_from_user_id` can only be resolved through
+   * the well-known, and `ClientBuilder::build` fails with
+   * `ClientBuildError::WellKnownLookupDisabled` in that case.
+   * `ClientBuilder::server_name_or_homeserver_url` skips the well-known step
+   * and works only when given a homeserver URL.
+   */
+  disableWellKnownLookup(disableWellKnownLookup: boolean): ClientBuilderLike {
+    return FfiConverterTypeClientBuilder.lift(
+      uniffiCaller.rustCall(
+        /*caller:*/ (callStatus) => {
+          return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_clientbuilder_disable_well_known_lookup(
+            uniffiTypeClientBuilderObjectFactory.clonePointer(this),
+            FfiConverterBool.lower(disableWellKnownLookup),
+            callStatus
+          );
+        },
+        /*liftString:*/ FfiConverterString.lift
+      )
+    );
+  }
+
   dmRoomDefinition(dmRoomDefinition: DmRoomDefinition): ClientBuilderLike {
     return FfiConverterTypeClientBuilder.lift(
       uniffiCaller.rustCall(
@@ -51307,6 +51611,28 @@ export class ClientBuilder
           return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_clientbuilder_dm_room_definition(
             uniffiTypeClientBuilderObjectFactory.clonePointer(this),
             FfiConverterTypeDmRoomDefinition.lower(dmRoomDefinition),
+            callStatus
+          );
+        },
+        /*liftString:*/ FfiConverterString.lift
+      )
+    );
+  }
+
+  /**
+   * Set whether to automatically back-paginate a room's history in the
+   * background, under certain conditions (search backfill, latest-event
+   * resolution, read-receipt finding). Off by default.
+   */
+  enableAutomaticBackPagination(
+    enableAutomaticBackPagination: boolean
+  ): ClientBuilderLike {
+    return FfiConverterTypeClientBuilder.lift(
+      uniffiCaller.rustCall(
+        /*caller:*/ (callStatus) => {
+          return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_clientbuilder_enable_automatic_back_pagination(
+            uniffiTypeClientBuilderObjectFactory.clonePointer(this),
+            FfiConverterBool.lower(enableAutomaticBackPagination),
             callStatus
           );
         },
@@ -51338,6 +51664,18 @@ export class ClientBuilder
     );
   }
 
+  /**
+   * Set the homeserver URL to use.
+   *
+   * The following methods are mutually exclusive: [`Self::homeserver_url`],
+   * [`Self::server_name`], [`Self::server_name_or_homeserver_url`] and
+   * [`Self::server_name_from_user_id`]. If you set more than one, then
+   * whichever was set last will be used.
+   *
+   * This is the only one of them that never performs a
+   * `.well-known/matrix/client` lookup, so it is the one to use together
+   * with [`Self::disable_well_known_lookup`].
+   */
   homeserverUrl(url: string): ClientBuilderLike {
     return FfiConverterTypeClientBuilder.lift(
       uniffiCaller.rustCall(
@@ -51422,6 +51760,18 @@ export class ClientBuilder
     );
   }
 
+  /**
+   * Set the server name to discover the homeserver from.
+   *
+   * The following methods are mutually exclusive: [`Self::homeserver_url`],
+   * [`Self::server_name`], [`Self::server_name_or_homeserver_url`] and
+   * [`Self::server_name_from_user_id`]. If you set more than one, then
+   * whichever was set last will be used.
+   *
+   * This performs a `.well-known/matrix/client` lookup, and is therefore
+   * incompatible with [`Self::disable_well_known_lookup`]: [`Self::build`]
+   * then fails with [`ClientBuildError::WellKnownLookupDisabled`].
+   */
   serverName(serverName: string): ClientBuilderLike {
     return FfiConverterTypeClientBuilder.lift(
       uniffiCaller.rustCall(
@@ -51437,6 +51787,56 @@ export class ClientBuilder
     );
   }
 
+  /**
+   * Uses the server name from the supplied the user ID to discover the
+   * homeserver.
+   *
+   * When building a client for restoration, prefer to use
+   * [`Self::homeserver_url`] as the restoration will pick up the user ID
+   * from the [`Session`], and using this will result in a needless request
+   * to re-discover the homeserver.
+   *
+   * The following methods are mutually exclusive: [`Self::homeserver_url`],
+   * [`Self::server_name`], [`Self::server_name_or_homeserver_url`] and
+   * [`Self::server_name_from_user_id`]. If you set more than one, then
+   * whichever was set last will be used.
+   *
+   * This performs a `.well-known/matrix/client` lookup, and is therefore
+   * incompatible with [`Self::disable_well_known_lookup`]: [`Self::build`]
+   * then fails with [`ClientBuildError::WellKnownLookupDisabled`].
+   */
+  serverNameFromUserId(userId: string): ClientBuilderLike {
+    return FfiConverterTypeClientBuilder.lift(
+      uniffiCaller.rustCall(
+        /*caller:*/ (callStatus) => {
+          return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_clientbuilder_server_name_from_user_id(
+            uniffiTypeClientBuilderObjectFactory.clonePointer(this),
+            FfiConverterString.lower(userId),
+            callStatus
+          );
+        },
+        /*liftString:*/ FfiConverterString.lift
+      )
+    );
+  }
+
+  /**
+   * Set the server name to discover the homeserver from, falling back to
+   * using it as a homeserver URL if discovery fails. When falling back to a
+   * homeserver URL, a check is made to ensure that the server exists (unlike
+   * [`Self::homeserver_url`], so you can guarantee that the client is ready
+   * to use.
+   *
+   * The following methods are mutually exclusive: [`Self::homeserver_url`],
+   * [`Self::server_name`], [`Self::server_name_or_homeserver_url`] and
+   * [`Self::server_name_from_user_id`]. If you set more than one, then
+   * whichever was set last will be used.
+   *
+   * With [`Self::disable_well_known_lookup`], the discovery step is skipped
+   * and only the homeserver URL check is performed, so a homeserver URL
+   * still works while a delegating server name fails with
+   * [`ClientBuildError::InvalidServerName`].
+   */
   serverNameOrHomeserverUrl(serverNameOrUrl: string): ClientBuilderLike {
     return FfiConverterTypeClientBuilder.lift(
       uniffiCaller.rustCall(
@@ -51581,21 +51981,6 @@ export class ClientBuilder
           return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_clientbuilder_user_agent(
             uniffiTypeClientBuilderObjectFactory.clonePointer(this),
             FfiConverterString.lower(userAgent),
-            callStatus
-          );
-        },
-        /*liftString:*/ FfiConverterString.lift
-      )
-    );
-  }
-
-  username(username: string): ClientBuilderLike {
-    return FfiConverterTypeClientBuilder.lift(
-      uniffiCaller.rustCall(
-        /*caller:*/ (callStatus) => {
-          return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_clientbuilder_username(
-            uniffiTypeClientBuilderObjectFactory.clonePointer(this),
-            FfiConverterString.lower(username),
             callStatus
           );
         },
@@ -56308,6 +56693,10 @@ export interface NotificationClientLike {
    * notification client sliding sync loop.
    */
   getRoom(roomId: string) /*throws*/ : RoomLike | undefined;
+  /**
+   * Returns the timeouts applied while fetching notifications.
+   */
+  timeouts(): NotificationClientTimeouts;
 }
 /**
  * @deprecated Use `NotificationClientLike` instead.
@@ -56444,6 +56833,23 @@ export class NotificationClient
           return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_notificationclient_get_room(
             uniffiTypeNotificationClientObjectFactory.clonePointer(this),
             FfiConverterString.lower(roomId),
+            callStatus
+          );
+        },
+        /*liftString:*/ FfiConverterString.lift
+      )
+    );
+  }
+
+  /**
+   * Returns the timeouts applied while fetching notifications.
+   */
+  timeouts(): NotificationClientTimeouts {
+    return FfiConverterTypeNotificationClientTimeouts.lift(
+      uniffiCaller.rustCall(
+        /*caller:*/ (callStatus) => {
+          return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_notificationclient_timeouts(
+            uniffiTypeNotificationClientObjectFactory.clonePointer(this),
             callStatus
           );
         },
@@ -58197,6 +58603,21 @@ const FfiConverterTypeQrCodeData = new FfiConverterObject(
 );
 
 export interface RoomLike {
+  /**
+   * Get the user IDs of the joined and invited members, without the service
+   * members. The current user is part of the result. Fetches the member list
+   * if it is not synced yet.
+   */
+  activeHumanMemberIds(asyncOpts_?: {
+    signal: AbortSignal;
+  }) /*throws*/ : Promise<Array<string>>;
+  /**
+   * Same as [`Self::active_human_member_ids`], without a request to the
+   * homeserver, so members can be missing.
+   */
+  activeHumanMemberIdsNoSync(asyncOpts_?: {
+    signal: AbortSignal;
+  }) /*throws*/ : Promise<Array<string>>;
   activeMembersCount(): /*u64*/ bigint;
   /**
    * Returns a Vec of userId's that participate in the room call.
@@ -58228,6 +58649,19 @@ export interface RoomLike {
     threadRoot: string | undefined,
     asyncOpts_?: { signal: AbortSignal }
   ) /*throws*/ : Promise<void>;
+  /**
+   * Clear this room's persisted event cache, in memory and in the store,
+   * keeping live observers alive; the next pagination or sync re-fetches
+   * the room's history from the homeserver.
+   *
+   * This is a repair for a local history suspected to be missing events:
+   * a rebuilt store re-asks the homeserver for ranges a corrupted one
+   * believes it already holds. Callers should rebuild any open timeline
+   * afterwards.
+   */
+  clearEventCache(asyncOpts_?: {
+    signal: AbortSignal;
+  }) /*throws*/ : Promise<void>;
   /**
    * Declines a call (and stop ringing).
    *
@@ -58430,6 +58864,19 @@ export interface RoomLike {
     eventId: string,
     asyncOpts_?: { signal: AbortSignal }
   ) /*throws*/ : Promise<TimelineEventLike>;
+  /**
+   * Either loads the event associated with the `event_id` from the event
+   * cache or fetches it from the homeserver, along with the events related
+   * to it (e.g. reactions and edits), fetched recursively.
+   *
+   * An optional filter restricts the relation types fetched; no filter
+   * fetches relations of all types.
+   */
+  loadOrFetchEventWithRelations(
+    eventId: string,
+    relationFilter: Array<RelationType> | undefined,
+    asyncOpts_?: { signal: AbortSignal }
+  ) /*throws*/ : Promise<EventWithRelations>;
   /**
    * Load the receipt of the given type for the given user in this room,
    * optionally scoped to a thread.
@@ -58945,6 +59392,89 @@ export class Room extends UniffiAbstractObject implements RoomLike {
     this[destructorGuardSymbol] = uniffiTypeRoomObjectFactory.bless(pointer);
   }
 
+  /**
+   * Get the user IDs of the joined and invited members, without the service
+   * members. The current user is part of the result. Fetches the member list
+   * if it is not synced yet.
+   */
+  async activeHumanMemberIds(asyncOpts_?: {
+    signal: AbortSignal;
+  }): Promise<Array<string>> /*throws*/ {
+    const __stack = uniffiIsDebug ? new Error().stack : undefined;
+    try {
+      return await uniffiRustCallAsync(
+        /*rustCaller:*/ uniffiCaller,
+        /*rustFutureFunc:*/ () => {
+          return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_room_active_human_member_ids(
+            uniffiTypeRoomObjectFactory.clonePointer(this)
+          );
+        },
+        /*pollFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_poll_rust_buffer,
+        /*cancelFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_cancel_rust_buffer,
+        /*completeFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_complete_rust_buffer,
+        /*freeFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_free_rust_buffer,
+        /*liftFunc:*/ FfiConverterArrayString.lift.bind(
+          FfiConverterArrayString
+        ),
+        /*liftString:*/ FfiConverterString.lift,
+        /*asyncOpts:*/ asyncOpts_,
+        /*errorHandler:*/ FfiConverterTypeClientError.lift.bind(
+          FfiConverterTypeClientError
+        )
+      );
+    } catch (__error: any) {
+      if (uniffiIsDebug && __error instanceof Error) {
+        __error.stack = __stack;
+      }
+      throw __error;
+    }
+  }
+
+  /**
+   * Same as [`Self::active_human_member_ids`], without a request to the
+   * homeserver, so members can be missing.
+   */
+  async activeHumanMemberIdsNoSync(asyncOpts_?: {
+    signal: AbortSignal;
+  }): Promise<Array<string>> /*throws*/ {
+    const __stack = uniffiIsDebug ? new Error().stack : undefined;
+    try {
+      return await uniffiRustCallAsync(
+        /*rustCaller:*/ uniffiCaller,
+        /*rustFutureFunc:*/ () => {
+          return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_room_active_human_member_ids_no_sync(
+            uniffiTypeRoomObjectFactory.clonePointer(this)
+          );
+        },
+        /*pollFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_poll_rust_buffer,
+        /*cancelFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_cancel_rust_buffer,
+        /*completeFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_complete_rust_buffer,
+        /*freeFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_free_rust_buffer,
+        /*liftFunc:*/ FfiConverterArrayString.lift.bind(
+          FfiConverterArrayString
+        ),
+        /*liftString:*/ FfiConverterString.lift,
+        /*asyncOpts:*/ asyncOpts_,
+        /*errorHandler:*/ FfiConverterTypeClientError.lift.bind(
+          FfiConverterTypeClientError
+        )
+      );
+    } catch (__error: any) {
+      if (uniffiIsDebug && __error instanceof Error) {
+        __error.stack = __stack;
+      }
+      throw __error;
+    }
+  }
+
   activeMembersCount(): /*u64*/ bigint {
     return FfiConverterUInt64.lift(
       uniffiCaller.rustCall(
@@ -59116,6 +59646,51 @@ export class Room extends UniffiAbstractObject implements RoomLike {
           return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_room_clear_composer_draft(
             uniffiTypeRoomObjectFactory.clonePointer(this),
             FfiConverterOptionalString.lower(threadRoot)
+          );
+        },
+        /*pollFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_poll_void,
+        /*cancelFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_cancel_void,
+        /*completeFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_complete_void,
+        /*freeFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_free_void,
+        /*liftFunc:*/ (_v) => {},
+        /*liftString:*/ FfiConverterString.lift,
+        /*asyncOpts:*/ asyncOpts_,
+        /*errorHandler:*/ FfiConverterTypeClientError.lift.bind(
+          FfiConverterTypeClientError
+        )
+      );
+    } catch (__error: any) {
+      if (uniffiIsDebug && __error instanceof Error) {
+        __error.stack = __stack;
+      }
+      throw __error;
+    }
+  }
+
+  /**
+   * Clear this room's persisted event cache, in memory and in the store,
+   * keeping live observers alive; the next pagination or sync re-fetches
+   * the room's history from the homeserver.
+   *
+   * This is a repair for a local history suspected to be missing events:
+   * a rebuilt store re-asks the homeserver for ranges a corrupted one
+   * believes it already holds. Callers should rebuild any open timeline
+   * afterwards.
+   */
+  async clearEventCache(asyncOpts_?: {
+    signal: AbortSignal;
+  }): Promise<void> /*throws*/ {
+    const __stack = uniffiIsDebug ? new Error().stack : undefined;
+    try {
+      return await uniffiRustCallAsync(
+        /*rustCaller:*/ uniffiCaller,
+        /*rustFutureFunc:*/ () => {
+          return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_room_clear_event_cache(
+            uniffiTypeRoomObjectFactory.clonePointer(this)
           );
         },
         /*pollFunc:*/ nativeModule()
@@ -60214,6 +60789,55 @@ export class Room extends UniffiAbstractObject implements RoomLike {
           .ubrn_ffi_matrix_sdk_ffi_rust_future_free_u64,
         /*liftFunc:*/ FfiConverterTypeTimelineEvent.lift.bind(
           FfiConverterTypeTimelineEvent
+        ),
+        /*liftString:*/ FfiConverterString.lift,
+        /*asyncOpts:*/ asyncOpts_,
+        /*errorHandler:*/ FfiConverterTypeClientError.lift.bind(
+          FfiConverterTypeClientError
+        )
+      );
+    } catch (__error: any) {
+      if (uniffiIsDebug && __error instanceof Error) {
+        __error.stack = __stack;
+      }
+      throw __error;
+    }
+  }
+
+  /**
+   * Either loads the event associated with the `event_id` from the event
+   * cache or fetches it from the homeserver, along with the events related
+   * to it (e.g. reactions and edits), fetched recursively.
+   *
+   * An optional filter restricts the relation types fetched; no filter
+   * fetches relations of all types.
+   */
+  async loadOrFetchEventWithRelations(
+    eventId: string,
+    relationFilter: Array<RelationType> | undefined,
+    asyncOpts_?: { signal: AbortSignal }
+  ): Promise<EventWithRelations> /*throws*/ {
+    const __stack = uniffiIsDebug ? new Error().stack : undefined;
+    try {
+      return await uniffiRustCallAsync(
+        /*rustCaller:*/ uniffiCaller,
+        /*rustFutureFunc:*/ () => {
+          return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_room_load_or_fetch_event_with_relations(
+            uniffiTypeRoomObjectFactory.clonePointer(this),
+            FfiConverterString.lower(eventId),
+            FfiConverterOptionalArrayTypeRelationType.lower(relationFilter)
+          );
+        },
+        /*pollFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_poll_rust_buffer,
+        /*cancelFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_cancel_rust_buffer,
+        /*completeFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_complete_rust_buffer,
+        /*freeFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_free_rust_buffer,
+        /*liftFunc:*/ FfiConverterTypeEventWithRelations.lift.bind(
+          FfiConverterTypeEventWithRelations
         ),
         /*liftString:*/ FfiConverterString.lift,
         /*asyncOpts:*/ asyncOpts_,
@@ -63523,12 +64147,17 @@ export interface RoomListServiceLike {
   allRooms(asyncOpts_?: {
     signal: AbortSignal;
   }) /*throws*/ : Promise<RoomListLike>;
-  room(roomId: string) /*throws*/ : RoomLike;
-  state(listener: RoomListServiceStateListener): TaskHandleLike;
-  subscribeToRooms(
+  removeRoomSubscriptions(roomIds: Array<string>) /*throws*/ : void;
+  resetAndAddRoomSubscriptions(
     roomIds: Array<string>,
     asyncOpts_?: { signal: AbortSignal }
   ) /*throws*/ : Promise<void>;
+  room(roomId: string) /*throws*/ : RoomLike;
+  setRoomSubscriptions(
+    roomIds: Array<string>,
+    asyncOpts_?: { signal: AbortSignal }
+  ) /*throws*/ : Promise<void>;
+  state(listener: RoomListServiceStateListener): TaskHandleLike;
   syncIndicator(
     delayBeforeShowingInMs: /*u32*/ number,
     delayBeforeHidingInMs: /*u32*/ number,
@@ -63592,40 +64221,23 @@ export class RoomListService
     }
   }
 
-  room(roomId: string): RoomLike /*throws*/ {
-    return FfiConverterTypeRoom.lift(
-      uniffiCaller.rustCallWithError(
-        /*liftError:*/ FfiConverterTypeRoomListError.lift.bind(
-          FfiConverterTypeRoomListError
-        ),
-        /*caller:*/ (callStatus) => {
-          return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_roomlistservice_room(
-            uniffiTypeRoomListServiceObjectFactory.clonePointer(this),
-            FfiConverterString.lower(roomId),
-            callStatus
-          );
-        },
-        /*liftString:*/ FfiConverterString.lift
-      )
+  removeRoomSubscriptions(roomIds: Array<string>): void /*throws*/ {
+    uniffiCaller.rustCallWithError(
+      /*liftError:*/ FfiConverterTypeRoomListError.lift.bind(
+        FfiConverterTypeRoomListError
+      ),
+      /*caller:*/ (callStatus) => {
+        nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_roomlistservice_remove_room_subscriptions(
+          uniffiTypeRoomListServiceObjectFactory.clonePointer(this),
+          FfiConverterArrayString.lower(roomIds),
+          callStatus
+        );
+      },
+      /*liftString:*/ FfiConverterString.lift
     );
   }
 
-  state(listener: RoomListServiceStateListener): TaskHandleLike {
-    return FfiConverterTypeTaskHandle.lift(
-      uniffiCaller.rustCall(
-        /*caller:*/ (callStatus) => {
-          return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_roomlistservice_state(
-            uniffiTypeRoomListServiceObjectFactory.clonePointer(this),
-            FfiConverterTypeRoomListServiceStateListener.lower(listener),
-            callStatus
-          );
-        },
-        /*liftString:*/ FfiConverterString.lift
-      )
-    );
-  }
-
-  async subscribeToRooms(
+  async resetAndAddRoomSubscriptions(
     roomIds: Array<string>,
     asyncOpts_?: { signal: AbortSignal }
   ): Promise<void> /*throws*/ {
@@ -63634,7 +64246,7 @@ export class RoomListService
       return await uniffiRustCallAsync(
         /*rustCaller:*/ uniffiCaller,
         /*rustFutureFunc:*/ () => {
-          return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_roomlistservice_subscribe_to_rooms(
+          return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_roomlistservice_reset_and_add_room_subscriptions(
             uniffiTypeRoomListServiceObjectFactory.clonePointer(this),
             FfiConverterArrayString.lower(roomIds)
           );
@@ -63660,6 +64272,76 @@ export class RoomListService
       }
       throw __error;
     }
+  }
+
+  room(roomId: string): RoomLike /*throws*/ {
+    return FfiConverterTypeRoom.lift(
+      uniffiCaller.rustCallWithError(
+        /*liftError:*/ FfiConverterTypeRoomListError.lift.bind(
+          FfiConverterTypeRoomListError
+        ),
+        /*caller:*/ (callStatus) => {
+          return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_roomlistservice_room(
+            uniffiTypeRoomListServiceObjectFactory.clonePointer(this),
+            FfiConverterString.lower(roomId),
+            callStatus
+          );
+        },
+        /*liftString:*/ FfiConverterString.lift
+      )
+    );
+  }
+
+  async setRoomSubscriptions(
+    roomIds: Array<string>,
+    asyncOpts_?: { signal: AbortSignal }
+  ): Promise<void> /*throws*/ {
+    const __stack = uniffiIsDebug ? new Error().stack : undefined;
+    try {
+      return await uniffiRustCallAsync(
+        /*rustCaller:*/ uniffiCaller,
+        /*rustFutureFunc:*/ () => {
+          return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_roomlistservice_set_room_subscriptions(
+            uniffiTypeRoomListServiceObjectFactory.clonePointer(this),
+            FfiConverterArrayString.lower(roomIds)
+          );
+        },
+        /*pollFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_poll_void,
+        /*cancelFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_cancel_void,
+        /*completeFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_complete_void,
+        /*freeFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_free_void,
+        /*liftFunc:*/ (_v) => {},
+        /*liftString:*/ FfiConverterString.lift,
+        /*asyncOpts:*/ asyncOpts_,
+        /*errorHandler:*/ FfiConverterTypeRoomListError.lift.bind(
+          FfiConverterTypeRoomListError
+        )
+      );
+    } catch (__error: any) {
+      if (uniffiIsDebug && __error instanceof Error) {
+        __error.stack = __stack;
+      }
+      throw __error;
+    }
+  }
+
+  state(listener: RoomListServiceStateListener): TaskHandleLike {
+    return FfiConverterTypeTaskHandle.lift(
+      uniffiCaller.rustCall(
+        /*caller:*/ (callStatus) => {
+          return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_roomlistservice_state(
+            uniffiTypeRoomListServiceObjectFactory.clonePointer(this),
+            FfiConverterTypeRoomListServiceStateListener.lower(listener),
+            callStatus
+          );
+        },
+        /*liftString:*/ FfiConverterString.lift
+      )
+    );
   }
 
   syncIndicator(
@@ -65925,7 +66607,8 @@ const FfiConverterTypeSendGalleryJoinHandle = new FfiConverterObject(
  */
 export interface SendHandleLike {
   /**
-   * Try to abort the sending of the current event.
+   * Try to abort the sending of the current event, with an optional
+   * `reason` applied to the redaction when the event went out anyway.
    *
    * If this returns `true`, then the sending could be aborted, because the
    * event hasn't been sent yet. Otherwise, if this returns `false`, the
@@ -65934,7 +66617,10 @@ export interface SendHandleLike {
    * This has an effect only on the first call; subsequent calls will always
    * return `false`.
    */
-  abort(asyncOpts_?: { signal: AbortSignal }) /*throws*/ : Promise<boolean>;
+  abort(
+    reason: string | undefined,
+    asyncOpts_?: { signal: AbortSignal }
+  ) /*throws*/ : Promise<boolean>;
   /**
    * Attempt to manually resend messages that failed to send due to issues
    * that should now have been fixed.
@@ -65972,7 +66658,8 @@ export class SendHandle extends UniffiAbstractObject implements SendHandleLike {
   }
 
   /**
-   * Try to abort the sending of the current event.
+   * Try to abort the sending of the current event, with an optional
+   * `reason` applied to the redaction when the event went out anyway.
    *
    * If this returns `true`, then the sending could be aborted, because the
    * event hasn't been sent yet. Otherwise, if this returns `false`, the
@@ -65981,16 +66668,18 @@ export class SendHandle extends UniffiAbstractObject implements SendHandleLike {
    * This has an effect only on the first call; subsequent calls will always
    * return `false`.
    */
-  async abort(asyncOpts_?: {
-    signal: AbortSignal;
-  }): Promise<boolean> /*throws*/ {
+  async abort(
+    reason: string | undefined = undefined,
+    asyncOpts_?: { signal: AbortSignal }
+  ): Promise<boolean> /*throws*/ {
     const __stack = uniffiIsDebug ? new Error().stack : undefined;
     try {
       return await uniffiRustCallAsync(
         /*rustCaller:*/ uniffiCaller,
         /*rustFutureFunc:*/ () => {
           return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_sendhandle_abort(
-            uniffiTypeSendHandleObjectFactory.clonePointer(this)
+            uniffiTypeSendHandleObjectFactory.clonePointer(this),
+            FfiConverterOptionalString.lower(reason)
           );
         },
         /*pollFunc:*/ nativeModule()
@@ -67249,6 +67938,28 @@ export interface SpaceServiceLike {
     asyncOpts_?: { signal: AbortSignal }
   ) /*throws*/ : Promise<SpaceRoom | undefined>;
   /**
+   * Returns the room IDs of all known direct parents of the given child
+   * space or room.
+   *
+   * This is a much cheaper version of [`Self::joined_parents_of_child()`]
+   * that doesn't build any `SpaceRoom` instances, it only reads the
+   * existing space graph.
+   *
+   * The returned IDs are always joined spaces, as that's all the space graph
+   * includes. Note that an empty result either means that the child is a
+   * top-level space (which has no direct parents) or the child isn't part of
+   * the space graph at all.
+   * See [`Self::top_level_ancestors_of()`] if you need that particular level
+   * of detail.
+   *
+   * Note: Unlike [`Self::top_level_joined_spaces()`], this method does not
+   * recompute the space graph nor notify subscribers about changes.
+   */
+  joinedParentIdsOfChild(
+    childId: string,
+    asyncOpts_?: { signal: AbortSignal }
+  ) /*throws*/ : Promise<Array<string>>;
+  /**
    * Returns all known direct-parents of a given space room ID.
    */
   joinedParentsOfChild(
@@ -67307,6 +68018,27 @@ export interface SpaceServiceLike {
     listener: SpaceServiceJoinedSpacesListener,
     asyncOpts_?: { signal: AbortSignal }
   ): Promise<TaskHandleLike>;
+  /**
+   * Returns the room IDs of the top-level joined space(s) that the given
+   * child room/space descends from, by walking the space graph upwards.
+   *
+   * A room/space can be the child of multiple spaces, so this might return
+   * multiple top-level spaces (in no order).
+   *
+   * A top-level space is its own only ancestor, which makes
+   * `top_level_ancestors_of(id) == [id]` a cheap top-level space check.
+   *
+   * Returns an empty vector if the room isn't part of the graph, which is
+   * notably the case for a room that was joined too recently for the graph
+   * to have been rebuilt.
+   *
+   * Note: Unlike [`Self::top_level_joined_spaces()`], this method does not
+   * recompute the space graph nor notify subscribers about changes.
+   */
+  topLevelAncestorsOf(
+    childId: string,
+    asyncOpts_?: { signal: AbortSignal }
+  ) /*throws*/ : Promise<Array<string>>;
   /**
    * Returns a list of all the top-level joined spaces. It will eagerly
    * compute the latest version and also notify subscribers if there were
@@ -67451,6 +68183,63 @@ export class SpaceService
           .ubrn_ffi_matrix_sdk_ffi_rust_future_free_rust_buffer,
         /*liftFunc:*/ FfiConverterOptionalTypeSpaceRoom.lift.bind(
           FfiConverterOptionalTypeSpaceRoom
+        ),
+        /*liftString:*/ FfiConverterString.lift,
+        /*asyncOpts:*/ asyncOpts_,
+        /*errorHandler:*/ FfiConverterTypeClientError.lift.bind(
+          FfiConverterTypeClientError
+        )
+      );
+    } catch (__error: any) {
+      if (uniffiIsDebug && __error instanceof Error) {
+        __error.stack = __stack;
+      }
+      throw __error;
+    }
+  }
+
+  /**
+   * Returns the room IDs of all known direct parents of the given child
+   * space or room.
+   *
+   * This is a much cheaper version of [`Self::joined_parents_of_child()`]
+   * that doesn't build any `SpaceRoom` instances, it only reads the
+   * existing space graph.
+   *
+   * The returned IDs are always joined spaces, as that's all the space graph
+   * includes. Note that an empty result either means that the child is a
+   * top-level space (which has no direct parents) or the child isn't part of
+   * the space graph at all.
+   * See [`Self::top_level_ancestors_of()`] if you need that particular level
+   * of detail.
+   *
+   * Note: Unlike [`Self::top_level_joined_spaces()`], this method does not
+   * recompute the space graph nor notify subscribers about changes.
+   */
+  async joinedParentIdsOfChild(
+    childId: string,
+    asyncOpts_?: { signal: AbortSignal }
+  ): Promise<Array<string>> /*throws*/ {
+    const __stack = uniffiIsDebug ? new Error().stack : undefined;
+    try {
+      return await uniffiRustCallAsync(
+        /*rustCaller:*/ uniffiCaller,
+        /*rustFutureFunc:*/ () => {
+          return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_spaceservice_joined_parent_ids_of_child(
+            uniffiTypeSpaceServiceObjectFactory.clonePointer(this),
+            FfiConverterString.lower(childId)
+          );
+        },
+        /*pollFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_poll_rust_buffer,
+        /*cancelFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_cancel_rust_buffer,
+        /*completeFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_complete_rust_buffer,
+        /*freeFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_free_rust_buffer,
+        /*liftFunc:*/ FfiConverterArrayString.lift.bind(
+          FfiConverterArrayString
         ),
         /*liftString:*/ FfiConverterString.lift,
         /*asyncOpts:*/ asyncOpts_,
@@ -67750,6 +68539,62 @@ export class SpaceService
         ),
         /*liftString:*/ FfiConverterString.lift,
         /*asyncOpts:*/ asyncOpts_
+      );
+    } catch (__error: any) {
+      if (uniffiIsDebug && __error instanceof Error) {
+        __error.stack = __stack;
+      }
+      throw __error;
+    }
+  }
+
+  /**
+   * Returns the room IDs of the top-level joined space(s) that the given
+   * child room/space descends from, by walking the space graph upwards.
+   *
+   * A room/space can be the child of multiple spaces, so this might return
+   * multiple top-level spaces (in no order).
+   *
+   * A top-level space is its own only ancestor, which makes
+   * `top_level_ancestors_of(id) == [id]` a cheap top-level space check.
+   *
+   * Returns an empty vector if the room isn't part of the graph, which is
+   * notably the case for a room that was joined too recently for the graph
+   * to have been rebuilt.
+   *
+   * Note: Unlike [`Self::top_level_joined_spaces()`], this method does not
+   * recompute the space graph nor notify subscribers about changes.
+   */
+  async topLevelAncestorsOf(
+    childId: string,
+    asyncOpts_?: { signal: AbortSignal }
+  ): Promise<Array<string>> /*throws*/ {
+    const __stack = uniffiIsDebug ? new Error().stack : undefined;
+    try {
+      return await uniffiRustCallAsync(
+        /*rustCaller:*/ uniffiCaller,
+        /*rustFutureFunc:*/ () => {
+          return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_spaceservice_top_level_ancestors_of(
+            uniffiTypeSpaceServiceObjectFactory.clonePointer(this),
+            FfiConverterString.lower(childId)
+          );
+        },
+        /*pollFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_poll_rust_buffer,
+        /*cancelFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_cancel_rust_buffer,
+        /*completeFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_complete_rust_buffer,
+        /*freeFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_free_rust_buffer,
+        /*liftFunc:*/ FfiConverterArrayString.lift.bind(
+          FfiConverterArrayString
+        ),
+        /*liftString:*/ FfiConverterString.lift,
+        /*asyncOpts:*/ asyncOpts_,
+        /*errorHandler:*/ FfiConverterTypeClientError.lift.bind(
+          FfiConverterTypeClientError
+        )
       );
     } catch (__error: any) {
       if (uniffiIsDebug && __error instanceof Error) {
@@ -68129,6 +68974,28 @@ export interface SqliteStoreBuilderLike {
    */
   cacheSize(cacheSize: /*u32*/ number | undefined): SqliteStoreBuilderLike;
   /**
+   * Define the passphrase if the store is encoded, declaring that it was
+   * randomly generated rather than chosen by a human.
+   *
+   * Do NOT use this with human-chosen passphrases, as doing so would
+   * remove their brute-force protection.
+   *
+   * This migrates a passphrase-based store whose passphrase was created
+   * by base64-encoding a randomly generated key to a key-based
+   * setup.
+   *
+   * Once this function has been called,
+   * [`SqliteStoreBuilder::passphrase`] can no longer be used with
+   * the passphrase.
+   *
+   * [`SqliteStoreBuilder::key`] can be used with the original key,
+   * before it was base64-encoded.
+   */
+  highEntropyPassphrase(
+    passphrase: ArrayBuffer | undefined,
+    base64Variant: Base64Variant
+  ): SqliteStoreBuilderLike;
+  /**
    * Set the size limit for the SQLite WAL files of stores.
    *
    * Each store uses the WAL journal mode. This method controls the size
@@ -68228,6 +69095,43 @@ export class SqliteStoreBuilder
           return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_sqlitestorebuilder_cache_size(
             uniffiTypeSqliteStoreBuilderObjectFactory.clonePointer(this),
             FfiConverterOptionalUInt32.lower(cacheSize),
+            callStatus
+          );
+        },
+        /*liftString:*/ FfiConverterString.lift
+      )
+    );
+  }
+
+  /**
+   * Define the passphrase if the store is encoded, declaring that it was
+   * randomly generated rather than chosen by a human.
+   *
+   * Do NOT use this with human-chosen passphrases, as doing so would
+   * remove their brute-force protection.
+   *
+   * This migrates a passphrase-based store whose passphrase was created
+   * by base64-encoding a randomly generated key to a key-based
+   * setup.
+   *
+   * Once this function has been called,
+   * [`SqliteStoreBuilder::passphrase`] can no longer be used with
+   * the passphrase.
+   *
+   * [`SqliteStoreBuilder::key`] can be used with the original key,
+   * before it was base64-encoded.
+   */
+  highEntropyPassphrase(
+    passphrase: ArrayBuffer | undefined,
+    base64Variant: Base64Variant
+  ): SqliteStoreBuilderLike {
+    return FfiConverterTypeSqliteStoreBuilder.lift(
+      uniffiCaller.rustCall(
+        /*caller:*/ (callStatus) => {
+          return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_sqlitestorebuilder_high_entropy_passphrase(
+            uniffiTypeSqliteStoreBuilderObjectFactory.clonePointer(this),
+            FfiConverterOptionalArrayBuffer.lower(passphrase),
+            FfiConverterTypeBase64Variant.lower(base64Variant),
             callStatus
           );
         },
@@ -68875,13 +69779,6 @@ export interface SyncServiceBuilderLike {
    */
   withParentSpan(span: SpanLike): SyncServiceBuilderLike;
   /**
-   * Enable the Profiles sliding sync extension for the room list service.
-   *
-   * Required to merge the global `m.status` and `m.call` fields into the
-   * room members and profiles read from the SDK.
-   */
-  withProfilesExtension(): SyncServiceBuilderLike;
-  /**
    * Set a custom Sliding Sync connection ID for the room list service.
    *
    * By default [`matrix_sdk_ui::room_list_service::DEFAULT_CONNECTION_ID`]
@@ -68983,26 +69880,6 @@ export class SyncServiceBuilder
           return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_syncservicebuilder_with_parent_span(
             uniffiTypeSyncServiceBuilderObjectFactory.clonePointer(this),
             FfiConverterTypeSpan.lower(span),
-            callStatus
-          );
-        },
-        /*liftString:*/ FfiConverterString.lift
-      )
-    );
-  }
-
-  /**
-   * Enable the Profiles sliding sync extension for the room list service.
-   *
-   * Required to merge the global `m.status` and `m.call` fields into the
-   * room members and profiles read from the SDK.
-   */
-  withProfilesExtension(): SyncServiceBuilderLike {
-    return FfiConverterTypeSyncServiceBuilder.lift(
-      uniffiCaller.rustCall(
-        /*caller:*/ (callStatus) => {
-          return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_syncservicebuilder_with_profiles_extension(
-            uniffiTypeSyncServiceBuilderObjectFactory.clonePointer(this),
             callStatus
           );
         },
@@ -69354,8 +70231,9 @@ export interface ThreadListServiceLike {
   /**
    * Subscribes to changes in the pagination state.
    *
-   * The `listener` is called once for every state transition. The returned
-   * [`TaskHandle`] keeps the subscription alive
+   * The `listener` is immediately called with the current state, then once
+   * for every state transition. The returned [`TaskHandle`] keeps the
+   * subscription alive
    */
   subscribeToPaginationStateUpdates(
     listener: ThreadListPaginationStateListener
@@ -69528,8 +70406,9 @@ export class ThreadListService
   /**
    * Subscribes to changes in the pagination state.
    *
-   * The `listener` is called once for every state transition. The returned
-   * [`TaskHandle`] keeps the subscription alive
+   * The `listener` is immediately called with the current state, then once
+   * for every state transition. The returned [`TaskHandle`] keeps the
+   * subscription alive
    */
   subscribeToPaginationStateUpdates(
     listener: ThreadListPaginationStateListener
@@ -69804,6 +70683,17 @@ export interface TimelineLike {
     newContent: EditedContent,
     asyncOpts_?: { signal: AbortSignal }
   ) /*throws*/ : Promise<void>;
+  /**
+   * Get the edit history for the given event.
+   *
+   * Returns all revisions of the event, in chronological order.
+   * The first entry is the original event content, followed by each
+   * edit in the order they were applied.
+   */
+  editRevisions(
+    eventId: string,
+    asyncOpts_?: { signal: AbortSignal }
+  ) /*throws*/ : Promise<Array<EditRevisionRecord>>;
   endPoll(
     pollStartEventId: string,
     text: string,
@@ -69969,13 +70859,13 @@ export interface TimelineLike {
    *
    * If the replied to event has a thread relation, it is forwarded on the
    * reply so that clients that support threads can render the reply
-   * inside the thread.
+   * inside the thread. Returns a handle to abort the pending send.
    */
   sendReply(
     msg: RoomMessageEventContentWithoutRelationLike,
     eventId: string,
     asyncOpts_?: { signal: AbortSignal }
-  ) /*throws*/ : Promise<void>;
+  ) /*throws*/ : Promise<SendHandleLike>;
   sendVideo(
     params: UploadParameters,
     thumbnailSource: UploadSource | undefined,
@@ -70017,6 +70907,20 @@ export interface TimelineLike {
   toggleReaction(
     itemId: EventOrTransactionId,
     key: string,
+    asyncOpts_?: { signal: AbortSignal }
+  ) /*throws*/ : Promise<boolean>;
+  /**
+   * Like [`Self::toggle_reaction`], but merges the given additional
+   * top-level fields (a JSON object, encoded as a string) into the
+   * reaction's content when one is added.
+   *
+   * Removing a reaction is a redaction, which carries no content, so the
+   * extra fields are only used when adding one.
+   */
+  toggleReactionWithExtraContent(
+    itemId: EventOrTransactionId,
+    key: string,
+    extraContentJson: string | undefined,
     asyncOpts_?: { signal: AbortSignal }
   ) /*throws*/ : Promise<boolean>;
   /**
@@ -70183,6 +71087,52 @@ export class Timeline extends UniffiAbstractObject implements TimelineLike {
         /*freeFunc:*/ nativeModule()
           .ubrn_ffi_matrix_sdk_ffi_rust_future_free_void,
         /*liftFunc:*/ (_v) => {},
+        /*liftString:*/ FfiConverterString.lift,
+        /*asyncOpts:*/ asyncOpts_,
+        /*errorHandler:*/ FfiConverterTypeClientError.lift.bind(
+          FfiConverterTypeClientError
+        )
+      );
+    } catch (__error: any) {
+      if (uniffiIsDebug && __error instanceof Error) {
+        __error.stack = __stack;
+      }
+      throw __error;
+    }
+  }
+
+  /**
+   * Get the edit history for the given event.
+   *
+   * Returns all revisions of the event, in chronological order.
+   * The first entry is the original event content, followed by each
+   * edit in the order they were applied.
+   */
+  async editRevisions(
+    eventId: string,
+    asyncOpts_?: { signal: AbortSignal }
+  ): Promise<Array<EditRevisionRecord>> /*throws*/ {
+    const __stack = uniffiIsDebug ? new Error().stack : undefined;
+    try {
+      return await uniffiRustCallAsync(
+        /*rustCaller:*/ uniffiCaller,
+        /*rustFutureFunc:*/ () => {
+          return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_timeline_edit_revisions(
+            uniffiTypeTimelineObjectFactory.clonePointer(this),
+            FfiConverterString.lower(eventId)
+          );
+        },
+        /*pollFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_poll_rust_buffer,
+        /*cancelFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_cancel_rust_buffer,
+        /*completeFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_complete_rust_buffer,
+        /*freeFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_free_rust_buffer,
+        /*liftFunc:*/ FfiConverterArrayTypeEditRevisionRecord.lift.bind(
+          FfiConverterArrayTypeEditRevisionRecord
+        ),
         /*liftString:*/ FfiConverterString.lift,
         /*asyncOpts:*/ asyncOpts_,
         /*errorHandler:*/ FfiConverterTypeClientError.lift.bind(
@@ -70934,13 +71884,13 @@ export class Timeline extends UniffiAbstractObject implements TimelineLike {
    *
    * If the replied to event has a thread relation, it is forwarded on the
    * reply so that clients that support threads can render the reply
-   * inside the thread.
+   * inside the thread. Returns a handle to abort the pending send.
    */
   async sendReply(
     msg: RoomMessageEventContentWithoutRelationLike,
     eventId: string,
     asyncOpts_?: { signal: AbortSignal }
-  ): Promise<void> /*throws*/ {
+  ): Promise<SendHandleLike> /*throws*/ {
     const __stack = uniffiIsDebug ? new Error().stack : undefined;
     try {
       return await uniffiRustCallAsync(
@@ -70953,14 +71903,16 @@ export class Timeline extends UniffiAbstractObject implements TimelineLike {
           );
         },
         /*pollFunc:*/ nativeModule()
-          .ubrn_ffi_matrix_sdk_ffi_rust_future_poll_void,
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_poll_u64,
         /*cancelFunc:*/ nativeModule()
-          .ubrn_ffi_matrix_sdk_ffi_rust_future_cancel_void,
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_cancel_u64,
         /*completeFunc:*/ nativeModule()
-          .ubrn_ffi_matrix_sdk_ffi_rust_future_complete_void,
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_complete_u64,
         /*freeFunc:*/ nativeModule()
-          .ubrn_ffi_matrix_sdk_ffi_rust_future_free_void,
-        /*liftFunc:*/ (_v) => {},
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_free_u64,
+        /*liftFunc:*/ FfiConverterTypeSendHandle.lift.bind(
+          FfiConverterTypeSendHandle
+        ),
         /*liftString:*/ FfiConverterString.lift,
         /*asyncOpts:*/ asyncOpts_,
         /*errorHandler:*/ FfiConverterTypeClientError.lift.bind(
@@ -71136,6 +72088,55 @@ export class Timeline extends UniffiAbstractObject implements TimelineLike {
             uniffiTypeTimelineObjectFactory.clonePointer(this),
             FfiConverterTypeEventOrTransactionId.lower(itemId),
             FfiConverterString.lower(key)
+          );
+        },
+        /*pollFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_poll_i8,
+        /*cancelFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_cancel_i8,
+        /*completeFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_complete_i8,
+        /*freeFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_free_i8,
+        /*liftFunc:*/ FfiConverterBool.lift.bind(FfiConverterBool),
+        /*liftString:*/ FfiConverterString.lift,
+        /*asyncOpts:*/ asyncOpts_,
+        /*errorHandler:*/ FfiConverterTypeClientError.lift.bind(
+          FfiConverterTypeClientError
+        )
+      );
+    } catch (__error: any) {
+      if (uniffiIsDebug && __error instanceof Error) {
+        __error.stack = __stack;
+      }
+      throw __error;
+    }
+  }
+
+  /**
+   * Like [`Self::toggle_reaction`], but merges the given additional
+   * top-level fields (a JSON object, encoded as a string) into the
+   * reaction's content when one is added.
+   *
+   * Removing a reaction is a redaction, which carries no content, so the
+   * extra fields are only used when adding one.
+   */
+  async toggleReactionWithExtraContent(
+    itemId: EventOrTransactionId,
+    key: string,
+    extraContentJson: string | undefined,
+    asyncOpts_?: { signal: AbortSignal }
+  ): Promise<boolean> /*throws*/ {
+    const __stack = uniffiIsDebug ? new Error().stack : undefined;
+    try {
+      return await uniffiRustCallAsync(
+        /*rustCaller:*/ uniffiCaller,
+        /*rustFutureFunc:*/ () => {
+          return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_timeline_toggle_reaction_with_extra_content(
+            uniffiTypeTimelineObjectFactory.clonePointer(this),
+            FfiConverterTypeEventOrTransactionId.lower(itemId),
+            FfiConverterString.lower(key),
+            FfiConverterOptionalString.lower(extraContentJson)
           );
         },
         /*pollFunc:*/ nativeModule()
@@ -71506,186 +72507,6 @@ const uniffiTypeTimelineEventObjectFactory: UniffiObjectFactory<TimelineEventLik
 // FfiConverter for TimelineEventLike
 const FfiConverterTypeTimelineEvent = new FfiConverterObject(
   uniffiTypeTimelineEventObjectFactory
-);
-
-/**
- * A timeline filter that includes or excludes events based on their type or
- * content.
- */
-export interface TimelineEventFilterLike {}
-/**
- * @deprecated Use `TimelineEventFilterLike` instead.
- */
-export type TimelineEventFilterInterface = TimelineEventFilterLike;
-
-/**
- * A timeline filter that includes or excludes events based on their type or
- * content.
- */
-export class TimelineEventFilter
-  extends UniffiAbstractObject
-  implements TimelineEventFilterLike
-{
-  readonly [uniffiTypeNameSymbol] = 'TimelineEventFilter';
-  readonly [destructorGuardSymbol]: UniffiGcObject;
-  readonly [pointerLiteralSymbol]: UniffiHandle;
-  // No primary constructor declared for this class.
-  private constructor(pointer: UniffiHandle) {
-    super();
-    this[pointerLiteralSymbol] = pointer;
-    this[destructorGuardSymbol] =
-      uniffiTypeTimelineEventFilterObjectFactory.bless(pointer);
-  }
-
-  static exclude(
-    conditions: Array<FilterTimelineEventCondition>
-  ): TimelineEventFilterLike {
-    return FfiConverterTypeTimelineEventFilter.lift(
-      uniffiCaller.rustCall(
-        /*caller:*/ (callStatus) => {
-          return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_constructor_timelineeventfilter_exclude(
-            FfiConverterArrayTypeFilterTimelineEventCondition.lower(conditions),
-            callStatus
-          );
-        },
-        /*liftString:*/ FfiConverterString.lift
-      )
-    );
-  }
-
-  static excludeEventTypes(
-    eventTypes: Array<FilterTimelineEventType>
-  ): TimelineEventFilterLike {
-    return FfiConverterTypeTimelineEventFilter.lift(
-      uniffiCaller.rustCall(
-        /*caller:*/ (callStatus) => {
-          return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_constructor_timelineeventfilter_exclude_event_types(
-            FfiConverterArrayTypeFilterTimelineEventType.lower(eventTypes),
-            callStatus
-          );
-        },
-        /*liftString:*/ FfiConverterString.lift
-      )
-    );
-  }
-
-  static include(
-    conditions: Array<FilterTimelineEventCondition>
-  ): TimelineEventFilterLike {
-    return FfiConverterTypeTimelineEventFilter.lift(
-      uniffiCaller.rustCall(
-        /*caller:*/ (callStatus) => {
-          return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_constructor_timelineeventfilter_include(
-            FfiConverterArrayTypeFilterTimelineEventCondition.lower(conditions),
-            callStatus
-          );
-        },
-        /*liftString:*/ FfiConverterString.lift
-      )
-    );
-  }
-
-  static includeEventTypes(
-    eventTypes: Array<FilterTimelineEventType>
-  ): TimelineEventFilterLike {
-    return FfiConverterTypeTimelineEventFilter.lift(
-      uniffiCaller.rustCall(
-        /*caller:*/ (callStatus) => {
-          return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_constructor_timelineeventfilter_include_event_types(
-            FfiConverterArrayTypeFilterTimelineEventType.lower(eventTypes),
-            callStatus
-          );
-        },
-        /*liftString:*/ FfiConverterString.lift
-      )
-    );
-  }
-
-  /**
-   * {@inheritDoc uniffi-bindgen-react-native#UniffiAbstractObject.uniffiDestroy}
-   */
-  uniffiDestroy(): void {
-    const ptr = (this as any)[destructorGuardSymbol];
-    if (ptr !== undefined) {
-      const pointer = uniffiTypeTimelineEventFilterObjectFactory.pointer(this);
-      uniffiTypeTimelineEventFilterObjectFactory.freePointer(pointer);
-      uniffiTypeTimelineEventFilterObjectFactory.unbless(ptr);
-      delete (this as any)[destructorGuardSymbol];
-    }
-  }
-
-  static instanceOf(obj: any): obj is TimelineEventFilter {
-    return uniffiTypeTimelineEventFilterObjectFactory.isConcreteType(obj);
-  }
-}
-
-const uniffiTypeTimelineEventFilterObjectFactory: UniffiObjectFactory<TimelineEventFilterLike> =
-  (() => {
-    return {
-      create(pointer: UniffiHandle): TimelineEventFilterLike {
-        const instance = Object.create(TimelineEventFilter.prototype);
-        instance[pointerLiteralSymbol] = pointer;
-        instance[destructorGuardSymbol] = this.bless(pointer);
-        instance[uniffiTypeNameSymbol] = 'TimelineEventFilter';
-        return instance;
-      },
-
-      bless(p: UniffiHandle): UniffiGcObject {
-        return uniffiCaller.rustCall(
-          /*caller:*/ (status) =>
-            nativeModule().ubrn_uniffi_internal_fn_method_timelineeventfilter_ffi__bless_pointer(
-              p,
-              status
-            ),
-          /*liftString:*/ FfiConverterString.lift
-        );
-      },
-
-      unbless(ptr: UniffiGcObject) {
-        ptr.markDestroyed();
-      },
-
-      pointer(obj: TimelineEventFilterLike): UniffiHandle {
-        if ((obj as any)[destructorGuardSymbol] === undefined) {
-          throw new UniffiInternalError.UnexpectedNullPointer();
-        }
-        return (obj as any)[pointerLiteralSymbol];
-      },
-
-      clonePointer(obj: TimelineEventFilterLike): UniffiHandle {
-        const pointer = this.pointer(obj);
-        return uniffiCaller.rustCall(
-          /*caller:*/ (callStatus) =>
-            nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_clone_timelineeventfilter(
-              pointer,
-              callStatus
-            ),
-          /*liftString:*/ FfiConverterString.lift
-        );
-      },
-
-      freePointer(pointer: UniffiHandle): void {
-        uniffiCaller.rustCall(
-          /*caller:*/ (callStatus) =>
-            nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_free_timelineeventfilter(
-              pointer,
-              callStatus
-            ),
-          /*liftString:*/ FfiConverterString.lift
-        );
-      },
-
-      isConcreteType(obj: any): obj is TimelineEventFilterLike {
-        return (
-          obj[destructorGuardSymbol] &&
-          obj[uniffiTypeNameSymbol] === 'TimelineEventFilter'
-        );
-      },
-    };
-  })();
-// FfiConverter for TimelineEventFilterLike
-const FfiConverterTypeTimelineEventFilter = new FfiConverterObject(
-  uniffiTypeTimelineEventFilterObjectFactory
 );
 
 export interface TimelineItemLike {
@@ -72531,10 +73352,11 @@ export interface WidgetDriverHandleLike {
    */
   recv(asyncOpts_?: { signal: AbortSignal }): Promise<string | undefined>;
   /**
+   * Send a message from the widget to the widget driver.
    *
    * Returns `false` if the widget driver is no longer running.
    */
-  send(msg: string, asyncOpts_?: { signal: AbortSignal }): Promise<boolean>;
+  send(msg: string): boolean;
 }
 /**
  * @deprecated Use `WidgetDriverHandleLike` instead.
@@ -72602,41 +73424,23 @@ export class WidgetDriverHandle
   }
 
   /**
+   * Send a message from the widget to the widget driver.
    *
    * Returns `false` if the widget driver is no longer running.
    */
-  async send(
-    msg: string,
-    asyncOpts_?: { signal: AbortSignal }
-  ): Promise<boolean> {
-    const __stack = uniffiIsDebug ? new Error().stack : undefined;
-    try {
-      return await uniffiRustCallAsync(
-        /*rustCaller:*/ uniffiCaller,
-        /*rustFutureFunc:*/ () => {
+  send(msg: string): boolean {
+    return FfiConverterBool.lift(
+      uniffiCaller.rustCall(
+        /*caller:*/ (callStatus) => {
           return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_widgetdriverhandle_send(
             uniffiTypeWidgetDriverHandleObjectFactory.clonePointer(this),
-            FfiConverterString.lower(msg)
+            FfiConverterString.lower(msg),
+            callStatus
           );
         },
-        /*pollFunc:*/ nativeModule()
-          .ubrn_ffi_matrix_sdk_ffi_rust_future_poll_i8,
-        /*cancelFunc:*/ nativeModule()
-          .ubrn_ffi_matrix_sdk_ffi_rust_future_cancel_i8,
-        /*completeFunc:*/ nativeModule()
-          .ubrn_ffi_matrix_sdk_ffi_rust_future_complete_i8,
-        /*freeFunc:*/ nativeModule()
-          .ubrn_ffi_matrix_sdk_ffi_rust_future_free_i8,
-        /*liftFunc:*/ FfiConverterBool.lift.bind(FfiConverterBool),
-        /*liftString:*/ FfiConverterString.lift,
-        /*asyncOpts:*/ asyncOpts_
-      );
-    } catch (__error: any) {
-      if (uniffiIsDebug && __error instanceof Error) {
-        __error.stack = __stack;
-      }
-      throw __error;
-    }
+        /*liftString:*/ FfiConverterString.lift
+      )
+    );
   }
 
   /**
@@ -72973,6 +73777,11 @@ const FfiConverterArrayTypeConditionalPushRule = new FfiConverterArray(
   FfiConverterTypeConditionalPushRule
 );
 
+// FfiConverter for Array<EditRevisionRecord>
+const FfiConverterArrayTypeEditRevisionRecord = new FfiConverterArray(
+  FfiConverterTypeEditRevisionRecord
+);
+
 // FfiConverter for Array<IdentityStatusChange>
 const FfiConverterArrayTypeIdentityStatusChange = new FfiConverterArray(
   FfiConverterTypeIdentityStatusChange
@@ -73297,16 +74106,6 @@ const FfiConverterArrayTypeDraftAttachment = new FfiConverterArray(
   FfiConverterTypeDraftAttachment
 );
 
-// FfiConverter for Array<FilterTimelineEventCondition>
-const FfiConverterArrayTypeFilterTimelineEventCondition = new FfiConverterArray(
-  FfiConverterTypeFilterTimelineEventCondition
-);
-
-// FfiConverter for Array<FilterTimelineEventType>
-const FfiConverterArrayTypeFilterTimelineEventType = new FfiConverterArray(
-  FfiConverterTypeFilterTimelineEventType
-);
-
 // FfiConverter for Array<GalleryItemInfo>
 const FfiConverterArrayTypeGalleryItemInfo = new FfiConverterArray(
   FfiConverterTypeGalleryItemInfo
@@ -73340,6 +74139,11 @@ const FfiConverterArrayTypePasswordStrengthSuggestion = new FfiConverterArray(
 // FfiConverter for Array<PushCondition>
 const FfiConverterArrayTypePushCondition = new FfiConverterArray(
   FfiConverterTypePushCondition
+);
+
+// FfiConverter for Array<RelationType>
+const FfiConverterArrayTypeRelationType = new FfiConverterArray(
+  FfiConverterTypeRelationType
 );
 
 // FfiConverter for Array<RoomDirectorySearchEntryUpdate>
@@ -73413,6 +74217,11 @@ const FfiConverterArrayTypeSessionVerificationEmoji = new FfiConverterArray(
   FfiConverterTypeSessionVerificationEmoji
 );
 
+// FfiConverter for Array<TimelineEventLike>
+const FfiConverterArrayTypeTimelineEvent = new FfiConverterArray(
+  FfiConverterTypeTimelineEvent
+);
+
 // FfiConverter for Array<TimelineItemLike>
 const FfiConverterArrayTypeTimelineItem = new FfiConverterArray(
   FfiConverterTypeTimelineItem
@@ -73425,6 +74234,11 @@ const FfiConverterOptionalMapTypeFfiTimelineEventTypeInt64 =
 // FfiConverter for Array<Action> | undefined
 const FfiConverterOptionalArrayTypeAction = new FfiConverterOptional(
   FfiConverterArrayTypeAction
+);
+
+// FfiConverter for Array<RelationType> | undefined
+const FfiConverterOptionalArrayTypeRelationType = new FfiConverterOptional(
+  FfiConverterArrayTypeRelationType
 );
 
 /**
@@ -73615,6 +74429,14 @@ function uniffiEnsureInitialized() {
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_matrix_sdk_ffi_checksum_func_create_caption_edit'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_func_server_name_from_user_id() !==
+    32123
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_matrix_sdk_ffi_checksum_func_server_name_from_user_id'
     );
   }
   if (
@@ -73850,6 +74672,14 @@ function uniffiEnsureInitialized() {
     );
   }
   if (
+    nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_disable_well_known_lookup() !==
+    45272
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_matrix_sdk_ffi_checksum_method_client_disable_well_known_lookup'
+    );
+  }
+  if (
     nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_display_name() !==
     20054
   ) {
@@ -73863,14 +74693,6 @@ function uniffiEnsureInitialized() {
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_matrix_sdk_ffi_checksum_method_client_enable_all_send_queues'
-    );
-  }
-  if (
-    nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_enable_automatic_backpagination() !==
-    35365
-  ) {
-    throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_matrix_sdk_ffi_checksum_method_client_enable_automatic_backpagination'
     );
   }
   if (
@@ -74042,6 +74864,14 @@ function uniffiEnsureInitialized() {
     );
   }
   if (
+    nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_get_url_preview() !==
+    48288
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_matrix_sdk_ffi_checksum_method_client_get_url_preview'
+    );
+  }
+  if (
     nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_homeserver() !==
     26707
   ) {
@@ -74083,7 +74913,7 @@ function uniffiEnsureInitialized() {
   }
   if (
     nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_is_livekit_rtc_supported() !==
-    41745
+    26302
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_matrix_sdk_ffi_checksum_method_client_is_livekit_rtc_supported'
@@ -74095,6 +74925,14 @@ function uniffiEnsureInitialized() {
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_matrix_sdk_ffi_checksum_method_client_is_login_with_qr_code_supported'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_is_profiles_sliding_sync_extension_supported() !==
+    59683
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_matrix_sdk_ffi_checksum_method_client_is_profiles_sliding_sync_extension_supported'
     );
   }
   if (
@@ -74203,10 +75041,18 @@ function uniffiEnsureInitialized() {
   }
   if (
     nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_notification_client() !==
-    17687
+    24829
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_matrix_sdk_ffi_checksum_method_client_notification_client'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_notification_client_with_timeouts() !==
+    35848
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_matrix_sdk_ffi_checksum_method_client_notification_client_with_timeouts'
     );
   }
   if (
@@ -74586,6 +75432,14 @@ function uniffiEnsureInitialized() {
     );
   }
   if (
+    nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_total_unread_notifications() !==
+    56252
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_matrix_sdk_ffi_checksum_method_client_total_unread_notifications'
+    );
+  }
+  if (
     nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_client_track_recently_visited_room() !==
     40498
   ) {
@@ -74826,11 +75680,27 @@ function uniffiEnsureInitialized() {
     );
   }
   if (
+    nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_disable_well_known_lookup() !==
+    21661
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_disable_well_known_lookup'
+    );
+  }
+  if (
     nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_dm_room_definition() !==
     42422
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_dm_room_definition'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_enable_automatic_back_pagination() !==
+    12407
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_enable_automatic_back_pagination'
     );
   }
   if (
@@ -74843,7 +75713,7 @@ function uniffiEnsureInitialized() {
   }
   if (
     nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_homeserver_url() !==
-    27846
+    20298
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_homeserver_url'
@@ -74883,15 +75753,23 @@ function uniffiEnsureInitialized() {
   }
   if (
     nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_server_name() !==
-    27235
+    50969
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_server_name'
     );
   }
   if (
+    nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_server_name_from_user_id() !==
+    425
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_server_name_from_user_id'
+    );
+  }
+  if (
     nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_server_name_or_homeserver_url() !==
-    11561
+    50246
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_server_name_or_homeserver_url'
@@ -74951,14 +75829,6 @@ function uniffiEnsureInitialized() {
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_user_agent'
-    );
-  }
-  if (
-    nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_username() !==
-    9349
-  ) {
-    throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_username'
     );
   }
   if (
@@ -75370,6 +76240,14 @@ function uniffiEnsureInitialized() {
     );
   }
   if (
+    nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_notificationclient_timeouts() !==
+    4995
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_matrix_sdk_ffi_checksum_method_notificationclient_timeouts'
+    );
+  }
+  if (
     nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_notificationsettings_can_homeserver_push_encrypted_event_to_device() !==
     46370
   ) {
@@ -75706,6 +76584,22 @@ function uniffiEnsureInitialized() {
     );
   }
   if (
+    nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_room_active_human_member_ids() !==
+    13215
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_matrix_sdk_ffi_checksum_method_room_active_human_member_ids'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_room_active_human_member_ids_no_sync() !==
+    32335
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_matrix_sdk_ffi_checksum_method_room_active_human_member_ids_no_sync'
+    );
+  }
+  if (
     nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_room_active_members_count() !==
     10052
   ) {
@@ -75767,6 +76661,14 @@ function uniffiEnsureInitialized() {
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_matrix_sdk_ffi_checksum_method_room_clear_composer_draft'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_room_clear_event_cache() !==
+    61491
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_matrix_sdk_ffi_checksum_method_room_clear_event_cache'
     );
   }
   if (
@@ -76031,6 +76933,14 @@ function uniffiEnsureInitialized() {
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_matrix_sdk_ffi_checksum_method_room_load_or_fetch_event'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_room_load_or_fetch_event_with_relations() !==
+    53875
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_matrix_sdk_ffi_checksum_method_room_load_or_fetch_event_with_relations'
     );
   }
   if (
@@ -76810,6 +77720,22 @@ function uniffiEnsureInitialized() {
     );
   }
   if (
+    nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_remove_room_subscriptions() !==
+    10579
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_remove_room_subscriptions'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_reset_and_add_room_subscriptions() !==
+    61909
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_reset_and_add_room_subscriptions'
+    );
+  }
+  if (
     nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_room() !==
     40756
   ) {
@@ -76818,19 +77744,19 @@ function uniffiEnsureInitialized() {
     );
   }
   if (
+    nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_set_room_subscriptions() !==
+    27356
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_set_room_subscriptions'
+    );
+  }
+  if (
     nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_state() !==
     41751
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_state'
-    );
-  }
-  if (
-    nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_subscribe_to_rooms() !==
-    1302
-  ) {
-    throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_matrix_sdk_ffi_checksum_method_roomlistservice_subscribe_to_rooms'
     );
   }
   if (
@@ -77154,6 +78080,14 @@ function uniffiEnsureInitialized() {
     );
   }
   if (
+    nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_spaceservice_joined_parent_ids_of_child() !==
+    10161
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_matrix_sdk_ffi_checksum_method_spaceservice_joined_parent_ids_of_child'
+    );
+  }
+  if (
     nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_spaceservice_joined_parents_of_child() !==
     40037
   ) {
@@ -77210,6 +78144,14 @@ function uniffiEnsureInitialized() {
     );
   }
   if (
+    nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_spaceservice_top_level_ancestors_of() !==
+    51088
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_matrix_sdk_ffi_checksum_method_spaceservice_top_level_ancestors_of'
+    );
+  }
+  if (
     nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_spaceservice_top_level_joined_spaces() !==
     19973
   ) {
@@ -77223,6 +78165,14 @@ function uniffiEnsureInitialized() {
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_matrix_sdk_ffi_checksum_method_sqlitestorebuilder_cache_size'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_sqlitestorebuilder_high_entropy_passphrase() !==
+    64847
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_matrix_sdk_ffi_checksum_method_sqlitestorebuilder_high_entropy_passphrase'
     );
   }
   if (
@@ -77330,14 +78280,6 @@ function uniffiEnsureInitialized() {
     );
   }
   if (
-    nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_syncservicebuilder_with_profiles_extension() !==
-    15111
-  ) {
-    throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_matrix_sdk_ffi_checksum_method_syncservicebuilder_with_profiles_extension'
-    );
-  }
-  if (
     nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_syncservicebuilder_with_room_list_connection_id() !==
     13768
   ) {
@@ -77435,7 +78377,7 @@ function uniffiEnsureInitialized() {
   }
   if (
     nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_sendhandle_abort() !==
-    2406
+    34502
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_matrix_sdk_ffi_checksum_method_sendhandle_abort'
@@ -77479,6 +78421,14 @@ function uniffiEnsureInitialized() {
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_matrix_sdk_ffi_checksum_method_timeline_edit'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_timeline_edit_revisions() !==
+    11010
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_matrix_sdk_ffi_checksum_method_timeline_edit_revisions'
     );
   }
   if (
@@ -77635,7 +78585,7 @@ function uniffiEnsureInitialized() {
   }
   if (
     nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_timeline_send_reply() !==
-    25065
+    40610
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_matrix_sdk_ffi_checksum_method_timeline_send_reply'
@@ -77679,6 +78629,14 @@ function uniffiEnsureInitialized() {
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_matrix_sdk_ffi_checksum_method_timeline_toggle_reaction'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_timeline_toggle_reaction_with_extra_content() !==
+    37370
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_matrix_sdk_ffi_checksum_method_timeline_toggle_reaction_with_extra_content'
     );
   }
   if (
@@ -77819,7 +78777,7 @@ function uniffiEnsureInitialized() {
   }
   if (
     nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_threadlistservice_subscribe_to_pagination_state_updates() !==
-    52158
+    1253
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_matrix_sdk_ffi_checksum_method_threadlistservice_subscribe_to_pagination_state_updates'
@@ -77843,7 +78801,7 @@ function uniffiEnsureInitialized() {
   }
   if (
     nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_widgetdriverhandle_send() !==
-    27865
+    4268
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_matrix_sdk_ffi_checksum_method_widgetdriverhandle_send'
@@ -77959,38 +78917,6 @@ function uniffiEnsureInitialized() {
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_matrix_sdk_ffi_checksum_constructor_sqlitestorebuilder_new'
-    );
-  }
-  if (
-    nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_constructor_timelineeventfilter_exclude() !==
-    53140
-  ) {
-    throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_matrix_sdk_ffi_checksum_constructor_timelineeventfilter_exclude'
-    );
-  }
-  if (
-    nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_constructor_timelineeventfilter_exclude_event_types() !==
-    53727
-  ) {
-    throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_matrix_sdk_ffi_checksum_constructor_timelineeventfilter_exclude_event_types'
-    );
-  }
-  if (
-    nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_constructor_timelineeventfilter_include() !==
-    40738
-  ) {
-    throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_matrix_sdk_ffi_checksum_constructor_timelineeventfilter_include'
-    );
-  }
-  if (
-    nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_constructor_timelineeventfilter_include_event_types() !==
-    47927
-  ) {
-    throw new UniffiInternalError.ApiChecksumMismatch(
-      'uniffi_matrix_sdk_ffi_checksum_constructor_timelineeventfilter_include_event_types'
     );
   }
   if (
@@ -78467,7 +79393,7 @@ function uniffiEnsureInitialized() {
   }
   if (
     nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_widgetcapabilitiesprovider_acquire_capabilities() !==
-    3738
+    42247
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_matrix_sdk_ffi_checksum_method_widgetcapabilitiesprovider_acquire_capabilities'
@@ -78569,6 +79495,7 @@ export default Object.freeze({
     FfiConverterTypeDetectedSecretsBundle,
     FfiConverterTypeDraftAttachment,
     FfiConverterTypeDuplicateOneTimeKeyErrorMessage,
+    FfiConverterTypeEditRevisionRecord,
     FfiConverterTypeEditedContent,
     FfiConverterTypeEmbeddedEventDetails,
     FfiConverterTypeEmoteMessageContent,
@@ -78580,12 +79507,11 @@ export default Object.freeze({
     FfiConverterTypeEventSendState,
     FfiConverterTypeEventTimelineItem,
     FfiConverterTypeEventTimelineItemDebugInfo,
+    FfiConverterTypeEventWithRelations,
     FfiConverterTypeExtendedProfileFields,
     FfiConverterTypeFfiTimelineEventType,
     FfiConverterTypeFileInfo,
     FfiConverterTypeFileMessageContent,
-    FfiConverterTypeFilterTimelineEventCondition,
-    FfiConverterTypeFilterTimelineEventType,
     FfiConverterTypeFocusEventError,
     FfiConverterTypeFormattedBody,
     FfiConverterTypeGalleryItemInfo,
@@ -78650,6 +79576,7 @@ export default Object.freeze({
     FfiConverterTypeMsgLikeKind,
     FfiConverterTypeNoticeMessageContent,
     FfiConverterTypeNotificationClient,
+    FfiConverterTypeNotificationClientTimeouts,
     FfiConverterTypeNotificationEvent,
     FfiConverterTypeNotificationItem,
     FfiConverterTypeNotificationItemsRequest,
@@ -78702,6 +79629,7 @@ export default Object.freeze({
     FfiConverterTypeRecentEmoji,
     FfiConverterTypeRecoveryError,
     FfiConverterTypeRecoveryState,
+    FfiConverterTypeRelationType,
     FfiConverterTypeRequestConfig,
     FfiConverterTypeResolvedRoomAlias,
     FfiConverterTypeRoom,
@@ -78719,7 +79647,6 @@ export default Object.freeze({
     FfiConverterTypeRoomListEntriesUpdate,
     FfiConverterTypeRoomListEntriesWithDynamicAdaptersResult,
     FfiConverterTypeRoomListError,
-    FfiConverterTypeRoomListFilterCategory,
     FfiConverterTypeRoomListLoadingState,
     FfiConverterTypeRoomListLoadingStateResult,
     FfiConverterTypeRoomListService,
@@ -78802,7 +79729,6 @@ export default Object.freeze({
     FfiConverterTypeTimelineDiff,
     FfiConverterTypeTimelineEvent,
     FfiConverterTypeTimelineEventContent,
-    FfiConverterTypeTimelineEventFilter,
     FfiConverterTypeTimelineFilter,
     FfiConverterTypeTimelineFocus,
     FfiConverterTypeTimelineItem,

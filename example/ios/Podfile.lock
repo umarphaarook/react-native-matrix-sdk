@@ -1823,7 +1823,7 @@ PODS:
     - React-utils (= 0.86.0)
     - ReactNativeDependencies
   - ReactNativeDependencies (0.86.0)
-  - ReactNativeMatrixSdk (0.9.1):
+  - ReactNativeMatrixSdk (0.10.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2163,7 +2163,7 @@ SPEC CHECKSUMS:
   ReactCodegen: cd296de5e1c422deebafff34134d1721b5c29704
   ReactCommon: d5c1bb4427bf51c443de5926aac332c89ddd9363
   ReactNativeDependencies: fa0a54b3f5319ae0e3b9aff32bfee7a424b88e66
-  ReactNativeMatrixSdk: 19726cfe27c06d5f5fec45d1dbeda45094355447
+  ReactNativeMatrixSdk: 13cbb65d624efe2a6b9bdd456dd2b5d3f3707072
   uniffi-bindgen-react-native: 205a15613d97a49fe17d5bda57f7fa46a7bbafd0
   Yoga: c30c859b7e9b75e547b600b486fe33165f60de00
 

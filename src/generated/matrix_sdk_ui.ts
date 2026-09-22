@@ -33,9 +33,11 @@ import nativeModule, {
   type UniffiForeignFutureResultVoid,
   type UniffiForeignFutureCompleteVoid,
 } from './matrix_sdk_ui-ffi';
+import { TimelineEventType } from './ruma_events';
 import {
   type UniffiByteArray,
   AbstractFfiConverterByteArray,
+  FfiConverterArray,
   FfiConverterBool,
   FfiConverterInt32,
   RustBuffer,
@@ -47,6 +49,8 @@ import {
 } from 'uniffi-bindgen-react-native';
 
 // Get converters from the other files, if any.
+import uniffiRumaEventsModule from './ruma_events';
+const { FfiConverterTypeTimelineEventType } = uniffiRumaEventsModule.converters;
 const uniffiCaller = new UniffiRustCaller(() => ({ code: 0 }));
 
 const uniffiIsDebug =
@@ -247,6 +251,113 @@ const FfiConverterTypeMembershipChangeFilter = (() => {
           return ordinalConverter.write(5, into);
         case MembershipChangeFilter.Knock:
           return ordinalConverter.write(6, into);
+      }
+    }
+    allocationSize(value: TypeName): number {
+      return ordinalConverter.allocationSize(0);
+    }
+  }
+  return new FFIConverter();
+})();
+
+/**
+ * An enum to represent whether a room is about “people” (strictly 2 users) or
+ * “group” (1 or more than 2 users).
+ *
+ * Ideally, we would only want to rely on the
+ * [`matrix_sdk::BaseRoom::is_direct`] method, but the rules are a little bit
+ * different for this high-level UI API.
+ *
+ * This is implemented this way so that it's impossible to filter by “group”
+ * and by “people” at the same time: these criteria are mutually
+ * exclusive by design per filter.
+ */
+export enum RoomListFilterCategory {
+  Group,
+  People,
+}
+
+const FfiConverterTypeRoomListFilterCategory = (() => {
+  const ordinalConverter = FfiConverterInt32;
+  type TypeName = RoomListFilterCategory;
+  class FFIConverter extends AbstractFfiConverterByteArray<TypeName> {
+    read(from: RustBuffer): TypeName {
+      switch (ordinalConverter.read(from)) {
+        case 1:
+          return RoomListFilterCategory.Group;
+        case 2:
+          return RoomListFilterCategory.People;
+        default:
+          throw new UniffiInternalError.UnexpectedEnumCase();
+      }
+    }
+    write(value: TypeName, into: RustBuffer): void {
+      switch (value) {
+        case RoomListFilterCategory.Group:
+          return ordinalConverter.write(1, into);
+        case RoomListFilterCategory.People:
+          return ordinalConverter.write(2, into);
+      }
+    }
+    allocationSize(value: TypeName): number {
+      return ordinalConverter.allocationSize(0);
+    }
+  }
+  return new FFIConverter();
+})();
+
+/**
+ * Filter read receipts by…
+ *
+ * This type decides which fields to reach in [`ReadReceipts`].
+ *
+ * [`ReadReceipts`]: matrix_sdk_base::read_receipts::ReadReceipts
+ */
+export enum RoomListFilterReadReceipts {
+  /**
+   * Filter by mentions, i.e. [`ReadReceipts::num_mentions`].
+   *
+   * [`ReadReceipts::num_mentions`]: matrix_sdk_base::read_receipts::ReadReceipts::num_mentions
+   */
+  Mentions,
+  /**
+   * Filter by notifications, i.e. [`ReadReceipts::num_notifications`].
+   *
+   * [`ReadReceipts::num_notifications`]: matrix_sdk_base::read_receipts::ReadReceipts::num_notifications
+   */
+  Notifications,
+  /**
+   * Filter by messages, i.e. [`ReadReceipts::num_unread`].
+   *
+   * [`ReadReceipts::num_unread`]: matrix_sdk_base::read_receipts::ReadReceipts::num_unread
+   */
+  Messages,
+}
+
+const FfiConverterTypeRoomListFilterReadReceipts = (() => {
+  const ordinalConverter = FfiConverterInt32;
+  type TypeName = RoomListFilterReadReceipts;
+  class FFIConverter extends AbstractFfiConverterByteArray<TypeName> {
+    read(from: RustBuffer): TypeName {
+      switch (ordinalConverter.read(from)) {
+        case 1:
+          return RoomListFilterReadReceipts.Mentions;
+        case 2:
+          return RoomListFilterReadReceipts.Notifications;
+        case 3:
+          return RoomListFilterReadReceipts.Messages;
+        default:
+          throw new UniffiInternalError.UnexpectedEnumCase();
+      }
+    }
+    write(value: TypeName, into: RustBuffer): void {
+      switch (value) {
+        case RoomListFilterReadReceipts.Mentions:
+          return ordinalConverter.write(1, into);
+        case RoomListFilterReadReceipts.Notifications:
+          return ordinalConverter.write(2, into);
+        case RoomListFilterReadReceipts.Messages:
+          return ordinalConverter.write(3, into);
       }
     }
     allocationSize(value: TypeName): number {
@@ -728,6 +839,442 @@ const FfiConverterTypeThreadListPaginationState = (() => {
   return new FFIConverter();
 })();
 
+// Enum: TimelineEventCondition
+export enum TimelineEventCondition_Tags {
+  EventType = 'EventType',
+  MembershipChange = 'MembershipChange',
+  ProfileChange = 'ProfileChange',
+  AnyCustomMessageLikeEvent = 'AnyCustomMessageLikeEvent',
+  AnyCustomStateEvent = 'AnyCustomStateEvent',
+}
+/**
+ * A condition that matches on an event's type or content.
+ */
+export const TimelineEventCondition = (() => {
+  type EventType__interface = {
+    tag: TimelineEventCondition_Tags.EventType;
+    inner: Readonly<[TimelineEventType]>;
+  };
+
+  /**
+   * The event has the specified event type.
+   */
+  class EventType_ extends UniffiEnum implements EventType__interface {
+    /**
+     * @private
+     * This field is private and should not be used, use `tag` instead.
+     */
+    readonly [uniffiTypeNameSymbol] = 'TimelineEventCondition';
+    readonly tag = TimelineEventCondition_Tags.EventType;
+    readonly inner: Readonly<[TimelineEventType]>;
+    constructor(v0: TimelineEventType) {
+      super('TimelineEventCondition', 'EventType');
+      this.inner = Object.freeze([v0]);
+    }
+
+    static new(v0: TimelineEventType): EventType_ {
+      return new EventType_(v0);
+    }
+
+    static instanceOf(obj: any): obj is EventType_ {
+      return obj.tag === TimelineEventCondition_Tags.EventType;
+    }
+  }
+
+  type MembershipChange__interface = {
+    tag: TimelineEventCondition_Tags.MembershipChange;
+    inner: Readonly<[MembershipChangeFilter]>;
+  };
+
+  /**
+   * The event is an `m.room.member` event that represents a membership
+   * change (join, leave, etc.).
+   */
+  class MembershipChange_
+    extends UniffiEnum
+    implements MembershipChange__interface
+  {
+    /**
+     * @private
+     * This field is private and should not be used, use `tag` instead.
+     */
+    readonly [uniffiTypeNameSymbol] = 'TimelineEventCondition';
+    readonly tag = TimelineEventCondition_Tags.MembershipChange;
+    readonly inner: Readonly<[MembershipChangeFilter]>;
+    constructor(v0: MembershipChangeFilter) {
+      super('TimelineEventCondition', 'MembershipChange');
+      this.inner = Object.freeze([v0]);
+    }
+
+    static new(v0: MembershipChangeFilter): MembershipChange_ {
+      return new MembershipChange_(v0);
+    }
+
+    static instanceOf(obj: any): obj is MembershipChange_ {
+      return obj.tag === TimelineEventCondition_Tags.MembershipChange;
+    }
+  }
+
+  type ProfileChange__interface = {
+    tag: TimelineEventCondition_Tags.ProfileChange;
+  };
+
+  /**
+   * The event is an `m.room.member` event that represents a profile
+   * change (displayname or avatar URL).
+   */
+  class ProfileChange_ extends UniffiEnum implements ProfileChange__interface {
+    /**
+     * @private
+     * This field is private and should not be used, use `tag` instead.
+     */
+    readonly [uniffiTypeNameSymbol] = 'TimelineEventCondition';
+    readonly tag = TimelineEventCondition_Tags.ProfileChange;
+    constructor() {
+      super('TimelineEventCondition', 'ProfileChange');
+    }
+
+    static new(): ProfileChange_ {
+      return new ProfileChange_();
+    }
+
+    static instanceOf(obj: any): obj is ProfileChange_ {
+      return obj.tag === TimelineEventCondition_Tags.ProfileChange;
+    }
+  }
+
+  type AnyCustomMessageLikeEvent__interface = {
+    tag: TimelineEventCondition_Tags.AnyCustomMessageLikeEvent;
+  };
+
+  /**
+   * The event is a custom message-like event type.
+   */
+  class AnyCustomMessageLikeEvent_
+    extends UniffiEnum
+    implements AnyCustomMessageLikeEvent__interface
+  {
+    /**
+     * @private
+     * This field is private and should not be used, use `tag` instead.
+     */
+    readonly [uniffiTypeNameSymbol] = 'TimelineEventCondition';
+    readonly tag = TimelineEventCondition_Tags.AnyCustomMessageLikeEvent;
+    constructor() {
+      super('TimelineEventCondition', 'AnyCustomMessageLikeEvent');
+    }
+
+    static new(): AnyCustomMessageLikeEvent_ {
+      return new AnyCustomMessageLikeEvent_();
+    }
+
+    static instanceOf(obj: any): obj is AnyCustomMessageLikeEvent_ {
+      return obj.tag === TimelineEventCondition_Tags.AnyCustomMessageLikeEvent;
+    }
+  }
+
+  type AnyCustomStateEvent__interface = {
+    tag: TimelineEventCondition_Tags.AnyCustomStateEvent;
+  };
+
+  /**
+   * The event is a custom state event type.
+   */
+  class AnyCustomStateEvent_
+    extends UniffiEnum
+    implements AnyCustomStateEvent__interface
+  {
+    /**
+     * @private
+     * This field is private and should not be used, use `tag` instead.
+     */
+    readonly [uniffiTypeNameSymbol] = 'TimelineEventCondition';
+    readonly tag = TimelineEventCondition_Tags.AnyCustomStateEvent;
+    constructor() {
+      super('TimelineEventCondition', 'AnyCustomStateEvent');
+    }
+
+    static new(): AnyCustomStateEvent_ {
+      return new AnyCustomStateEvent_();
+    }
+
+    static instanceOf(obj: any): obj is AnyCustomStateEvent_ {
+      return obj.tag === TimelineEventCondition_Tags.AnyCustomStateEvent;
+    }
+  }
+
+  function instanceOf(obj: any): obj is TimelineEventCondition {
+    return obj[uniffiTypeNameSymbol] === 'TimelineEventCondition';
+  }
+
+  return Object.freeze({
+    instanceOf,
+    EventType: EventType_,
+    MembershipChange: MembershipChange_,
+    ProfileChange: ProfileChange_,
+    AnyCustomMessageLikeEvent: AnyCustomMessageLikeEvent_,
+    AnyCustomStateEvent: AnyCustomStateEvent_,
+  });
+})();
+
+/**
+ * A condition that matches on an event's type or content.
+ */
+
+export type TimelineEventCondition = InstanceType<
+  (typeof TimelineEventCondition)[keyof Omit<
+    typeof TimelineEventCondition,
+    'instanceOf'
+  >]
+>;
+
+// FfiConverter for enum TimelineEventCondition
+const FfiConverterTypeTimelineEventCondition = (() => {
+  const ordinalConverter = FfiConverterInt32;
+  type TypeName = TimelineEventCondition;
+  class FFIConverter extends AbstractFfiConverterByteArray<TypeName> {
+    read(from: RustBuffer): TypeName {
+      switch (ordinalConverter.read(from)) {
+        case 1:
+          return new TimelineEventCondition.EventType(
+            FfiConverterTypeTimelineEventType.read(from)
+          );
+        case 2:
+          return new TimelineEventCondition.MembershipChange(
+            FfiConverterTypeMembershipChangeFilter.read(from)
+          );
+        case 3:
+          return new TimelineEventCondition.ProfileChange();
+        case 4:
+          return new TimelineEventCondition.AnyCustomMessageLikeEvent();
+        case 5:
+          return new TimelineEventCondition.AnyCustomStateEvent();
+        default:
+          throw new UniffiInternalError.UnexpectedEnumCase();
+      }
+    }
+    write(value: TypeName, into: RustBuffer): void {
+      switch (value.tag) {
+        case TimelineEventCondition_Tags.EventType: {
+          ordinalConverter.write(1, into);
+          const inner = value.inner;
+          FfiConverterTypeTimelineEventType.write(inner[0], into);
+          return;
+        }
+        case TimelineEventCondition_Tags.MembershipChange: {
+          ordinalConverter.write(2, into);
+          const inner = value.inner;
+          FfiConverterTypeMembershipChangeFilter.write(inner[0], into);
+          return;
+        }
+        case TimelineEventCondition_Tags.ProfileChange: {
+          ordinalConverter.write(3, into);
+          return;
+        }
+        case TimelineEventCondition_Tags.AnyCustomMessageLikeEvent: {
+          ordinalConverter.write(4, into);
+          return;
+        }
+        case TimelineEventCondition_Tags.AnyCustomStateEvent: {
+          ordinalConverter.write(5, into);
+          return;
+        }
+        default:
+          // Throwing from here means that TimelineEventCondition_Tags hasn't matched an ordinal.
+          throw new UniffiInternalError.UnexpectedEnumCase();
+      }
+    }
+    allocationSize(value: TypeName): number {
+      switch (value.tag) {
+        case TimelineEventCondition_Tags.EventType: {
+          const inner = value.inner;
+          let size = ordinalConverter.allocationSize(1);
+          size += FfiConverterTypeTimelineEventType.allocationSize(inner[0]);
+          return size;
+        }
+        case TimelineEventCondition_Tags.MembershipChange: {
+          const inner = value.inner;
+          let size = ordinalConverter.allocationSize(2);
+          size += FfiConverterTypeMembershipChangeFilter.allocationSize(
+            inner[0]
+          );
+          return size;
+        }
+        case TimelineEventCondition_Tags.ProfileChange: {
+          return ordinalConverter.allocationSize(3);
+        }
+        case TimelineEventCondition_Tags.AnyCustomMessageLikeEvent: {
+          return ordinalConverter.allocationSize(4);
+        }
+        case TimelineEventCondition_Tags.AnyCustomStateEvent: {
+          return ordinalConverter.allocationSize(5);
+        }
+        default:
+          throw new UniffiInternalError.UnexpectedEnumCase();
+      }
+    }
+  }
+  return new FFIConverter();
+})();
+
+// Enum: TimelineEventFilter
+export enum TimelineEventFilter_Tags {
+  Include = 'Include',
+  Exclude = 'Exclude',
+}
+/**
+ * A timeline filter that in- or excludes events based on their type or
+ * content.
+ */
+export const TimelineEventFilter = (() => {
+  type Include__interface = {
+    tag: TimelineEventFilter_Tags.Include;
+    inner: Readonly<[Array<TimelineEventCondition>]>;
+  };
+
+  /**
+   * Only return items whose event matches any of the conditions in the list.
+   */
+  class Include_ extends UniffiEnum implements Include__interface {
+    /**
+     * @private
+     * This field is private and should not be used, use `tag` instead.
+     */
+    readonly [uniffiTypeNameSymbol] = 'TimelineEventFilter';
+    readonly tag = TimelineEventFilter_Tags.Include;
+    readonly inner: Readonly<[Array<TimelineEventCondition>]>;
+    constructor(v0: Array<TimelineEventCondition>) {
+      super('TimelineEventFilter', 'Include');
+      this.inner = Object.freeze([v0]);
+    }
+
+    static new(v0: Array<TimelineEventCondition>): Include_ {
+      return new Include_(v0);
+    }
+
+    static instanceOf(obj: any): obj is Include_ {
+      return obj.tag === TimelineEventFilter_Tags.Include;
+    }
+  }
+
+  type Exclude__interface = {
+    tag: TimelineEventFilter_Tags.Exclude;
+    inner: Readonly<[Array<TimelineEventCondition>]>;
+  };
+
+  /**
+   * Return all items except the ones whose event matches any of the
+   * conditions in the list
+   */
+  class Exclude_ extends UniffiEnum implements Exclude__interface {
+    /**
+     * @private
+     * This field is private and should not be used, use `tag` instead.
+     */
+    readonly [uniffiTypeNameSymbol] = 'TimelineEventFilter';
+    readonly tag = TimelineEventFilter_Tags.Exclude;
+    readonly inner: Readonly<[Array<TimelineEventCondition>]>;
+    constructor(v0: Array<TimelineEventCondition>) {
+      super('TimelineEventFilter', 'Exclude');
+      this.inner = Object.freeze([v0]);
+    }
+
+    static new(v0: Array<TimelineEventCondition>): Exclude_ {
+      return new Exclude_(v0);
+    }
+
+    static instanceOf(obj: any): obj is Exclude_ {
+      return obj.tag === TimelineEventFilter_Tags.Exclude;
+    }
+  }
+
+  function instanceOf(obj: any): obj is TimelineEventFilter {
+    return obj[uniffiTypeNameSymbol] === 'TimelineEventFilter';
+  }
+
+  return Object.freeze({
+    instanceOf,
+    Include: Include_,
+    Exclude: Exclude_,
+  });
+})();
+
+/**
+ * A timeline filter that in- or excludes events based on their type or
+ * content.
+ */
+
+export type TimelineEventFilter = InstanceType<
+  (typeof TimelineEventFilter)[keyof Omit<
+    typeof TimelineEventFilter,
+    'instanceOf'
+  >]
+>;
+
+// FfiConverter for enum TimelineEventFilter
+const FfiConverterTypeTimelineEventFilter = (() => {
+  const ordinalConverter = FfiConverterInt32;
+  type TypeName = TimelineEventFilter;
+  class FFIConverter extends AbstractFfiConverterByteArray<TypeName> {
+    read(from: RustBuffer): TypeName {
+      switch (ordinalConverter.read(from)) {
+        case 1:
+          return new TimelineEventFilter.Include(
+            FfiConverterArrayTypeTimelineEventCondition.read(from)
+          );
+        case 2:
+          return new TimelineEventFilter.Exclude(
+            FfiConverterArrayTypeTimelineEventCondition.read(from)
+          );
+        default:
+          throw new UniffiInternalError.UnexpectedEnumCase();
+      }
+    }
+    write(value: TypeName, into: RustBuffer): void {
+      switch (value.tag) {
+        case TimelineEventFilter_Tags.Include: {
+          ordinalConverter.write(1, into);
+          const inner = value.inner;
+          FfiConverterArrayTypeTimelineEventCondition.write(inner[0], into);
+          return;
+        }
+        case TimelineEventFilter_Tags.Exclude: {
+          ordinalConverter.write(2, into);
+          const inner = value.inner;
+          FfiConverterArrayTypeTimelineEventCondition.write(inner[0], into);
+          return;
+        }
+        default:
+          // Throwing from here means that TimelineEventFilter_Tags hasn't matched an ordinal.
+          throw new UniffiInternalError.UnexpectedEnumCase();
+      }
+    }
+    allocationSize(value: TypeName): number {
+      switch (value.tag) {
+        case TimelineEventFilter_Tags.Include: {
+          const inner = value.inner;
+          let size = ordinalConverter.allocationSize(1);
+          size += FfiConverterArrayTypeTimelineEventCondition.allocationSize(
+            inner[0]
+          );
+          return size;
+        }
+        case TimelineEventFilter_Tags.Exclude: {
+          const inner = value.inner;
+          let size = ordinalConverter.allocationSize(2);
+          size += FfiConverterArrayTypeTimelineEventCondition.allocationSize(
+            inner[0]
+          );
+          return size;
+        }
+        default:
+          throw new UniffiInternalError.UnexpectedEnumCase();
+      }
+    }
+  }
+  return new FFIConverter();
+})();
+
 // Enum: TimelineEventFocusThreadMode
 export enum TimelineEventFocusThreadMode_Tags {
   ForceThread = 'ForceThread',
@@ -1036,6 +1583,11 @@ const FfiConverterTypeTimelineReadReceiptTracking = (() => {
   return new FFIConverter();
 })();
 
+// FfiConverter for Array<TimelineEventCondition>
+const FfiConverterArrayTypeTimelineEventCondition = new FfiConverterArray(
+  FfiConverterTypeTimelineEventCondition
+);
+
 /**
  * This should be called before anything else.
  *
@@ -1066,10 +1618,14 @@ export default Object.freeze({
     FfiConverterTypeEventItemOrigin,
     FfiConverterTypeLatestEventValueLocalState,
     FfiConverterTypeMembershipChangeFilter,
+    FfiConverterTypeRoomListFilterCategory,
+    FfiConverterTypeRoomListFilterReadReceipts,
     FfiConverterTypeRoomPinnedEventsChange,
     FfiConverterTypeSearchServicePaginationState,
     FfiConverterTypeSpaceRoomListPaginationState,
     FfiConverterTypeThreadListPaginationState,
+    FfiConverterTypeTimelineEventCondition,
+    FfiConverterTypeTimelineEventFilter,
     FfiConverterTypeTimelineEventFocusThreadMode,
     FfiConverterTypeTimelineEventShieldStateCode,
     FfiConverterTypeTimelineReadReceiptTracking,

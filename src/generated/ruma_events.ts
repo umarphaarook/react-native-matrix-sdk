@@ -6112,6 +6112,7 @@ export enum StateEventType_Tags {
   RoomPinnedEvents = 'RoomPinnedEvents',
   RoomPolicy = 'RoomPolicy',
   RoomPowerLevels = 'RoomPowerLevels',
+  RoomRetention = 'RoomRetention',
   RoomServerAcl = 'RoomServerAcl',
   RoomThirdPartyInvite = 'RoomThirdPartyInvite',
   RoomTombstone = 'RoomTombstone',
@@ -7420,6 +7421,84 @@ export const StateEventType = (() => {
     }
   }
 
+  type RoomRetention__interface = {
+    tag: StateEventType_Tags.RoomRetention;
+  };
+
+  /**
+   * m.room.retention
+   *
+   * This variant uses the unstable type `org.matrix.msc1763.retention`.
+   *
+   * This variant can also be deserialized from the `m.room.retention` type.
+   */
+  class RoomRetention_ extends UniffiEnum implements RoomRetention__interface {
+    /**
+     * @private
+     * This field is private and should not be used, use `tag` instead.
+     */
+    readonly [uniffiTypeNameSymbol] = 'StateEventType';
+    readonly tag = StateEventType_Tags.RoomRetention;
+    constructor() {
+      super('StateEventType', 'RoomRetention');
+    }
+
+    static new(): RoomRetention_ {
+      return new RoomRetention_();
+    }
+
+    static instanceOf(obj: any): obj is RoomRetention_ {
+      return obj.tag === StateEventType_Tags.RoomRetention;
+    }
+
+    toString(): string {
+      return FfiConverterString.lift(
+        uniffiCaller.rustCall(
+          /*caller:*/ (callStatus) => {
+            return nativeModule().ubrn_uniffi_ruma_events_fn_method_stateeventtype_uniffi_trait_display(
+              FfiConverterTypeStateEventType.lower(
+                this as unknown as StateEventType
+              ),
+              callStatus
+            );
+          },
+          /*liftString:*/ FfiConverterString.lift
+        )
+      );
+    }
+    equals(other: StateEventType): boolean {
+      return FfiConverterBool.lift(
+        uniffiCaller.rustCall(
+          /*caller:*/ (callStatus) => {
+            return nativeModule().ubrn_uniffi_ruma_events_fn_method_stateeventtype_uniffi_trait_eq_eq(
+              FfiConverterTypeStateEventType.lower(
+                this as unknown as StateEventType
+              ),
+              FfiConverterTypeStateEventType.lower(other),
+              callStatus
+            );
+          },
+          /*liftString:*/ FfiConverterString.lift
+        )
+      );
+    }
+    hashCode(): /*u64*/ bigint {
+      return FfiConverterUInt64.lift(
+        uniffiCaller.rustCall(
+          /*caller:*/ (callStatus) => {
+            return nativeModule().ubrn_uniffi_ruma_events_fn_method_stateeventtype_uniffi_trait_hash(
+              FfiConverterTypeStateEventType.lower(
+                this as unknown as StateEventType
+              ),
+              callStatus
+            );
+          },
+          /*liftString:*/ FfiConverterString.lift
+        )
+      );
+    }
+  }
+
   type RoomServerAcl__interface = {
     tag: StateEventType_Tags.RoomServerAcl;
   };
@@ -8202,6 +8281,7 @@ export const StateEventType = (() => {
     RoomPinnedEvents: RoomPinnedEvents_,
     RoomPolicy: RoomPolicy_,
     RoomPowerLevels: RoomPowerLevels_,
+    RoomRetention: RoomRetention_,
     RoomServerAcl: RoomServerAcl_,
     RoomThirdPartyInvite: RoomThirdPartyInvite_,
     RoomTombstone: RoomTombstone_,
@@ -8269,24 +8349,26 @@ const FfiConverterTypeStateEventType = (() => {
         case 17:
           return new StateEventType.RoomPowerLevels();
         case 18:
-          return new StateEventType.RoomServerAcl();
+          return new StateEventType.RoomRetention();
         case 19:
-          return new StateEventType.RoomThirdPartyInvite();
+          return new StateEventType.RoomServerAcl();
         case 20:
-          return new StateEventType.RoomTombstone();
+          return new StateEventType.RoomThirdPartyInvite();
         case 21:
-          return new StateEventType.RoomTopic();
+          return new StateEventType.RoomTombstone();
         case 22:
-          return new StateEventType.SpaceChild();
+          return new StateEventType.RoomTopic();
         case 23:
-          return new StateEventType.SpaceParent();
+          return new StateEventType.SpaceChild();
         case 24:
-          return new StateEventType.BeaconInfo();
+          return new StateEventType.SpaceParent();
         case 25:
-          return new StateEventType.CallMember();
+          return new StateEventType.BeaconInfo();
         case 26:
-          return new StateEventType.MemberHints();
+          return new StateEventType.CallMember();
         case 27:
+          return new StateEventType.MemberHints();
+        case 28:
           return new StateEventType.Custom(
             FfiConverterTypePrivOwnedStr.read(from)
           );
@@ -8364,44 +8446,48 @@ const FfiConverterTypeStateEventType = (() => {
           ordinalConverter.write(17, into);
           return;
         }
-        case StateEventType_Tags.RoomServerAcl: {
+        case StateEventType_Tags.RoomRetention: {
           ordinalConverter.write(18, into);
           return;
         }
-        case StateEventType_Tags.RoomThirdPartyInvite: {
+        case StateEventType_Tags.RoomServerAcl: {
           ordinalConverter.write(19, into);
           return;
         }
-        case StateEventType_Tags.RoomTombstone: {
+        case StateEventType_Tags.RoomThirdPartyInvite: {
           ordinalConverter.write(20, into);
           return;
         }
-        case StateEventType_Tags.RoomTopic: {
+        case StateEventType_Tags.RoomTombstone: {
           ordinalConverter.write(21, into);
           return;
         }
-        case StateEventType_Tags.SpaceChild: {
+        case StateEventType_Tags.RoomTopic: {
           ordinalConverter.write(22, into);
           return;
         }
-        case StateEventType_Tags.SpaceParent: {
+        case StateEventType_Tags.SpaceChild: {
           ordinalConverter.write(23, into);
           return;
         }
-        case StateEventType_Tags.BeaconInfo: {
+        case StateEventType_Tags.SpaceParent: {
           ordinalConverter.write(24, into);
           return;
         }
-        case StateEventType_Tags.CallMember: {
+        case StateEventType_Tags.BeaconInfo: {
           ordinalConverter.write(25, into);
           return;
         }
-        case StateEventType_Tags.MemberHints: {
+        case StateEventType_Tags.CallMember: {
           ordinalConverter.write(26, into);
           return;
         }
-        case StateEventType_Tags.Custom: {
+        case StateEventType_Tags.MemberHints: {
           ordinalConverter.write(27, into);
+          return;
+        }
+        case StateEventType_Tags.Custom: {
+          ordinalConverter.write(28, into);
           const inner = value.inner;
           FfiConverterTypePrivOwnedStr.write(inner[0], into);
           return;
@@ -8464,36 +8550,39 @@ const FfiConverterTypeStateEventType = (() => {
         case StateEventType_Tags.RoomPowerLevels: {
           return ordinalConverter.allocationSize(17);
         }
-        case StateEventType_Tags.RoomServerAcl: {
+        case StateEventType_Tags.RoomRetention: {
           return ordinalConverter.allocationSize(18);
         }
-        case StateEventType_Tags.RoomThirdPartyInvite: {
+        case StateEventType_Tags.RoomServerAcl: {
           return ordinalConverter.allocationSize(19);
         }
-        case StateEventType_Tags.RoomTombstone: {
+        case StateEventType_Tags.RoomThirdPartyInvite: {
           return ordinalConverter.allocationSize(20);
         }
-        case StateEventType_Tags.RoomTopic: {
+        case StateEventType_Tags.RoomTombstone: {
           return ordinalConverter.allocationSize(21);
         }
-        case StateEventType_Tags.SpaceChild: {
+        case StateEventType_Tags.RoomTopic: {
           return ordinalConverter.allocationSize(22);
         }
-        case StateEventType_Tags.SpaceParent: {
+        case StateEventType_Tags.SpaceChild: {
           return ordinalConverter.allocationSize(23);
         }
-        case StateEventType_Tags.BeaconInfo: {
+        case StateEventType_Tags.SpaceParent: {
           return ordinalConverter.allocationSize(24);
         }
-        case StateEventType_Tags.CallMember: {
+        case StateEventType_Tags.BeaconInfo: {
           return ordinalConverter.allocationSize(25);
         }
-        case StateEventType_Tags.MemberHints: {
+        case StateEventType_Tags.CallMember: {
           return ordinalConverter.allocationSize(26);
+        }
+        case StateEventType_Tags.MemberHints: {
+          return ordinalConverter.allocationSize(27);
         }
         case StateEventType_Tags.Custom: {
           const inner = value.inner;
-          let size = ordinalConverter.allocationSize(27);
+          let size = ordinalConverter.allocationSize(28);
           size += FfiConverterTypePrivOwnedStr.allocationSize(inner[0]);
           return size;
         }
@@ -8563,6 +8652,7 @@ export enum TimelineEventType_Tags {
   RoomPinnedEvents = 'RoomPinnedEvents',
   RoomPolicy = 'RoomPolicy',
   RoomPowerLevels = 'RoomPowerLevels',
+  RoomRetention = 'RoomRetention',
   RoomServerAcl = 'RoomServerAcl',
   RoomThirdPartyInvite = 'RoomThirdPartyInvite',
   RoomTombstone = 'RoomTombstone',
@@ -12849,6 +12939,84 @@ export const TimelineEventType = (() => {
     }
   }
 
+  type RoomRetention__interface = {
+    tag: TimelineEventType_Tags.RoomRetention;
+  };
+
+  /**
+   * m.room.retention
+   *
+   * This variant uses the unstable type `org.matrix.msc1763.retention`.
+   *
+   * This variant can also be deserialized from the `m.room.retention` type.
+   */
+  class RoomRetention_ extends UniffiEnum implements RoomRetention__interface {
+    /**
+     * @private
+     * This field is private and should not be used, use `tag` instead.
+     */
+    readonly [uniffiTypeNameSymbol] = 'TimelineEventType';
+    readonly tag = TimelineEventType_Tags.RoomRetention;
+    constructor() {
+      super('TimelineEventType', 'RoomRetention');
+    }
+
+    static new(): RoomRetention_ {
+      return new RoomRetention_();
+    }
+
+    static instanceOf(obj: any): obj is RoomRetention_ {
+      return obj.tag === TimelineEventType_Tags.RoomRetention;
+    }
+
+    toString(): string {
+      return FfiConverterString.lift(
+        uniffiCaller.rustCall(
+          /*caller:*/ (callStatus) => {
+            return nativeModule().ubrn_uniffi_ruma_events_fn_method_timelineeventtype_uniffi_trait_display(
+              FfiConverterTypeTimelineEventType.lower(
+                this as unknown as TimelineEventType
+              ),
+              callStatus
+            );
+          },
+          /*liftString:*/ FfiConverterString.lift
+        )
+      );
+    }
+    equals(other: TimelineEventType): boolean {
+      return FfiConverterBool.lift(
+        uniffiCaller.rustCall(
+          /*caller:*/ (callStatus) => {
+            return nativeModule().ubrn_uniffi_ruma_events_fn_method_timelineeventtype_uniffi_trait_eq_eq(
+              FfiConverterTypeTimelineEventType.lower(
+                this as unknown as TimelineEventType
+              ),
+              FfiConverterTypeTimelineEventType.lower(other),
+              callStatus
+            );
+          },
+          /*liftString:*/ FfiConverterString.lift
+        )
+      );
+    }
+    hashCode(): /*u64*/ bigint {
+      return FfiConverterUInt64.lift(
+        uniffiCaller.rustCall(
+          /*caller:*/ (callStatus) => {
+            return nativeModule().ubrn_uniffi_ruma_events_fn_method_timelineeventtype_uniffi_trait_hash(
+              FfiConverterTypeTimelineEventType.lower(
+                this as unknown as TimelineEventType
+              ),
+              callStatus
+            );
+          },
+          /*liftString:*/ FfiConverterString.lift
+        )
+      );
+    }
+  }
+
   type RoomServerAcl__interface = {
     tag: TimelineEventType_Tags.RoomServerAcl;
   };
@@ -13670,6 +13838,7 @@ export const TimelineEventType = (() => {
     RoomPinnedEvents: RoomPinnedEvents_,
     RoomPolicy: RoomPolicy_,
     RoomPowerLevels: RoomPowerLevels_,
+    RoomRetention: RoomRetention_,
     RoomServerAcl: RoomServerAcl_,
     RoomThirdPartyInvite: RoomThirdPartyInvite_,
     RoomTombstone: RoomTombstone_,
@@ -13815,24 +13984,26 @@ const FfiConverterTypeTimelineEventType = (() => {
         case 56:
           return new TimelineEventType.RoomPowerLevels();
         case 57:
-          return new TimelineEventType.RoomServerAcl();
+          return new TimelineEventType.RoomRetention();
         case 58:
-          return new TimelineEventType.RoomThirdPartyInvite();
+          return new TimelineEventType.RoomServerAcl();
         case 59:
-          return new TimelineEventType.RoomTombstone();
+          return new TimelineEventType.RoomThirdPartyInvite();
         case 60:
-          return new TimelineEventType.RoomTopic();
+          return new TimelineEventType.RoomTombstone();
         case 61:
-          return new TimelineEventType.SpaceChild();
+          return new TimelineEventType.RoomTopic();
         case 62:
-          return new TimelineEventType.SpaceParent();
+          return new TimelineEventType.SpaceChild();
         case 63:
-          return new TimelineEventType.BeaconInfo();
+          return new TimelineEventType.SpaceParent();
         case 64:
-          return new TimelineEventType.CallMember();
+          return new TimelineEventType.BeaconInfo();
         case 65:
-          return new TimelineEventType.MemberHints();
+          return new TimelineEventType.CallMember();
         case 66:
+          return new TimelineEventType.MemberHints();
+        case 67:
           return new TimelineEventType.Custom(
             FfiConverterTypePrivOwnedStr.read(from)
           );
@@ -14066,44 +14237,48 @@ const FfiConverterTypeTimelineEventType = (() => {
           ordinalConverter.write(56, into);
           return;
         }
-        case TimelineEventType_Tags.RoomServerAcl: {
+        case TimelineEventType_Tags.RoomRetention: {
           ordinalConverter.write(57, into);
           return;
         }
-        case TimelineEventType_Tags.RoomThirdPartyInvite: {
+        case TimelineEventType_Tags.RoomServerAcl: {
           ordinalConverter.write(58, into);
           return;
         }
-        case TimelineEventType_Tags.RoomTombstone: {
+        case TimelineEventType_Tags.RoomThirdPartyInvite: {
           ordinalConverter.write(59, into);
           return;
         }
-        case TimelineEventType_Tags.RoomTopic: {
+        case TimelineEventType_Tags.RoomTombstone: {
           ordinalConverter.write(60, into);
           return;
         }
-        case TimelineEventType_Tags.SpaceChild: {
+        case TimelineEventType_Tags.RoomTopic: {
           ordinalConverter.write(61, into);
           return;
         }
-        case TimelineEventType_Tags.SpaceParent: {
+        case TimelineEventType_Tags.SpaceChild: {
           ordinalConverter.write(62, into);
           return;
         }
-        case TimelineEventType_Tags.BeaconInfo: {
+        case TimelineEventType_Tags.SpaceParent: {
           ordinalConverter.write(63, into);
           return;
         }
-        case TimelineEventType_Tags.CallMember: {
+        case TimelineEventType_Tags.BeaconInfo: {
           ordinalConverter.write(64, into);
           return;
         }
-        case TimelineEventType_Tags.MemberHints: {
+        case TimelineEventType_Tags.CallMember: {
           ordinalConverter.write(65, into);
           return;
         }
-        case TimelineEventType_Tags.Custom: {
+        case TimelineEventType_Tags.MemberHints: {
           ordinalConverter.write(66, into);
+          return;
+        }
+        case TimelineEventType_Tags.Custom: {
+          ordinalConverter.write(67, into);
           const inner = value.inner;
           FfiConverterTypePrivOwnedStr.write(inner[0], into);
           return;
@@ -14283,36 +14458,39 @@ const FfiConverterTypeTimelineEventType = (() => {
         case TimelineEventType_Tags.RoomPowerLevels: {
           return ordinalConverter.allocationSize(56);
         }
-        case TimelineEventType_Tags.RoomServerAcl: {
+        case TimelineEventType_Tags.RoomRetention: {
           return ordinalConverter.allocationSize(57);
         }
-        case TimelineEventType_Tags.RoomThirdPartyInvite: {
+        case TimelineEventType_Tags.RoomServerAcl: {
           return ordinalConverter.allocationSize(58);
         }
-        case TimelineEventType_Tags.RoomTombstone: {
+        case TimelineEventType_Tags.RoomThirdPartyInvite: {
           return ordinalConverter.allocationSize(59);
         }
-        case TimelineEventType_Tags.RoomTopic: {
+        case TimelineEventType_Tags.RoomTombstone: {
           return ordinalConverter.allocationSize(60);
         }
-        case TimelineEventType_Tags.SpaceChild: {
+        case TimelineEventType_Tags.RoomTopic: {
           return ordinalConverter.allocationSize(61);
         }
-        case TimelineEventType_Tags.SpaceParent: {
+        case TimelineEventType_Tags.SpaceChild: {
           return ordinalConverter.allocationSize(62);
         }
-        case TimelineEventType_Tags.BeaconInfo: {
+        case TimelineEventType_Tags.SpaceParent: {
           return ordinalConverter.allocationSize(63);
         }
-        case TimelineEventType_Tags.CallMember: {
+        case TimelineEventType_Tags.BeaconInfo: {
           return ordinalConverter.allocationSize(64);
         }
-        case TimelineEventType_Tags.MemberHints: {
+        case TimelineEventType_Tags.CallMember: {
           return ordinalConverter.allocationSize(65);
+        }
+        case TimelineEventType_Tags.MemberHints: {
+          return ordinalConverter.allocationSize(66);
         }
         case TimelineEventType_Tags.Custom: {
           const inner = value.inner;
-          let size = ordinalConverter.allocationSize(66);
+          let size = ordinalConverter.allocationSize(67);
           size += FfiConverterTypePrivOwnedStr.allocationSize(inner[0]);
           return size;
         }
@@ -14328,6 +14506,7 @@ const FfiConverterTypeTimelineEventType = (() => {
 export enum ToDeviceEventType_Tags {
   Dummy = 'Dummy',
   RoomKey = 'RoomKey',
+  RoomKeyBundle = 'RoomKeyBundle',
   RoomKeyRequest = 'RoomKeyRequest',
   RoomKeyWithheld = 'RoomKeyWithheld',
   ForwardedRoomKey = 'ForwardedRoomKey',
@@ -14451,6 +14630,80 @@ export const ToDeviceEventType = (() => {
 
     static instanceOf(obj: any): obj is RoomKey_ {
       return obj.tag === ToDeviceEventType_Tags.RoomKey;
+    }
+
+    toString(): string {
+      return FfiConverterString.lift(
+        uniffiCaller.rustCall(
+          /*caller:*/ (callStatus) => {
+            return nativeModule().ubrn_uniffi_ruma_events_fn_method_todeviceeventtype_uniffi_trait_display(
+              FfiConverterTypeToDeviceEventType.lower(
+                this as unknown as ToDeviceEventType
+              ),
+              callStatus
+            );
+          },
+          /*liftString:*/ FfiConverterString.lift
+        )
+      );
+    }
+    equals(other: ToDeviceEventType): boolean {
+      return FfiConverterBool.lift(
+        uniffiCaller.rustCall(
+          /*caller:*/ (callStatus) => {
+            return nativeModule().ubrn_uniffi_ruma_events_fn_method_todeviceeventtype_uniffi_trait_eq_eq(
+              FfiConverterTypeToDeviceEventType.lower(
+                this as unknown as ToDeviceEventType
+              ),
+              FfiConverterTypeToDeviceEventType.lower(other),
+              callStatus
+            );
+          },
+          /*liftString:*/ FfiConverterString.lift
+        )
+      );
+    }
+    hashCode(): /*u64*/ bigint {
+      return FfiConverterUInt64.lift(
+        uniffiCaller.rustCall(
+          /*caller:*/ (callStatus) => {
+            return nativeModule().ubrn_uniffi_ruma_events_fn_method_todeviceeventtype_uniffi_trait_hash(
+              FfiConverterTypeToDeviceEventType.lower(
+                this as unknown as ToDeviceEventType
+              ),
+              callStatus
+            );
+          },
+          /*liftString:*/ FfiConverterString.lift
+        )
+      );
+    }
+  }
+
+  type RoomKeyBundle__interface = {
+    tag: ToDeviceEventType_Tags.RoomKeyBundle;
+  };
+
+  /**
+   * m.room_key_bundle
+   */
+  class RoomKeyBundle_ extends UniffiEnum implements RoomKeyBundle__interface {
+    /**
+     * @private
+     * This field is private and should not be used, use `tag` instead.
+     */
+    readonly [uniffiTypeNameSymbol] = 'ToDeviceEventType';
+    readonly tag = ToDeviceEventType_Tags.RoomKeyBundle;
+    constructor() {
+      super('ToDeviceEventType', 'RoomKeyBundle');
+    }
+
+    static new(): RoomKeyBundle_ {
+      return new RoomKeyBundle_();
+    }
+
+    static instanceOf(obj: any): obj is RoomKeyBundle_ {
+      return obj.tag === ToDeviceEventType_Tags.RoomKeyBundle;
     }
 
     toString(): string {
@@ -15734,6 +15987,7 @@ export const ToDeviceEventType = (() => {
     instanceOf,
     Dummy: Dummy_,
     RoomKey: RoomKey_,
+    RoomKeyBundle: RoomKeyBundle_,
     RoomKeyRequest: RoomKeyRequest_,
     RoomKeyWithheld: RoomKeyWithheld_,
     ForwardedRoomKey: ForwardedRoomKey_,
@@ -15777,36 +16031,38 @@ const FfiConverterTypeToDeviceEventType = (() => {
         case 2:
           return new ToDeviceEventType.RoomKey();
         case 3:
-          return new ToDeviceEventType.RoomKeyRequest();
+          return new ToDeviceEventType.RoomKeyBundle();
         case 4:
-          return new ToDeviceEventType.RoomKeyWithheld();
+          return new ToDeviceEventType.RoomKeyRequest();
         case 5:
-          return new ToDeviceEventType.ForwardedRoomKey();
+          return new ToDeviceEventType.RoomKeyWithheld();
         case 6:
-          return new ToDeviceEventType.KeyVerificationRequest();
+          return new ToDeviceEventType.ForwardedRoomKey();
         case 7:
-          return new ToDeviceEventType.KeyVerificationReady();
+          return new ToDeviceEventType.KeyVerificationRequest();
         case 8:
-          return new ToDeviceEventType.KeyVerificationStart();
+          return new ToDeviceEventType.KeyVerificationReady();
         case 9:
-          return new ToDeviceEventType.KeyVerificationCancel();
+          return new ToDeviceEventType.KeyVerificationStart();
         case 10:
-          return new ToDeviceEventType.KeyVerificationAccept();
+          return new ToDeviceEventType.KeyVerificationCancel();
         case 11:
-          return new ToDeviceEventType.KeyVerificationKey();
+          return new ToDeviceEventType.KeyVerificationAccept();
         case 12:
-          return new ToDeviceEventType.KeyVerificationMac();
+          return new ToDeviceEventType.KeyVerificationKey();
         case 13:
-          return new ToDeviceEventType.KeyVerificationDone();
+          return new ToDeviceEventType.KeyVerificationMac();
         case 14:
-          return new ToDeviceEventType.RoomEncrypted();
+          return new ToDeviceEventType.KeyVerificationDone();
         case 15:
-          return new ToDeviceEventType.SecretRequest();
+          return new ToDeviceEventType.RoomEncrypted();
         case 16:
-          return new ToDeviceEventType.SecretSend();
+          return new ToDeviceEventType.SecretRequest();
         case 17:
-          return new ToDeviceEventType.SecretPush();
+          return new ToDeviceEventType.SecretSend();
         case 18:
+          return new ToDeviceEventType.SecretPush();
+        case 19:
           return new ToDeviceEventType.Custom(
             FfiConverterTypePrivOwnedStr.read(from)
           );
@@ -15824,68 +16080,72 @@ const FfiConverterTypeToDeviceEventType = (() => {
           ordinalConverter.write(2, into);
           return;
         }
-        case ToDeviceEventType_Tags.RoomKeyRequest: {
+        case ToDeviceEventType_Tags.RoomKeyBundle: {
           ordinalConverter.write(3, into);
           return;
         }
-        case ToDeviceEventType_Tags.RoomKeyWithheld: {
+        case ToDeviceEventType_Tags.RoomKeyRequest: {
           ordinalConverter.write(4, into);
           return;
         }
-        case ToDeviceEventType_Tags.ForwardedRoomKey: {
+        case ToDeviceEventType_Tags.RoomKeyWithheld: {
           ordinalConverter.write(5, into);
           return;
         }
-        case ToDeviceEventType_Tags.KeyVerificationRequest: {
+        case ToDeviceEventType_Tags.ForwardedRoomKey: {
           ordinalConverter.write(6, into);
           return;
         }
-        case ToDeviceEventType_Tags.KeyVerificationReady: {
+        case ToDeviceEventType_Tags.KeyVerificationRequest: {
           ordinalConverter.write(7, into);
           return;
         }
-        case ToDeviceEventType_Tags.KeyVerificationStart: {
+        case ToDeviceEventType_Tags.KeyVerificationReady: {
           ordinalConverter.write(8, into);
           return;
         }
-        case ToDeviceEventType_Tags.KeyVerificationCancel: {
+        case ToDeviceEventType_Tags.KeyVerificationStart: {
           ordinalConverter.write(9, into);
           return;
         }
-        case ToDeviceEventType_Tags.KeyVerificationAccept: {
+        case ToDeviceEventType_Tags.KeyVerificationCancel: {
           ordinalConverter.write(10, into);
           return;
         }
-        case ToDeviceEventType_Tags.KeyVerificationKey: {
+        case ToDeviceEventType_Tags.KeyVerificationAccept: {
           ordinalConverter.write(11, into);
           return;
         }
-        case ToDeviceEventType_Tags.KeyVerificationMac: {
+        case ToDeviceEventType_Tags.KeyVerificationKey: {
           ordinalConverter.write(12, into);
           return;
         }
-        case ToDeviceEventType_Tags.KeyVerificationDone: {
+        case ToDeviceEventType_Tags.KeyVerificationMac: {
           ordinalConverter.write(13, into);
           return;
         }
-        case ToDeviceEventType_Tags.RoomEncrypted: {
+        case ToDeviceEventType_Tags.KeyVerificationDone: {
           ordinalConverter.write(14, into);
           return;
         }
-        case ToDeviceEventType_Tags.SecretRequest: {
+        case ToDeviceEventType_Tags.RoomEncrypted: {
           ordinalConverter.write(15, into);
           return;
         }
-        case ToDeviceEventType_Tags.SecretSend: {
+        case ToDeviceEventType_Tags.SecretRequest: {
           ordinalConverter.write(16, into);
           return;
         }
-        case ToDeviceEventType_Tags.SecretPush: {
+        case ToDeviceEventType_Tags.SecretSend: {
           ordinalConverter.write(17, into);
           return;
         }
-        case ToDeviceEventType_Tags.Custom: {
+        case ToDeviceEventType_Tags.SecretPush: {
           ordinalConverter.write(18, into);
+          return;
+        }
+        case ToDeviceEventType_Tags.Custom: {
+          ordinalConverter.write(19, into);
           const inner = value.inner;
           FfiConverterTypePrivOwnedStr.write(inner[0], into);
           return;
@@ -15903,54 +16163,57 @@ const FfiConverterTypeToDeviceEventType = (() => {
         case ToDeviceEventType_Tags.RoomKey: {
           return ordinalConverter.allocationSize(2);
         }
-        case ToDeviceEventType_Tags.RoomKeyRequest: {
+        case ToDeviceEventType_Tags.RoomKeyBundle: {
           return ordinalConverter.allocationSize(3);
         }
-        case ToDeviceEventType_Tags.RoomKeyWithheld: {
+        case ToDeviceEventType_Tags.RoomKeyRequest: {
           return ordinalConverter.allocationSize(4);
         }
-        case ToDeviceEventType_Tags.ForwardedRoomKey: {
+        case ToDeviceEventType_Tags.RoomKeyWithheld: {
           return ordinalConverter.allocationSize(5);
         }
-        case ToDeviceEventType_Tags.KeyVerificationRequest: {
+        case ToDeviceEventType_Tags.ForwardedRoomKey: {
           return ordinalConverter.allocationSize(6);
         }
-        case ToDeviceEventType_Tags.KeyVerificationReady: {
+        case ToDeviceEventType_Tags.KeyVerificationRequest: {
           return ordinalConverter.allocationSize(7);
         }
-        case ToDeviceEventType_Tags.KeyVerificationStart: {
+        case ToDeviceEventType_Tags.KeyVerificationReady: {
           return ordinalConverter.allocationSize(8);
         }
-        case ToDeviceEventType_Tags.KeyVerificationCancel: {
+        case ToDeviceEventType_Tags.KeyVerificationStart: {
           return ordinalConverter.allocationSize(9);
         }
-        case ToDeviceEventType_Tags.KeyVerificationAccept: {
+        case ToDeviceEventType_Tags.KeyVerificationCancel: {
           return ordinalConverter.allocationSize(10);
         }
-        case ToDeviceEventType_Tags.KeyVerificationKey: {
+        case ToDeviceEventType_Tags.KeyVerificationAccept: {
           return ordinalConverter.allocationSize(11);
         }
-        case ToDeviceEventType_Tags.KeyVerificationMac: {
+        case ToDeviceEventType_Tags.KeyVerificationKey: {
           return ordinalConverter.allocationSize(12);
         }
-        case ToDeviceEventType_Tags.KeyVerificationDone: {
+        case ToDeviceEventType_Tags.KeyVerificationMac: {
           return ordinalConverter.allocationSize(13);
         }
-        case ToDeviceEventType_Tags.RoomEncrypted: {
+        case ToDeviceEventType_Tags.KeyVerificationDone: {
           return ordinalConverter.allocationSize(14);
         }
-        case ToDeviceEventType_Tags.SecretRequest: {
+        case ToDeviceEventType_Tags.RoomEncrypted: {
           return ordinalConverter.allocationSize(15);
         }
-        case ToDeviceEventType_Tags.SecretSend: {
+        case ToDeviceEventType_Tags.SecretRequest: {
           return ordinalConverter.allocationSize(16);
         }
-        case ToDeviceEventType_Tags.SecretPush: {
+        case ToDeviceEventType_Tags.SecretSend: {
           return ordinalConverter.allocationSize(17);
+        }
+        case ToDeviceEventType_Tags.SecretPush: {
+          return ordinalConverter.allocationSize(18);
         }
         case ToDeviceEventType_Tags.Custom: {
           const inner = value.inner;
-          let size = ordinalConverter.allocationSize(18);
+          let size = ordinalConverter.allocationSize(19);
           size += FfiConverterTypePrivOwnedStr.allocationSize(inner[0]);
           return size;
         }
