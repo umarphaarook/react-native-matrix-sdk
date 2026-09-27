@@ -1,7 +1,7 @@
 ---
 crate:
   repo: https://github.com/umarphaarook/matrix-rust-sdk
-  rev: 8788dde9343a8a4f1bcc0923465e489049e40f72 # zaure-patches-2026-09-22: upstream @ b994f47f1 (last uniffi-0.31 commit) + the 7 Zaure patches
+  rev: 0c1ff24c898e50de7b08e246573fef688d380e1f # verification request scoping and cancellation codes; based on zaure-patches-2026-09-22
   manifestPath: bindings/matrix-sdk-ffi/Cargo.toml
 android:
   cargoExtras: []

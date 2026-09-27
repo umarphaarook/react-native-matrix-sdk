@@ -2870,7 +2870,7 @@ export interface SessionVerificationControllerDelegate {
   didStartSasVerification(): void;
   didReceiveVerificationData(data: SessionVerificationData): void;
   didFail(): void;
-  didCancel(): void;
+  didCancel(code: string): void;
   didFinish(): void;
 }
 
@@ -2994,13 +2994,13 @@ const uniffiCallbackInterfaceSessionVerificationControllerDelegate: {
       );
       return uniffiResult;
     },
-    didCancel: (uniffiHandle: bigint) => {
+    didCancel: (uniffiHandle: bigint, code: Uint8Array) => {
       const uniffiMakeCall = (): void => {
         const jsCallback =
           FfiConverterTypeSessionVerificationControllerDelegate.lift(
             uniffiHandle
           );
-        return jsCallback.didCancel();
+        return jsCallback.didCancel(FfiConverterString.lift(code));
       };
       const uniffiResult = UniffiResult.ready<void>();
       const uniffiHandleSuccess = (obj: any) => {};
@@ -79281,7 +79281,7 @@ function uniffiEnsureInitialized() {
   }
   if (
     nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_sessionverificationcontrollerdelegate_did_cancel() !==
-    36580
+    20103
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_matrix_sdk_ffi_checksum_method_sessionverificationcontrollerdelegate_did_cancel'
