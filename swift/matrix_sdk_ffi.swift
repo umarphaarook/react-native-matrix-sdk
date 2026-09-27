@@ -49721,7 +49721,7 @@ public protocol SessionVerificationControllerDelegate: AnyObject, Sendable {
     
     func didFail() 
     
-    func didCancel() 
+    func didCancel(code: String)
     
     func didFinish() 
     
@@ -49867,6 +49867,7 @@ fileprivate struct UniffiCallbackInterfaceSessionVerificationControllerDelegate 
         },
         didCancel: { (
             uniffiHandle: UInt64,
+            code: RustBuffer,
             uniffiOutReturn: UnsafeMutableRawPointer,
             uniffiCallStatus: UnsafeMutablePointer<RustCallStatus>
         ) in
@@ -49876,6 +49877,7 @@ fileprivate struct UniffiCallbackInterfaceSessionVerificationControllerDelegate 
                     throw UniffiInternalError.unexpectedStaleHandle
                 }
                 return uniffiObj.didCancel(
+                     code: try FfiConverterString.lift(code)
                 )
             }
 
@@ -58026,7 +58028,7 @@ private let initializationResult: InitializationResult = {
     if (uniffi_matrix_sdk_ffi_checksum_method_sessionverificationcontrollerdelegate_did_fail() != 45076) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_matrix_sdk_ffi_checksum_method_sessionverificationcontrollerdelegate_did_cancel() != 36580) {
+    if (uniffi_matrix_sdk_ffi_checksum_method_sessionverificationcontrollerdelegate_did_cancel() != 20103) {
         return InitializationResult.apiChecksumMismatch
     }
     if (uniffi_matrix_sdk_ffi_checksum_method_sessionverificationcontrollerdelegate_did_finish() != 53036) {

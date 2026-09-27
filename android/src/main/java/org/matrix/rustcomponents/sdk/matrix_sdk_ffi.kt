@@ -866,7 +866,7 @@ internal interface UniffiCallbackInterfaceSessionVerificationControllerDelegateM
     fun callback(`uniffiHandle`: Long,`uniffiOutReturn`: Pointer,uniffiCallStatus: UniffiRustCallStatus,)
 }
 internal interface UniffiCallbackInterfaceSessionVerificationControllerDelegateMethod5 : com.sun.jna.Callback {
-    fun callback(`uniffiHandle`: Long,`uniffiOutReturn`: Pointer,uniffiCallStatus: UniffiRustCallStatus,)
+    fun callback(`uniffiHandle`: Long,`code`: RustBuffer.ByValue,`uniffiOutReturn`: Pointer,uniffiCallStatus: UniffiRustCallStatus,)
 }
 internal interface UniffiCallbackInterfaceSessionVerificationControllerDelegateMethod6 : com.sun.jna.Callback {
     fun callback(`uniffiHandle`: Long,`uniffiOutReturn`: Pointer,uniffiCallStatus: UniffiRustCallStatus,)
@@ -63114,7 +63114,7 @@ public interface SessionVerificationControllerDelegate {
     
     fun `didFail`()
     
-    fun `didCancel`()
+    fun `didCancel`(`code`: kotlin.String)
     
     fun `didFinish`()
     
@@ -63183,10 +63183,11 @@ internal object uniffiCallbackInterfaceSessionVerificationControllerDelegate {
         }
     }
     internal object `didCancel`: UniffiCallbackInterfaceSessionVerificationControllerDelegateMethod5 {
-        override fun callback(`uniffiHandle`: Long,`uniffiOutReturn`: Pointer,uniffiCallStatus: UniffiRustCallStatus,) {
+        override fun callback(`uniffiHandle`: Long,`code`: RustBuffer.ByValue,`uniffiOutReturn`: Pointer,uniffiCallStatus: UniffiRustCallStatus,) {
             val uniffiObj = FfiConverterTypeSessionVerificationControllerDelegate.handleMap.get(uniffiHandle)
             val makeCall = { ->
                 uniffiObj.`didCancel`(
+                    FfiConverterString.lift(`code`),
                 )
             }
             val writeReturn = { _: Unit -> Unit }

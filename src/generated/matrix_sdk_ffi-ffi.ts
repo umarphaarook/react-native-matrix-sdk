@@ -4354,7 +4354,8 @@ type UniffiCallbackInterfaceSessionVerificationControllerDelegateMethod4 = (
   uniffiHandle: bigint
 ) => UniffiResult<void>;
 type UniffiCallbackInterfaceSessionVerificationControllerDelegateMethod5 = (
-  uniffiHandle: bigint
+  uniffiHandle: bigint,
+  code: Uint8Array
 ) => UniffiResult<void>;
 type UniffiCallbackInterfaceSessionVerificationControllerDelegateMethod6 = (
   uniffiHandle: bigint

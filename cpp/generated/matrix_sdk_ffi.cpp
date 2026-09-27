@@ -241,7 +241,7 @@ typedef void (
     RustCallStatus *rust_call_status);
 typedef void (
     *UniffiCallbackInterfaceSessionVerificationControllerDelegateMethod5)(
-    uint64_t uniffi_handle, void *uniffi_out_return,
+    uint64_t uniffi_handle, RustBuffer code, void *uniffi_out_return,
     RustCallStatus *rust_call_status);
 typedef void (
     *UniffiCallbackInterfaceSessionVerificationControllerDelegateMethod6)(
@@ -23170,21 +23170,23 @@ using namespace facebook;
 
 // We need to store a lambda in a global so we can call it from
 // a function pointer. The function pointer is passed to Rust.
-static std::function<void(uint64_t, void *, RustCallStatus *)> rsLambda =
-    nullptr;
+static std::function<void(uint64_t, RustBuffer, void *, RustCallStatus *)>
+    rsLambda = nullptr;
 
 // This is the main body of the callback. It's called from the lambda,
 // which itself is called from the callback function which is passed to Rust.
 static void body(jsi::Runtime &rt,
                  std::shared_ptr<uniffi_runtime::UniffiCallInvoker> callInvoker,
                  std::shared_ptr<jsi::Value> callbackValue,
-                 uint64_t rs_uniffiHandle, void *rs_uniffiOutReturn,
-                 RustCallStatus *uniffi_call_status) {
+                 uint64_t rs_uniffiHandle, RustBuffer rs_code,
+                 void *rs_uniffiOutReturn, RustCallStatus *uniffi_call_status) {
 
   // Convert the arguments from Rust, into jsi::Values.
   // We'll use the Bridging class to do this…
   auto js_uniffiHandle =
       uniffi_jsi::Bridging<uint64_t>::toJs(rt, callInvoker, rs_uniffiHandle);
+  auto js_code = uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::toJs(
+      rt, callInvoker, rs_code);
 
   // Now we are ready to call the callback.
   // We are already on the JS thread, because this `body` function was
@@ -23192,7 +23194,7 @@ static void body(jsi::Runtime &rt,
   try {
     // Getting the callback function
     auto cb = callbackValue->asObject(rt).asFunction(rt);
-    auto uniffiResult = cb.call(rt, js_uniffiHandle);
+    auto uniffiResult = cb.call(rt, js_uniffiHandle, js_code);
 
     // Now copy the result back from JS into the RustCallStatus object.
     uniffi::matrix_sdk_ffi::Bridging<RustCallStatus>::copyFromJs(
@@ -23213,7 +23215,8 @@ static void body(jsi::Runtime &rt,
   }
 }
 
-static void callback(uint64_t rs_uniffiHandle, void *rs_uniffiOutReturn,
+static void callback(uint64_t rs_uniffiHandle, RustBuffer rs_code,
+                     void *rs_uniffiOutReturn,
                      RustCallStatus *uniffi_call_status) {
   // If the runtime has shutdown, then there is no point in trying to
   // call into Javascript. BUT how do we tell if the runtime has shutdown?
@@ -23230,7 +23233,7 @@ static void callback(uint64_t rs_uniffiHandle, void *rs_uniffiOutReturn,
 
   // The runtime, the actual callback jsi::funtion, and the callInvoker
   // are all in the lambda.
-  rsLambda(rs_uniffiHandle, rs_uniffiOutReturn, uniffi_call_status);
+  rsLambda(rs_uniffiHandle, rs_code, rs_uniffiOutReturn, uniffi_call_status);
 }
 
 [[maybe_unused]] static UniffiCallbackInterfaceSessionVerificationControllerDelegateMethod5
@@ -23252,15 +23255,15 @@ makeCallbackFunction( // uniffi::matrix_sdk_ffi::cb::callbackinterfacesessionver
   }
   auto callbackFunction = value.asObject(rt).asFunction(rt);
   auto callbackValue = std::make_shared<jsi::Value>(rt, callbackFunction);
-  rsLambda = [&rt, callInvoker,
-              callbackValue](uint64_t rs_uniffiHandle, void *rs_uniffiOutReturn,
-                             RustCallStatus *uniffi_call_status) {
+  rsLambda = [&rt, callInvoker, callbackValue](
+                 uint64_t rs_uniffiHandle, RustBuffer rs_code,
+                 void *rs_uniffiOutReturn, RustCallStatus *uniffi_call_status) {
     // We immediately make a lambda which will do the work of transforming the
     // arguments into JSI values and calling the callback.
     uniffi_runtime::UniffiCallFunc jsLambda =
-        [callInvoker, callbackValue, rs_uniffiHandle, rs_uniffiOutReturn,
-         uniffi_call_status](jsi::Runtime &rt) mutable {
-          body(rt, callInvoker, callbackValue, rs_uniffiHandle,
+        [callInvoker, callbackValue, rs_uniffiHandle, rs_code,
+         rs_uniffiOutReturn, uniffi_call_status](jsi::Runtime &rt) mutable {
+          body(rt, callInvoker, callbackValue, rs_uniffiHandle, rs_code,
                rs_uniffiOutReturn, uniffi_call_status);
         };
     // We'll then call that lambda from the callInvoker which will
