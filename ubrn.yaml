@@ -1,7 +1,7 @@
 ---
 crate:
   repo: https://github.com/umarphaarook/matrix-rust-sdk
-  rev: 0c1ff24c898e50de7b08e246573fef688d380e1f # verification request scoping and cancellation codes; based on zaure-patches-2026-09-22
+  rev: d29806413a07f91bdf37689fb460069d8f852a15 # verification scoping, cancellation codes and distinct-device overlap; based on zaure-patches-2026-09-22
   manifestPath: bindings/matrix-sdk-ffi/Cargo.toml
 android:
   cargoExtras: []
