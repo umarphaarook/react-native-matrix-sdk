@@ -943,6 +943,29 @@ private class AndroidSystemCleanable(
 /**
  * @suppress
  */
+public object FfiConverterBoolean: FfiConverter<Boolean, Byte> {
+    override fun lift(value: Byte): Boolean {
+        return value.toInt() != 0
+    }
+
+    override fun read(buf: ByteBuffer): Boolean {
+        return lift(buf.get())
+    }
+
+    override fun lower(value: Boolean): Byte {
+        return if (value) 1.toByte() else 0.toByte()
+    }
+
+    override fun allocationSize(value: Boolean) = 1UL
+
+    override fun write(value: Boolean, buf: ByteBuffer) {
+        buf.put(lower(value))
+    }
+}
+
+/**
+ * @suppress
+ */
 public object FfiConverterString: FfiConverter<String, RustBuffer.ByValue> {
     // Note: we don't inherit from FfiConverterRustBuffer, because we use a
     // special encoding when lowering/lifting.  We can use `RustBuffer.len` to
@@ -1734,6 +1757,29 @@ data class DecryptionSettings (
      * [`MegolmError::SenderIdentityNotTrusted`] will be returned.
      */
     var `senderDeviceTrustRequirement`: TrustRequirement
+    , 
+    /**
+     * Only meaningful with [`TrustRequirement::CrossSignedOrLegacy`].
+     *
+     * When `true`, a legacy session (for instance one imported from a key
+     * backup) is refused with [`MegolmError::SenderIdentityNotTrusted`] if its
+     * sender curve25519 key belongs to a device of the claimed sender that we
+     * currently know and that is not cross-signed by its owner. Without this,
+     * restoring a backup decrypts, on a new device, messages that the device
+     * that received the live session refused for exactly that reason.
+     *
+     * This is a best-effort rule for the honest-device case. It cannot tell
+     * who really created an imported session, so a malicious homeserver can
+     * still feed us a device list that hides the device; it needs the device
+     * to be known (and so is order dependent when a decryption result was
+     * already cached before the device was known). The real fix is
+     * authenticated sender data in the backup (MSC4048).
+     *
+     * It only ever refuses, never raises the trust of a session, and a
+     * refused session decrypts again once the device is cross-signed by its
+     * owner. Defaults to `false`.
+     */
+    var `refuseLegacyFromUnsignedKnownDevices`: kotlin.Boolean
     
 ){
     
@@ -1751,15 +1797,18 @@ public object FfiConverterTypeDecryptionSettings: FfiConverterRustBuffer<Decrypt
     override fun read(buf: ByteBuffer): DecryptionSettings {
         return DecryptionSettings(
             FfiConverterTypeTrustRequirement.read(buf),
+            FfiConverterBoolean.read(buf),
         )
     }
 
     override fun allocationSize(value: DecryptionSettings) = (
-            FfiConverterTypeTrustRequirement.allocationSize(value.`senderDeviceTrustRequirement`)
+            FfiConverterTypeTrustRequirement.allocationSize(value.`senderDeviceTrustRequirement`) +
+            FfiConverterBoolean.allocationSize(value.`refuseLegacyFromUnsignedKnownDevices`)
     )
 
     override fun write(value: DecryptionSettings, buf: ByteBuffer) {
             FfiConverterTypeTrustRequirement.write(value.`senderDeviceTrustRequirement`, buf)
+            FfiConverterBoolean.write(value.`refuseLegacyFromUnsignedKnownDevices`, buf)
     }
 }
 

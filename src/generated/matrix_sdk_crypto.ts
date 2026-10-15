@@ -40,6 +40,7 @@ import {
   type UniffiHandle,
   type UniffiObjectFactory,
   AbstractFfiConverterByteArray,
+  FfiConverterBool,
   FfiConverterInt32,
   FfiConverterObject,
   FfiConverterUInt64,
@@ -77,6 +78,28 @@ export type DecryptionSettings = {
    * [`MegolmError::SenderIdentityNotTrusted`] will be returned.
    */
   senderDeviceTrustRequirement: TrustRequirement;
+  /**
+   * Only meaningful with [`TrustRequirement::CrossSignedOrLegacy`].
+   *
+   * When `true`, a legacy session (for instance one imported from a key
+   * backup) is refused with [`MegolmError::SenderIdentityNotTrusted`] if its
+   * sender curve25519 key belongs to a device of the claimed sender that we
+   * currently know and that is not cross-signed by its owner. Without this,
+   * restoring a backup decrypts, on a new device, messages that the device
+   * that received the live session refused for exactly that reason.
+   *
+   * This is a best-effort rule for the honest-device case. It cannot tell
+   * who really created an imported session, so a malicious homeserver can
+   * still feed us a device list that hides the device; it needs the device
+   * to be known (and so is order dependent when a decryption result was
+   * already cached before the device was known). The real fix is
+   * authenticated sender data in the backup (MSC4048).
+   *
+   * It only ever refuses, never raises the trust of a session, and a
+   * refused session decrypts again once the device is cross-signed by its
+   * owner. Defaults to `false`.
+   */
+  refuseLegacyFromUnsignedKnownDevices: boolean;
 };
 
 /**
@@ -103,6 +126,7 @@ const FfiConverterTypeDecryptionSettings = (() => {
       return {
         senderDeviceTrustRequirement:
           FfiConverterTypeTrustRequirement.read(from),
+        refuseLegacyFromUnsignedKnownDevices: FfiConverterBool.read(from),
       };
     }
     write(value: TypeName, into: RustBuffer): void {
@@ -110,10 +134,16 @@ const FfiConverterTypeDecryptionSettings = (() => {
         value.senderDeviceTrustRequirement,
         into
       );
+      FfiConverterBool.write(value.refuseLegacyFromUnsignedKnownDevices, into);
     }
     allocationSize(value: TypeName): number {
-      return FfiConverterTypeTrustRequirement.allocationSize(
-        value.senderDeviceTrustRequirement
+      return (
+        FfiConverterTypeTrustRequirement.allocationSize(
+          value.senderDeviceTrustRequirement
+        ) +
+        FfiConverterBool.allocationSize(
+          value.refuseLegacyFromUnsignedKnownDevices
+        )
       );
     }
   }

@@ -1112,6 +1112,8 @@ uniffi_matrix_sdk_ffi_fn_method_encryption_delete_dehydrated_device(
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_encryption_enable_recovery(
     /*handle*/ uint64_t ptr, int8_t wait_for_backups_to_upload,
     RustBuffer passphrase, uint64_t progress_listener);
+/*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_encryption_get_device(
+    /*handle*/ uint64_t ptr, RustBuffer user_id, RustBuffer device_id);
 /*handle*/ uint64_t
 uniffi_matrix_sdk_ffi_fn_method_encryption_has_devices_to_verify_against(
     /*handle*/ uint64_t ptr);
@@ -2098,6 +2100,8 @@ void uniffi_matrix_sdk_ffi_fn_free_sendhandle(
     /*handle*/ uint64_t handle, RustCallStatus *uniffi_out_err);
 void uniffi_matrix_sdk_ffi_fn_free_timeline(
     /*handle*/ uint64_t handle, RustCallStatus *uniffi_out_err);
+/*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_timeline_abort_send(
+    /*handle*/ uint64_t ptr, RustBuffer item_id, RustBuffer target);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_timeline_add_listener(
     /*handle*/ uint64_t ptr, uint64_t listener);
 RustBuffer uniffi_matrix_sdk_ffi_fn_method_timeline_create_message_content(
@@ -2139,6 +2143,8 @@ uniffi_matrix_sdk_ffi_fn_method_timeline_get_event_timeline_item_by_event_id(
 void uniffi_matrix_sdk_ffi_fn_method_timeline_retry_decryption(
     /*handle*/ uint64_t ptr, RustBuffer session_ids,
     RustCallStatus *uniffi_out_err);
+/*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_timeline_retry_send(
+    /*handle*/ uint64_t ptr, RustBuffer item_id, RustBuffer target);
 /*handle*/ uint64_t uniffi_matrix_sdk_ffi_fn_method_timeline_send(
     /*handle*/ uint64_t ptr,
     /*handle*/ uint64_t msg);
@@ -2850,6 +2856,7 @@ uint16_t uniffi_matrix_sdk_ffi_checksum_method_encryption_disable_recovery();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_encryption_ed25519_key();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_encryption_enable_backups();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_encryption_enable_recovery();
+uint16_t uniffi_matrix_sdk_ffi_checksum_method_encryption_get_device();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_encryption_has_devices_to_verify_against();
 uint16_t
@@ -3295,6 +3302,7 @@ uniffi_matrix_sdk_ffi_checksum_method_sendattachmentjoinhandle_cancel();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_sendattachmentjoinhandle_join();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_sendhandle_abort();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_sendhandle_try_resend();
+uint16_t uniffi_matrix_sdk_ffi_checksum_method_timeline_abort_send();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_timeline_add_listener();
 uint16_t
 uniffi_matrix_sdk_ffi_checksum_method_timeline_create_message_content();
@@ -3315,6 +3323,7 @@ uint16_t uniffi_matrix_sdk_ffi_checksum_method_timeline_paginate_forwards();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_timeline_pin_event();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_timeline_redact_event();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_timeline_retry_decryption();
+uint16_t uniffi_matrix_sdk_ffi_checksum_method_timeline_retry_send();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_timeline_send();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_timeline_send_audio();
 uint16_t uniffi_matrix_sdk_ffi_checksum_method_timeline_send_file();
@@ -29932,6 +29941,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_fn_method_encryption_enable_recovery(
                     rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_encryption_get_device"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_encryption_get_device"),
+          3,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_fn_method_encryption_get_device(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_encryption_has_devices_to_verify_"
         "against"] = jsi::Function::createFromHostFunction(
       rt,
@@ -34737,6 +34758,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             return this->cpp_uniffi_matrix_sdk_ffi_fn_free_timeline(
                 rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_timeline_abort_send"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_timeline_abort_send"),
+          3,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_fn_method_timeline_abort_send(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_timeline_add_listener"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -34941,6 +34974,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                  const jsi::Value *args, size_t count) -> jsi::Value {
             return this
                 ->cpp_uniffi_matrix_sdk_ffi_fn_method_timeline_retry_decryption(
+                    rt, thisVal, args, count);
+          });
+  props["ubrn_uniffi_matrix_sdk_ffi_fn_method_timeline_retry_send"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt, "ubrn_uniffi_matrix_sdk_ffi_fn_method_timeline_retry_send"),
+          3,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_fn_method_timeline_retry_send(
                     rt, thisVal, args, count);
           });
   props["ubrn_uniffi_matrix_sdk_ffi_fn_method_timeline_send"] =
@@ -39696,6 +39741,18 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             ->cpp_uniffi_matrix_sdk_ffi_checksum_method_encryption_enable_recovery(
                 rt, thisVal, args, count);
       });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_encryption_get_device"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(rt, "ubrn_uniffi_matrix_sdk_ffi_checksum_"
+                                        "method_encryption_get_device"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_checksum_method_encryption_get_device(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_encryption_has_devices_to_"
         "verify_against"] = jsi::Function::createFromHostFunction(
       rt,
@@ -43534,6 +43591,19 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
                 ->cpp_uniffi_matrix_sdk_ffi_checksum_method_sendhandle_try_resend(
                     rt, thisVal, args, count);
           });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_timeline_abort_send"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_matrix_sdk_ffi_checksum_method_timeline_abort_send"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_checksum_method_timeline_abort_send(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_timeline_add_listener"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -43741,6 +43811,19 @@ NativeMatrixSdkFfi::NativeMatrixSdkFfi(
             ->cpp_uniffi_matrix_sdk_ffi_checksum_method_timeline_retry_decryption(
                 rt, thisVal, args, count);
       });
+  props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_timeline_retry_send"] =
+      jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forAscii(
+              rt,
+              "ubrn_uniffi_matrix_sdk_ffi_checksum_method_timeline_retry_send"),
+          0,
+          [this](jsi::Runtime &rt, const jsi::Value &thisVal,
+                 const jsi::Value *args, size_t count) -> jsi::Value {
+            return this
+                ->cpp_uniffi_matrix_sdk_ffi_checksum_method_timeline_retry_send(
+                    rt, thisVal, args, count);
+          });
   props["ubrn_uniffi_matrix_sdk_ffi_checksum_method_timeline_send"] =
       jsi::Function::createFromHostFunction(
           rt,
@@ -50181,6 +50264,21 @@ jsi::Value NativeMatrixSdkFfi::
   return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
                                                          value);
 }
+jsi::Value
+NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_encryption_get_device(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_fn_method_encryption_get_device(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]),
+      uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                           args[1]),
+      uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                           args[2]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
 jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_fn_method_encryption_has_devices_to_verify_against(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
@@ -56017,6 +56115,21 @@ jsi::Value NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_free_timeline(
   return jsi::Value::undefined();
 }
 jsi::Value
+NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_timeline_abort_send(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_fn_method_timeline_abort_send(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]),
+      uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                           args[1]),
+      uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                           args[2]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
+}
+jsi::Value
 NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_timeline_add_listener(
     jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
     size_t count) {
@@ -56250,6 +56363,21 @@ jsi::Value NativeMatrixSdkFfi::
       rt, callInvoker, status, args[count - 1]);
 
   return jsi::Value::undefined();
+}
+jsi::Value
+NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_timeline_retry_send(
+    jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+    size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_fn_method_timeline_retry_send(
+      uniffi_jsi::Bridging</*handle*/ uint64_t>::fromJs(rt, callInvoker,
+                                                        args[0]),
+      uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                           args[1]),
+      uniffi::matrix_sdk_ffi::Bridging<RustBuffer>::fromJs(rt, callInvoker,
+                                                           args[2]));
+
+  return uniffi_jsi::Bridging</*handle*/ uint64_t>::toJs(rt, callInvoker,
+                                                         value);
 }
 jsi::Value
 NativeMatrixSdkFfi::cpp_uniffi_matrix_sdk_ffi_fn_method_timeline_send(
@@ -60744,6 +60872,14 @@ jsi::Value NativeMatrixSdkFfi::
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_encryption_get_device(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_checksum_method_encryption_get_device();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_checksum_method_encryption_has_devices_to_verify_against(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
@@ -63394,6 +63530,14 @@ jsi::Value NativeMatrixSdkFfi::
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_timeline_abort_send(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_checksum_method_timeline_abort_send();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
     cpp_uniffi_matrix_sdk_ffi_checksum_method_timeline_add_listener(
         jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
         size_t count) {
@@ -63533,6 +63677,14 @@ jsi::Value NativeMatrixSdkFfi::
         size_t count) {
   auto value =
       uniffi_matrix_sdk_ffi_checksum_method_timeline_retry_decryption();
+
+  return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeMatrixSdkFfi::
+    cpp_uniffi_matrix_sdk_ffi_checksum_method_timeline_retry_send(
+        jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args,
+        size_t count) {
+  auto value = uniffi_matrix_sdk_ffi_checksum_method_timeline_retry_send();
 
   return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }

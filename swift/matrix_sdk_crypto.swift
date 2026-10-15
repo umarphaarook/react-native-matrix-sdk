@@ -419,6 +419,30 @@ fileprivate final class UniffiHandleMap<T>: @unchecked Sendable {
 #if swift(>=5.8)
 @_documentation(visibility: private)
 #endif
+fileprivate struct FfiConverterBool : FfiConverter {
+    typealias FfiType = Int8
+    typealias SwiftType = Bool
+
+    public static func lift(_ value: Int8) throws -> Bool {
+        return value != 0
+    }
+
+    public static func lower(_ value: Bool) -> Int8 {
+        return value ? 1 : 0
+    }
+
+    public static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> Bool {
+        return try lift(readInt(&buf))
+    }
+
+    public static func write(_ value: Bool, into buf: inout [UInt8]) {
+        writeInt(&buf, lower(value))
+    }
+}
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
 fileprivate struct FfiConverterString: FfiConverter {
     typealias SwiftType = String
     typealias FfiType = RustBuffer
@@ -806,6 +830,28 @@ public struct DecryptionSettings: Equatable, Hashable {
      * [`MegolmError::SenderIdentityNotTrusted`] will be returned.
      */
     public var senderDeviceTrustRequirement: TrustRequirement
+    /**
+     * Only meaningful with [`TrustRequirement::CrossSignedOrLegacy`].
+     *
+     * When `true`, a legacy session (for instance one imported from a key
+     * backup) is refused with [`MegolmError::SenderIdentityNotTrusted`] if its
+     * sender curve25519 key belongs to a device of the claimed sender that we
+     * currently know and that is not cross-signed by its owner. Without this,
+     * restoring a backup decrypts, on a new device, messages that the device
+     * that received the live session refused for exactly that reason.
+     *
+     * This is a best-effort rule for the honest-device case. It cannot tell
+     * who really created an imported session, so a malicious homeserver can
+     * still feed us a device list that hides the device; it needs the device
+     * to be known (and so is order dependent when a decryption result was
+     * already cached before the device was known). The real fix is
+     * authenticated sender data in the backup (MSC4048).
+     *
+     * It only ever refuses, never raises the trust of a session, and a
+     * refused session decrypts again once the device is cross-signed by its
+     * owner. Defaults to `false`.
+     */
+    public var refuseLegacyFromUnsignedKnownDevices: Bool
 
     // Default memberwise initializers are never public by default, so we
     // declare one manually.
@@ -814,8 +860,30 @@ public struct DecryptionSettings: Equatable, Hashable {
          * The trust level in the sender's device that is required to decrypt the
          * event. If the sender's device is not sufficiently trusted,
          * [`MegolmError::SenderIdentityNotTrusted`] will be returned.
-         */senderDeviceTrustRequirement: TrustRequirement) {
+         */senderDeviceTrustRequirement: TrustRequirement, 
+        /**
+         * Only meaningful with [`TrustRequirement::CrossSignedOrLegacy`].
+         *
+         * When `true`, a legacy session (for instance one imported from a key
+         * backup) is refused with [`MegolmError::SenderIdentityNotTrusted`] if its
+         * sender curve25519 key belongs to a device of the claimed sender that we
+         * currently know and that is not cross-signed by its owner. Without this,
+         * restoring a backup decrypts, on a new device, messages that the device
+         * that received the live session refused for exactly that reason.
+         *
+         * This is a best-effort rule for the honest-device case. It cannot tell
+         * who really created an imported session, so a malicious homeserver can
+         * still feed us a device list that hides the device; it needs the device
+         * to be known (and so is order dependent when a decryption result was
+         * already cached before the device was known). The real fix is
+         * authenticated sender data in the backup (MSC4048).
+         *
+         * It only ever refuses, never raises the trust of a session, and a
+         * refused session decrypts again once the device is cross-signed by its
+         * owner. Defaults to `false`.
+         */refuseLegacyFromUnsignedKnownDevices: Bool) {
         self.senderDeviceTrustRequirement = senderDeviceTrustRequirement
+        self.refuseLegacyFromUnsignedKnownDevices = refuseLegacyFromUnsignedKnownDevices
     }
 
     
@@ -834,12 +902,14 @@ public struct FfiConverterTypeDecryptionSettings: FfiConverterRustBuffer {
     public static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> DecryptionSettings {
         return
             try DecryptionSettings(
-                senderDeviceTrustRequirement: FfiConverterTypeTrustRequirement.read(from: &buf)
+                senderDeviceTrustRequirement: FfiConverterTypeTrustRequirement.read(from: &buf), 
+                refuseLegacyFromUnsignedKnownDevices: FfiConverterBool.read(from: &buf)
         )
     }
 
     public static func write(_ value: DecryptionSettings, into buf: inout [UInt8]) {
         FfiConverterTypeTrustRequirement.write(value.senderDeviceTrustRequirement, into: &buf)
+        FfiConverterBool.write(value.refuseLegacyFromUnsignedKnownDevices, into: &buf)
     }
 }
 
