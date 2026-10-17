@@ -2362,6 +2362,8 @@ external fun uniffi_matrix_sdk_ffi_checksum_method_encryption_enable_backups(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_encryption_enable_recovery(
 ): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_encryption_get_device(
+): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_encryption_has_devices_to_verify_against(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_encryption_import_secrets_bundle(
@@ -2976,6 +2978,8 @@ external fun uniffi_matrix_sdk_ffi_checksum_method_sendhandle_abort(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_sendhandle_try_resend(
 ): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_timeline_abort_send(
+): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_timeline_add_listener(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_timeline_create_message_content(
@@ -3009,6 +3013,8 @@ external fun uniffi_matrix_sdk_ffi_checksum_method_timeline_pin_event(
 external fun uniffi_matrix_sdk_ffi_checksum_method_timeline_redact_event(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_timeline_retry_decryption(
+): Short
+external fun uniffi_matrix_sdk_ffi_checksum_method_timeline_retry_send(
 ): Short
 external fun uniffi_matrix_sdk_ffi_checksum_method_timeline_send(
 ): Short
@@ -3711,6 +3717,8 @@ external fun uniffi_matrix_sdk_ffi_fn_method_encryption_ed25519_key(`ptr`: Long,
 external fun uniffi_matrix_sdk_ffi_fn_method_encryption_enable_backups(`ptr`: Long,
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_encryption_enable_recovery(`ptr`: Long,`waitForBackupsToUpload`: Byte,`passphrase`: RustBuffer.ByValue,`progressListener`: Long,
+): Long
+external fun uniffi_matrix_sdk_ffi_fn_method_encryption_get_device(`ptr`: Long,`userId`: RustBuffer.ByValue,`deviceId`: RustBuffer.ByValue,
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_encryption_has_devices_to_verify_against(`ptr`: Long,
 ): Long
@@ -4510,6 +4518,8 @@ external fun uniffi_matrix_sdk_ffi_fn_clone_timeline(`handle`: Long,uniffi_out_e
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_free_timeline(`handle`: Long,uniffi_out_err: UniffiRustCallStatus, 
 ): Unit
+external fun uniffi_matrix_sdk_ffi_fn_method_timeline_abort_send(`ptr`: Long,`itemId`: RustBuffer.ByValue,`target`: RustBuffer.ByValue,
+): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_timeline_add_listener(`ptr`: Long,`listener`: Long,
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_timeline_create_message_content(`ptr`: Long,`msgType`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
@@ -4544,6 +4554,8 @@ external fun uniffi_matrix_sdk_ffi_fn_method_timeline_redact_event(`ptr`: Long,`
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_timeline_retry_decryption(`ptr`: Long,`sessionIds`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
 ): Unit
+external fun uniffi_matrix_sdk_ffi_fn_method_timeline_retry_send(`ptr`: Long,`itemId`: RustBuffer.ByValue,`target`: RustBuffer.ByValue,
+): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_timeline_send(`ptr`: Long,`msg`: Long,
 ): Long
 external fun uniffi_matrix_sdk_ffi_fn_method_timeline_send_audio(`ptr`: Long,`params`: RustBuffer.ByValue,`audioInfo`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
@@ -9965,6 +9977,12 @@ public interface ClientBuilderInterface {
     
     /**
      * Set the trust requirement to be used when decrypting events.
+     *
+     * With `TrustRequirement::CrossSignedOrLegacy`, also set
+     * `refuse_legacy_from_unsigned_known_devices` to refuse a legacy session
+     * (for instance one restored from key backup) whose sender device we know
+     * and that is not cross-signed by its owner. See
+     * [`DecryptionSettings::refuse_legacy_from_unsigned_known_devices`].
      */
     fun `decryptionSettings`(`decryptionSettings`: DecryptionSettings): ClientBuilder
     
@@ -10361,6 +10379,12 @@ open class ClientBuilder: Disposable, AutoCloseable, ClientBuilderInterface
     
     /**
      * Set the trust requirement to be used when decrypting events.
+     *
+     * With `TrustRequirement::CrossSignedOrLegacy`, also set
+     * `refuse_legacy_from_unsigned_known_devices` to refuse a legacy session
+     * (for instance one restored from key backup) whose sender device we know
+     * and that is not cross-signed by its owner. See
+     * [`DecryptionSettings::refuse_legacy_from_unsigned_known_devices`].
      */override fun `decryptionSettings`(`decryptionSettings`: DecryptionSettings): ClientBuilder {
             return FfiConverterTypeClientBuilder.lift(
     callWithHandle {
@@ -11592,6 +11616,14 @@ public interface EncryptionInterface {
     suspend fun `enableRecovery`(`waitForBackupsToUpload`: kotlin.Boolean, `passphrase`: kotlin.String?, `progressListener`: EnableRecoveryProgressListener): kotlin.String
     
     /**
+     * Look a device up in the local crypto store.
+     *
+     * Returns `None` when the device is unknown to us, which includes the
+     * case where the keys of its owner have not been downloaded yet.
+     */
+    suspend fun `getDevice`(`userId`: kotlin.String, `deviceId`: kotlin.String): UserDevice?
+    
+    /**
      * Does the user have other devices that the current device can verify
      * against?
      *
@@ -12057,6 +12089,33 @@ open class Encryption: Disposable, AutoCloseable, EncryptionInterface
         { FfiConverterString.lift(it) },
         // Error FFI converter
         RecoveryException.ErrorHandler,
+    )
+    }
+
+    
+    /**
+     * Look a device up in the local crypto store.
+     *
+     * Returns `None` when the device is unknown to us, which includes the
+     * case where the keys of its owner have not been downloaded yet.
+     */
+    @Throws(ClientException::class)
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `getDevice`(`userId`: kotlin.String, `deviceId`: kotlin.String) : UserDevice? {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_matrix_sdk_ffi_fn_method_encryption_get_device(
+                uniffiHandle,
+                FfiConverterString.lower(`userId`),FfiConverterString.lower(`deviceId`),
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_rust_buffer(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_complete_rust_buffer(future, continuation) },
+        { future -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_free_rust_buffer(future) },
+        // lift function
+        { FfiConverterOptionalTypeUserDevice.lift(it) },
+        // Error FFI converter
+        ClientException.ErrorHandler,
     )
     }
 
@@ -31655,6 +31714,15 @@ public object FfiConverterTypeThreadSummary: FfiConverter<ThreadSummary, Long> {
 
 public interface TimelineInterface {
     
+    /**
+     * Abort sending something on this item that hasn't gone out yet, see
+     * [`SendTarget`].
+     *
+     * Returns `false` if there was nothing of that kind left to abort, e.g.
+     * because it went out in the meantime.
+     */
+    suspend fun `abortSend`(`itemId`: EventOrTransactionId, `target`: SendTarget): kotlin.Boolean
+    
     suspend fun `addListener`(`listener`: TimelineListener): TaskHandle
     
     fun `createMessageContent`(`msgType`: MessageType): RoomMessageEventContentWithoutRelation?
@@ -31769,6 +31837,18 @@ public interface TimelineInterface {
     suspend fun `redactEvent`(`eventOrTransactionId`: EventOrTransactionId, `reason`: kotlin.String?)
     
     fun `retryDecryption`(`sessionIds`: List<kotlin.String>)
+    
+    /**
+     * Retry sending something on this item that failed, see [`SendTarget`].
+     *
+     * Only needed after an unrecoverable failure, which parks the request
+     * until it's retried or aborted; a recoverable one goes out again when
+     * the room's send queue is re-enabled.
+     *
+     * Returns `false` if there was nothing of that kind left to retry, e.g.
+     * because it went out in the meantime.
+     */
+    suspend fun `retrySend`(`itemId`: EventOrTransactionId, `target`: SendTarget): kotlin.Boolean
     
     /**
      * Queues an event in the room's send queue so it's processed for
@@ -31956,6 +32036,34 @@ open class Timeline: Disposable, AutoCloseable, TimelineInterface
         return uniffiRustCall() { status ->
             UniffiLib.uniffi_matrix_sdk_ffi_fn_clone_timeline(handle, status)
         }
+    }
+
+    
+    /**
+     * Abort sending something on this item that hasn't gone out yet, see
+     * [`SendTarget`].
+     *
+     * Returns `false` if there was nothing of that kind left to abort, e.g.
+     * because it went out in the meantime.
+     */
+    @Throws(ClientException::class)
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `abortSend`(`itemId`: EventOrTransactionId, `target`: SendTarget) : kotlin.Boolean {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_matrix_sdk_ffi_fn_method_timeline_abort_send(
+                uniffiHandle,
+                FfiConverterTypeEventOrTransactionId.lower(`itemId`),FfiConverterTypeSendTarget.lower(`target`),
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_i8(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_complete_i8(future, continuation) },
+        { future -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_free_i8(future) },
+        // lift function
+        { FfiConverterBoolean.lift(it) },
+        // Error FFI converter
+        ClientException.ErrorHandler,
+    )
     }
 
     
@@ -32382,6 +32490,37 @@ open class Timeline: Disposable, AutoCloseable, TimelineInterface
     }
     
     
+
+    
+    /**
+     * Retry sending something on this item that failed, see [`SendTarget`].
+     *
+     * Only needed after an unrecoverable failure, which parks the request
+     * until it's retried or aborted; a recoverable one goes out again when
+     * the room's send queue is re-enabled.
+     *
+     * Returns `false` if there was nothing of that kind left to retry, e.g.
+     * because it went out in the meantime.
+     */
+    @Throws(ClientException::class)
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    override suspend fun `retrySend`(`itemId`: EventOrTransactionId, `target`: SendTarget) : kotlin.Boolean {
+        return uniffiRustCallAsync(
+        callWithHandle { uniffiHandle ->
+            UniffiLib.uniffi_matrix_sdk_ffi_fn_method_timeline_retry_send(
+                uniffiHandle,
+                FfiConverterTypeEventOrTransactionId.lower(`itemId`),FfiConverterTypeSendTarget.lower(`target`),
+            )
+        },
+        { future, callback, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_poll_i8(future, callback, continuation) },
+        { future, continuation -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_complete_i8(future, continuation) },
+        { future -> UniffiLib.ffi_matrix_sdk_ffi_rust_future_free_i8(future) },
+        // lift function
+        { FfiConverterBoolean.lift(it) },
+        // Error FFI converter
+        ClientException.ErrorHandler,
+    )
+    }
 
     
     /**
@@ -35482,6 +35621,16 @@ data class EventTimelineItem (
     , 
     var `localSendState`: EventSendState?
     , 
+    /**
+     * Send state of our pending edit of this event, if any.
+     */
+    var `editSendState`: EventSendState?
+    , 
+    /**
+     * Send state of our pending redaction of this event, if any.
+     */
+    var `redactionSendState`: EventSendState?
+    , 
     var `localCreatedAt`: kotlin.ULong?
     , 
     var `readReceipts`: Map<kotlin.String, Receipt>
@@ -35514,6 +35663,8 @@ data class EventTimelineItem (
         this.`eventTypeRaw`,
         this.`timestamp`,
         this.`localSendState`,
+        this.`editSendState`,
+        this.`redactionSendState`,
         this.`localCreatedAt`,
         this.`readReceipts`,
         this.`origin`,
@@ -35543,6 +35694,8 @@ public object FfiConverterTypeEventTimelineItem: FfiConverterRustBuffer<EventTim
             FfiConverterOptionalString.read(buf),
             FfiConverterTypeTimestamp.read(buf),
             FfiConverterOptionalTypeEventSendState.read(buf),
+            FfiConverterOptionalTypeEventSendState.read(buf),
+            FfiConverterOptionalTypeEventSendState.read(buf),
             FfiConverterOptionalULong.read(buf),
             FfiConverterMapStringTypeReceipt.read(buf),
             FfiConverterOptionalTypeEventItemOrigin.read(buf),
@@ -35564,6 +35717,8 @@ public object FfiConverterTypeEventTimelineItem: FfiConverterRustBuffer<EventTim
             FfiConverterOptionalString.allocationSize(value.`eventTypeRaw`) +
             FfiConverterTypeTimestamp.allocationSize(value.`timestamp`) +
             FfiConverterOptionalTypeEventSendState.allocationSize(value.`localSendState`) +
+            FfiConverterOptionalTypeEventSendState.allocationSize(value.`editSendState`) +
+            FfiConverterOptionalTypeEventSendState.allocationSize(value.`redactionSendState`) +
             FfiConverterOptionalULong.allocationSize(value.`localCreatedAt`) +
             FfiConverterMapStringTypeReceipt.allocationSize(value.`readReceipts`) +
             FfiConverterOptionalTypeEventItemOrigin.allocationSize(value.`origin`) +
@@ -35584,6 +35739,8 @@ public object FfiConverterTypeEventTimelineItem: FfiConverterRustBuffer<EventTim
             FfiConverterOptionalString.write(value.`eventTypeRaw`, buf)
             FfiConverterTypeTimestamp.write(value.`timestamp`, buf)
             FfiConverterOptionalTypeEventSendState.write(value.`localSendState`, buf)
+            FfiConverterOptionalTypeEventSendState.write(value.`editSendState`, buf)
+            FfiConverterOptionalTypeEventSendState.write(value.`redactionSendState`, buf)
             FfiConverterOptionalULong.write(value.`localCreatedAt`, buf)
             FfiConverterMapStringTypeReceipt.write(value.`readReceipts`, buf)
             FfiConverterOptionalTypeEventItemOrigin.write(value.`origin`, buf)
@@ -38463,6 +38620,11 @@ data class ReactionSenderData (
     var `senderId`: kotlin.String
     , 
     var `timestamp`: Timestamp
+    , 
+    /**
+     * Send state of the reaction when it's ours and pending, `None` otherwise.
+     */
+    var `sendState`: EventSendState?
     
 ){
     
@@ -38481,17 +38643,20 @@ public object FfiConverterTypeReactionSenderData: FfiConverterRustBuffer<Reactio
         return ReactionSenderData(
             FfiConverterString.read(buf),
             FfiConverterTypeTimestamp.read(buf),
+            FfiConverterOptionalTypeEventSendState.read(buf),
         )
     }
 
     override fun allocationSize(value: ReactionSenderData) = (
             FfiConverterString.allocationSize(value.`senderId`) +
-            FfiConverterTypeTimestamp.allocationSize(value.`timestamp`)
+            FfiConverterTypeTimestamp.allocationSize(value.`timestamp`) +
+            FfiConverterOptionalTypeEventSendState.allocationSize(value.`sendState`)
     )
 
     override fun write(value: ReactionSenderData, buf: ByteBuffer) {
             FfiConverterString.write(value.`senderId`, buf)
             FfiConverterTypeTimestamp.write(value.`timestamp`, buf)
+            FfiConverterOptionalTypeEventSendState.write(value.`sendState`, buf)
     }
 }
 
@@ -41540,6 +41705,103 @@ public object FfiConverterTypeUserCall: FfiConverterRustBuffer<UserCall> {
 
     override fun write(value: UserCall, buf: ByteBuffer) {
             FfiConverterOptionalULong.write(value.`callJoinedTs`, buf)
+    }
+}
+
+
+
+/**
+ * What we know, locally, about one device of a user.
+ */
+data class UserDevice (
+    /**
+     * The ID of the user the device belongs to.
+     */
+    var `userId`: kotlin.String
+    , 
+    /**
+     * The ID of the device.
+     */
+    var `deviceId`: kotlin.String
+    , 
+    /**
+     * The display name the user gave the device, if any.
+     */
+    var `displayName`: kotlin.String?
+    , 
+    /**
+     * Is the device signed by the cross-signing identity of its owner?
+     *
+     * This is the crypto layer's own check of the signature chain, not the
+     * server's say-so: it is `true` only when the owner's self-signing key,
+     * as we currently know it, has a valid signature over the device keys.
+     * It says nothing about whether *we* trust that owner.
+     *
+     * For a device of another user, this is the field to use: it is what the
+     * trust requirements (`TrustRequirement::CrossSigned` and
+     * `CrossSignedOrLegacy`) enforce when decrypting events from that device,
+     * and what a live session from it is held to. For one of our own devices,
+     * prefer `is_verified_with_cross_signing`.
+     */
+    var `isCrossSignedByOwner`: kotlin.Boolean
+    , 
+    /**
+     * Do we trust the device through cross-signing?
+     *
+     * For one of our own devices this is the field to use: it is `true` only
+     * when the device is signed by our own cross-signing identity *and* that
+     * identity is itself verified by us (this device holds its private keys,
+     * or it was verified some other way). It is the equivalent of
+     * `crossSigningVerified` in matrix-js-sdk. For a device of another user it
+     * additionally requires that we verified that user's identity; it is not
+     * what the trust requirements check there (see
+     * `is_cross_signed_by_owner`).
+     *
+     * Unlike a plain "is this device verified" check, this never includes
+     * *local* trust, i.e. the device being marked as trusted by hand. A device
+     * can be locally trusted and still report `false` here, and a device can
+     * be `is_cross_signed_by_owner` while this is `false`, for instance a
+     * new device that has not verified our own identity yet.
+     */
+    var `isVerifiedWithCrossSigning`: kotlin.Boolean
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeUserDevice: FfiConverterRustBuffer<UserDevice> {
+    override fun read(buf: ByteBuffer): UserDevice {
+        return UserDevice(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterOptionalString.read(buf),
+            FfiConverterBoolean.read(buf),
+            FfiConverterBoolean.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: UserDevice) = (
+            FfiConverterString.allocationSize(value.`userId`) +
+            FfiConverterString.allocationSize(value.`deviceId`) +
+            FfiConverterOptionalString.allocationSize(value.`displayName`) +
+            FfiConverterBoolean.allocationSize(value.`isCrossSignedByOwner`) +
+            FfiConverterBoolean.allocationSize(value.`isVerifiedWithCrossSigning`)
+    )
+
+    override fun write(value: UserDevice, buf: ByteBuffer) {
+            FfiConverterString.write(value.`userId`, buf)
+            FfiConverterString.write(value.`deviceId`, buf)
+            FfiConverterOptionalString.write(value.`displayName`, buf)
+            FfiConverterBoolean.write(value.`isCrossSignedByOwner`, buf)
+            FfiConverterBoolean.write(value.`isVerifiedWithCrossSigning`, buf)
     }
 }
 
@@ -46385,8 +46647,8 @@ sealed class EventSendState {
          * Whether the error is considered recoverable or not.
          *
          * An error that's recoverable will disable the room's send queue,
-         * while an unrecoverable error will be parked, until the user
-         * decides to cancel sending it.
+         * while an unrecoverable error will be parked, until it's retried or
+         * aborted.
          */
         val `isRecoverable`: kotlin.Boolean) : EventSendState()
         
@@ -57272,6 +57534,126 @@ public object FfiConverterTypeSecretStorageEncryptionAlgorithm : FfiConverterRus
 
 
 
+/**
+ * Which pending send on an item [`Timeline::retry_send`] and
+ * [`Timeline::abort_send`] act on.
+ */
+sealed class SendTarget {
+    
+    /**
+     * The item itself, while it's a local echo.
+     *
+     * Note that aborting one that's already in flight queues a redaction for
+     * it, without a reason; use `SendHandle::abort` if one is needed.
+     */
+    object Event : SendTarget()
+    
+    
+    /**
+     * Our pending edit of the item.
+     */
+    object Edit : SendTarget()
+    
+    
+    /**
+     * Our pending redaction of the item.
+     */
+    object Redaction : SendTarget()
+    
+    
+    /**
+     * Our pending reaction to the item with this key.
+     */
+    data class Reaction(
+        val `key`: kotlin.String) : SendTarget()
+        
+    {
+        
+
+        companion object
+    }
+    
+
+    
+
+    
+    
+
+
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeSendTarget : FfiConverterRustBuffer<SendTarget>{
+    override fun read(buf: ByteBuffer): SendTarget {
+        return when(buf.getInt()) {
+            1 -> SendTarget.Event
+            2 -> SendTarget.Edit
+            3 -> SendTarget.Redaction
+            4 -> SendTarget.Reaction(
+                FfiConverterString.read(buf),
+                )
+            else -> throw RuntimeException("invalid enum value, something is very wrong!!")
+        }
+    }
+
+    override fun allocationSize(value: SendTarget) = when(value) {
+        is SendTarget.Event -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
+        is SendTarget.Edit -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
+        is SendTarget.Redaction -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+            )
+        }
+        is SendTarget.Reaction -> {
+            // Add the size for the Int that specifies the variant plus the size needed for all fields
+            (
+                4UL
+                + FfiConverterString.allocationSize(value.`key`)
+            )
+        }
+    }
+
+    override fun write(value: SendTarget, buf: ByteBuffer) {
+        when(value) {
+            is SendTarget.Event -> {
+                buf.putInt(1)
+                Unit
+            }
+            is SendTarget.Edit -> {
+                buf.putInt(2)
+                Unit
+            }
+            is SendTarget.Redaction -> {
+                buf.putInt(3)
+                Unit
+            }
+            is SendTarget.Reaction -> {
+                buf.putInt(4)
+                FfiConverterString.write(value.`key`, buf)
+                Unit
+            }
+        }.let { /* this makes the `when` an expression, which ensures it is exhaustive */ }
+    }
+}
+
+
+
+
+
 sealed class SessionVerificationData: Disposable  {
     
     data class Emojis(
@@ -65882,6 +66264,38 @@ public object FfiConverterOptionalTypeUserCall: FfiConverterRustBuffer<UserCall?
         } else {
             buf.put(1)
             FfiConverterTypeUserCall.write(value, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterOptionalTypeUserDevice: FfiConverterRustBuffer<UserDevice?> {
+    override fun read(buf: ByteBuffer): UserDevice? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterTypeUserDevice.read(buf)
+    }
+
+    override fun allocationSize(value: UserDevice?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterTypeUserDevice.allocationSize(value)
+        }
+    }
+
+    override fun write(value: UserDevice?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterTypeUserDevice.write(value, buf)
         }
     }
 }

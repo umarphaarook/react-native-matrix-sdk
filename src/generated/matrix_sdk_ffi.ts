@@ -4745,6 +4745,14 @@ export type EventTimelineItem = {
   eventTypeRaw?: string;
   timestamp: Timestamp;
   localSendState?: EventSendState;
+  /**
+   * Send state of our pending edit of this event, if any.
+   */
+  editSendState?: EventSendState;
+  /**
+   * Send state of our pending redaction of this event, if any.
+   */
+  redactionSendState?: EventSendState;
   localCreatedAt?: /*u64*/ bigint;
   readReceipts: Map<string, Receipt>;
   origin?: EventItemOrigin;
@@ -4786,6 +4794,8 @@ const FfiConverterTypeEventTimelineItem = (() => {
         eventTypeRaw: FfiConverterOptionalString.read(from),
         timestamp: FfiConverterTypeTimestamp.read(from),
         localSendState: FfiConverterOptionalTypeEventSendState.read(from),
+        editSendState: FfiConverterOptionalTypeEventSendState.read(from),
+        redactionSendState: FfiConverterOptionalTypeEventSendState.read(from),
         localCreatedAt: FfiConverterOptionalUInt64.read(from),
         readReceipts: FfiConverterMapStringTypeReceipt.read(from),
         origin: FfiConverterOptionalTypeEventItemOrigin.read(from),
@@ -4812,6 +4822,11 @@ const FfiConverterTypeEventTimelineItem = (() => {
       FfiConverterOptionalString.write(value.eventTypeRaw, into);
       FfiConverterTypeTimestamp.write(value.timestamp, into);
       FfiConverterOptionalTypeEventSendState.write(value.localSendState, into);
+      FfiConverterOptionalTypeEventSendState.write(value.editSendState, into);
+      FfiConverterOptionalTypeEventSendState.write(
+        value.redactionSendState,
+        into
+      );
       FfiConverterOptionalUInt64.write(value.localCreatedAt, into);
       FfiConverterMapStringTypeReceipt.write(value.readReceipts, into);
       FfiConverterOptionalTypeEventItemOrigin.write(value.origin, into);
@@ -4837,6 +4852,12 @@ const FfiConverterTypeEventTimelineItem = (() => {
         FfiConverterTypeTimestamp.allocationSize(value.timestamp) +
         FfiConverterOptionalTypeEventSendState.allocationSize(
           value.localSendState
+        ) +
+        FfiConverterOptionalTypeEventSendState.allocationSize(
+          value.editSendState
+        ) +
+        FfiConverterOptionalTypeEventSendState.allocationSize(
+          value.redactionSendState
         ) +
         FfiConverterOptionalUInt64.allocationSize(value.localCreatedAt) +
         FfiConverterMapStringTypeReceipt.allocationSize(value.readReceipts) +
@@ -7884,6 +7905,10 @@ const FfiConverterTypeReaction = (() => {
 export type ReactionSenderData = {
   senderId: string;
   timestamp: Timestamp;
+  /**
+   * Send state of the reaction when it's ours and pending, `None` otherwise.
+   */
+  sendState?: EventSendState;
 };
 
 /**
@@ -7910,16 +7935,19 @@ const FfiConverterTypeReactionSenderData = (() => {
       return {
         senderId: FfiConverterString.read(from),
         timestamp: FfiConverterTypeTimestamp.read(from),
+        sendState: FfiConverterOptionalTypeEventSendState.read(from),
       };
     }
     write(value: TypeName, into: RustBuffer): void {
       FfiConverterString.write(value.senderId, into);
       FfiConverterTypeTimestamp.write(value.timestamp, into);
+      FfiConverterOptionalTypeEventSendState.write(value.sendState, into);
     }
     allocationSize(value: TypeName): number {
       return (
         FfiConverterString.allocationSize(value.senderId) +
-        FfiConverterTypeTimestamp.allocationSize(value.timestamp)
+        FfiConverterTypeTimestamp.allocationSize(value.timestamp) +
+        FfiConverterOptionalTypeEventSendState.allocationSize(value.sendState)
       );
     }
   }
@@ -11109,6 +11137,107 @@ const FfiConverterTypeUserCall = (() => {
     }
     allocationSize(value: TypeName): number {
       return FfiConverterOptionalUInt64.allocationSize(value.callJoinedTs);
+    }
+  }
+  return new FFIConverter();
+})();
+
+/**
+ * What we know, locally, about one device of a user.
+ */
+export type UserDevice = {
+  /**
+   * The ID of the user the device belongs to.
+   */
+  userId: string;
+  /**
+   * The ID of the device.
+   */
+  deviceId: string;
+  /**
+   * The display name the user gave the device, if any.
+   */
+  displayName?: string;
+  /**
+   * Is the device signed by the cross-signing identity of its owner?
+   *
+   * This is the crypto layer's own check of the signature chain, not the
+   * server's say-so: it is `true` only when the owner's self-signing key,
+   * as we currently know it, has a valid signature over the device keys.
+   * It says nothing about whether *we* trust that owner.
+   *
+   * For a device of another user, this is the field to use: it is what the
+   * trust requirements (`TrustRequirement::CrossSigned` and
+   * `CrossSignedOrLegacy`) enforce when decrypting events from that device,
+   * and what a live session from it is held to. For one of our own devices,
+   * prefer `is_verified_with_cross_signing`.
+   */
+  isCrossSignedByOwner: boolean;
+  /**
+   * Do we trust the device through cross-signing?
+   *
+   * For one of our own devices this is the field to use: it is `true` only
+   * when the device is signed by our own cross-signing identity *and* that
+   * identity is itself verified by us (this device holds its private keys,
+   * or it was verified some other way). It is the equivalent of
+   * `crossSigningVerified` in matrix-js-sdk. For a device of another user it
+   * additionally requires that we verified that user's identity; it is not
+   * what the trust requirements check there (see
+   * `is_cross_signed_by_owner`).
+   *
+   * Unlike a plain "is this device verified" check, this never includes
+   * *local* trust, i.e. the device being marked as trusted by hand. A device
+   * can be locally trusted and still report `false` here, and a device can
+   * be `is_cross_signed_by_owner` while this is `false`, for instance a
+   * new device that has not verified our own identity yet.
+   */
+  isVerifiedWithCrossSigning: boolean;
+};
+
+/**
+ * Generated factory for {@link UserDevice} record objects.
+ */
+export const UserDevice = (() => {
+  const defaults = () => ({});
+  const create = (() => {
+    return uniffiCreateRecord<UserDevice, ReturnType<typeof defaults>>(
+      defaults
+    );
+  })();
+  return Object.freeze({
+    create,
+    new: create,
+    defaults: () => Object.freeze(defaults()) as Partial<UserDevice>,
+  });
+})();
+
+const FfiConverterTypeUserDevice = (() => {
+  type TypeName = UserDevice;
+  class FFIConverter extends AbstractFfiConverterByteArray<TypeName> {
+    read(from: RustBuffer): TypeName {
+      return {
+        userId: FfiConverterString.read(from),
+        deviceId: FfiConverterString.read(from),
+        displayName: FfiConverterOptionalString.read(from),
+        isCrossSignedByOwner: FfiConverterBool.read(from),
+        isVerifiedWithCrossSigning: FfiConverterBool.read(from),
+      };
+    }
+    write(value: TypeName, into: RustBuffer): void {
+      FfiConverterString.write(value.userId, into);
+      FfiConverterString.write(value.deviceId, into);
+      FfiConverterOptionalString.write(value.displayName, into);
+      FfiConverterBool.write(value.isCrossSignedByOwner, into);
+      FfiConverterBool.write(value.isVerifiedWithCrossSigning, into);
+    }
+    allocationSize(value: TypeName): number {
+      return (
+        FfiConverterString.allocationSize(value.userId) +
+        FfiConverterString.allocationSize(value.deviceId) +
+        FfiConverterOptionalString.allocationSize(value.displayName) +
+        FfiConverterBool.allocationSize(value.isCrossSignedByOwner) +
+        FfiConverterBool.allocationSize(value.isVerifiedWithCrossSigning)
+      );
     }
   }
   return new FFIConverter();
@@ -14443,9 +14572,7 @@ export const ClientError = (() => {
       return MatrixApi_.instanceOf(obj);
     }
 
-    static getInner(
-      obj: MatrixApi_
-    ): Readonly<{
+    static getInner(obj: MatrixApi_): Readonly<{
       kind: ErrorKind;
       code: string;
       msg: string;
@@ -19705,8 +19832,8 @@ export const EventSendState = (() => {
        * Whether the error is considered recoverable or not.
        *
        * An error that's recoverable will disable the room's send queue,
-       * while an unrecoverable error will be parked, until the user
-       * decides to cancel sending it.
+       * while an unrecoverable error will be parked, until it's retried or
+       * aborted.
        */ isRecoverable: boolean;
     }) {
       super('EventSendState', 'SendingFailed');
@@ -19721,8 +19848,8 @@ export const EventSendState = (() => {
        * Whether the error is considered recoverable or not.
        *
        * An error that's recoverable will disable the room's send queue,
-       * while an unrecoverable error will be parked, until the user
-       * decides to cancel sending it.
+       * while an unrecoverable error will be parked, until it's retried or
+       * aborted.
        */ isRecoverable: boolean;
     }): SendingFailed_ {
       return new SendingFailed_(inner);
@@ -39185,6 +39312,225 @@ const FfiConverterTypeSecretStorageEncryptionAlgorithm = (() => {
   return new FFIConverter();
 })();
 
+// Enum: SendTarget
+export enum SendTarget_Tags {
+  Event = 'Event',
+  Edit = 'Edit',
+  Redaction = 'Redaction',
+  Reaction = 'Reaction',
+}
+/**
+ * Which pending send on an item [`Timeline::retry_send`] and
+ * [`Timeline::abort_send`] act on.
+ */
+export const SendTarget = (() => {
+  type Event__interface = {
+    tag: SendTarget_Tags.Event;
+  };
+
+  /**
+   * The item itself, while it's a local echo.
+   *
+   * Note that aborting one that's already in flight queues a redaction for
+   * it, without a reason; use `SendHandle::abort` if one is needed.
+   */
+  class Event_ extends UniffiEnum implements Event__interface {
+    /**
+     * @private
+     * This field is private and should not be used, use `tag` instead.
+     */
+    readonly [uniffiTypeNameSymbol] = 'SendTarget';
+    readonly tag = SendTarget_Tags.Event;
+    constructor() {
+      super('SendTarget', 'Event');
+    }
+
+    static new(): Event_ {
+      return new Event_();
+    }
+
+    static instanceOf(obj: any): obj is Event_ {
+      return obj.tag === SendTarget_Tags.Event;
+    }
+  }
+
+  type Edit__interface = {
+    tag: SendTarget_Tags.Edit;
+  };
+
+  /**
+   * Our pending edit of the item.
+   */
+  class Edit_ extends UniffiEnum implements Edit__interface {
+    /**
+     * @private
+     * This field is private and should not be used, use `tag` instead.
+     */
+    readonly [uniffiTypeNameSymbol] = 'SendTarget';
+    readonly tag = SendTarget_Tags.Edit;
+    constructor() {
+      super('SendTarget', 'Edit');
+    }
+
+    static new(): Edit_ {
+      return new Edit_();
+    }
+
+    static instanceOf(obj: any): obj is Edit_ {
+      return obj.tag === SendTarget_Tags.Edit;
+    }
+  }
+
+  type Redaction__interface = {
+    tag: SendTarget_Tags.Redaction;
+  };
+
+  /**
+   * Our pending redaction of the item.
+   */
+  class Redaction_ extends UniffiEnum implements Redaction__interface {
+    /**
+     * @private
+     * This field is private and should not be used, use `tag` instead.
+     */
+    readonly [uniffiTypeNameSymbol] = 'SendTarget';
+    readonly tag = SendTarget_Tags.Redaction;
+    constructor() {
+      super('SendTarget', 'Redaction');
+    }
+
+    static new(): Redaction_ {
+      return new Redaction_();
+    }
+
+    static instanceOf(obj: any): obj is Redaction_ {
+      return obj.tag === SendTarget_Tags.Redaction;
+    }
+  }
+
+  type Reaction__interface = {
+    tag: SendTarget_Tags.Reaction;
+    inner: Readonly<{ key: string }>;
+  };
+
+  /**
+   * Our pending reaction to the item with this key.
+   */
+  class Reaction_ extends UniffiEnum implements Reaction__interface {
+    /**
+     * @private
+     * This field is private and should not be used, use `tag` instead.
+     */
+    readonly [uniffiTypeNameSymbol] = 'SendTarget';
+    readonly tag = SendTarget_Tags.Reaction;
+    readonly inner: Readonly<{ key: string }>;
+    constructor(inner: { key: string }) {
+      super('SendTarget', 'Reaction');
+      this.inner = Object.freeze(inner);
+    }
+
+    static new(inner: { key: string }): Reaction_ {
+      return new Reaction_(inner);
+    }
+
+    static instanceOf(obj: any): obj is Reaction_ {
+      return obj.tag === SendTarget_Tags.Reaction;
+    }
+  }
+
+  function instanceOf(obj: any): obj is SendTarget {
+    return obj[uniffiTypeNameSymbol] === 'SendTarget';
+  }
+
+  return Object.freeze({
+    instanceOf,
+    Event: Event_,
+    Edit: Edit_,
+    Redaction: Redaction_,
+    Reaction: Reaction_,
+  });
+})();
+
+/**
+ * Which pending send on an item [`Timeline::retry_send`] and
+ * [`Timeline::abort_send`] act on.
+ */
+
+export type SendTarget = InstanceType<
+  (typeof SendTarget)[keyof Omit<typeof SendTarget, 'instanceOf'>]
+>;
+
+// FfiConverter for enum SendTarget
+const FfiConverterTypeSendTarget = (() => {
+  const ordinalConverter = FfiConverterInt32;
+  type TypeName = SendTarget;
+  class FFIConverter extends AbstractFfiConverterByteArray<TypeName> {
+    read(from: RustBuffer): TypeName {
+      switch (ordinalConverter.read(from)) {
+        case 1:
+          return new SendTarget.Event();
+        case 2:
+          return new SendTarget.Edit();
+        case 3:
+          return new SendTarget.Redaction();
+        case 4:
+          return new SendTarget.Reaction({
+            key: FfiConverterString.read(from),
+          });
+        default:
+          throw new UniffiInternalError.UnexpectedEnumCase();
+      }
+    }
+    write(value: TypeName, into: RustBuffer): void {
+      switch (value.tag) {
+        case SendTarget_Tags.Event: {
+          ordinalConverter.write(1, into);
+          return;
+        }
+        case SendTarget_Tags.Edit: {
+          ordinalConverter.write(2, into);
+          return;
+        }
+        case SendTarget_Tags.Redaction: {
+          ordinalConverter.write(3, into);
+          return;
+        }
+        case SendTarget_Tags.Reaction: {
+          ordinalConverter.write(4, into);
+          const inner = value.inner;
+          FfiConverterString.write(inner.key, into);
+          return;
+        }
+        default:
+          // Throwing from here means that SendTarget_Tags hasn't matched an ordinal.
+          throw new UniffiInternalError.UnexpectedEnumCase();
+      }
+    }
+    allocationSize(value: TypeName): number {
+      switch (value.tag) {
+        case SendTarget_Tags.Event: {
+          return ordinalConverter.allocationSize(1);
+        }
+        case SendTarget_Tags.Edit: {
+          return ordinalConverter.allocationSize(2);
+        }
+        case SendTarget_Tags.Redaction: {
+          return ordinalConverter.allocationSize(3);
+        }
+        case SendTarget_Tags.Reaction: {
+          const inner = value.inner;
+          let size = ordinalConverter.allocationSize(4);
+          size += FfiConverterString.allocationSize(inner.key);
+          return size;
+        }
+        default:
+          throw new UniffiInternalError.UnexpectedEnumCase();
+      }
+    }
+  }
+  return new FFIConverter();
+})();
+
 // Enum: SessionVerificationData
 export enum SessionVerificationData_Tags {
   Emojis = 'Emojis',
@@ -51168,6 +51514,12 @@ export interface ClientBuilderLike {
   ): ClientBuilderLike;
   /**
    * Set the trust requirement to be used when decrypting events.
+   *
+   * With `TrustRequirement::CrossSignedOrLegacy`, also set
+   * `refuse_legacy_from_unsigned_known_devices` to refuse a legacy session
+   * (for instance one restored from key backup) whose sender device we know
+   * and that is not cross-signed by its owner. See
+   * [`DecryptionSettings::refuse_legacy_from_unsigned_known_devices`].
    */
   decryptionSettings(decryptionSettings: DecryptionSettings): ClientBuilderLike;
   disableAutomaticTokenRefresh(): ClientBuilderLike;
@@ -51504,6 +51856,12 @@ export class ClientBuilder
 
   /**
    * Set the trust requirement to be used when decrypting events.
+   *
+   * With `TrustRequirement::CrossSignedOrLegacy`, also set
+   * `refuse_legacy_from_unsigned_known_devices` to refuse a legacy session
+   * (for instance one restored from key backup) whose sender device we know
+   * and that is not cross-signed by its owner. See
+   * [`DecryptionSettings::refuse_legacy_from_unsigned_known_devices`].
    */
   decryptionSettings(
     decryptionSettings: DecryptionSettings
@@ -52554,6 +52912,17 @@ export interface EncryptionLike {
     asyncOpts_?: { signal: AbortSignal }
   ) /*throws*/ : Promise<string>;
   /**
+   * Look a device up in the local crypto store.
+   *
+   * Returns `None` when the device is unknown to us, which includes the
+   * case where the keys of its owner have not been downloaded yet.
+   */
+  getDevice(
+    userId: string,
+    deviceId: string,
+    asyncOpts_?: { signal: AbortSignal }
+  ) /*throws*/ : Promise<UserDevice | undefined>;
+  /**
    * Does the user have other devices that the current device can verify
    * against?
    *
@@ -53080,6 +53449,53 @@ export class Encryption extends UniffiAbstractObject implements EncryptionLike {
         /*asyncOpts:*/ asyncOpts_,
         /*errorHandler:*/ FfiConverterTypeRecoveryError.lift.bind(
           FfiConverterTypeRecoveryError
+        )
+      );
+    } catch (__error: any) {
+      if (uniffiIsDebug && __error instanceof Error) {
+        __error.stack = __stack;
+      }
+      throw __error;
+    }
+  }
+
+  /**
+   * Look a device up in the local crypto store.
+   *
+   * Returns `None` when the device is unknown to us, which includes the
+   * case where the keys of its owner have not been downloaded yet.
+   */
+  async getDevice(
+    userId: string,
+    deviceId: string,
+    asyncOpts_?: { signal: AbortSignal }
+  ): Promise<UserDevice | undefined> /*throws*/ {
+    const __stack = uniffiIsDebug ? new Error().stack : undefined;
+    try {
+      return await uniffiRustCallAsync(
+        /*rustCaller:*/ uniffiCaller,
+        /*rustFutureFunc:*/ () => {
+          return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_encryption_get_device(
+            uniffiTypeEncryptionObjectFactory.clonePointer(this),
+            FfiConverterString.lower(userId),
+            FfiConverterString.lower(deviceId)
+          );
+        },
+        /*pollFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_poll_rust_buffer,
+        /*cancelFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_cancel_rust_buffer,
+        /*completeFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_complete_rust_buffer,
+        /*freeFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_free_rust_buffer,
+        /*liftFunc:*/ FfiConverterOptionalTypeUserDevice.lift.bind(
+          FfiConverterOptionalTypeUserDevice
+        ),
+        /*liftString:*/ FfiConverterString.lift,
+        /*asyncOpts:*/ asyncOpts_,
+        /*errorHandler:*/ FfiConverterTypeClientError.lift.bind(
+          FfiConverterTypeClientError
         )
       );
     } catch (__error: any) {
@@ -70654,6 +71070,18 @@ const FfiConverterTypeThreadSummary = new FfiConverterObject(
 );
 
 export interface TimelineLike {
+  /**
+   * Abort sending something on this item that hasn't gone out yet, see
+   * [`SendTarget`].
+   *
+   * Returns `false` if there was nothing of that kind left to abort, e.g.
+   * because it went out in the meantime.
+   */
+  abortSend(
+    itemId: EventOrTransactionId,
+    target: SendTarget,
+    asyncOpts_?: { signal: AbortSignal }
+  ) /*throws*/ : Promise<boolean>;
   addListener(
     listener: TimelineListener,
     asyncOpts_?: { signal: AbortSignal }
@@ -70801,6 +71229,21 @@ export interface TimelineLike {
     asyncOpts_?: { signal: AbortSignal }
   ) /*throws*/ : Promise<void>;
   retryDecryption(sessionIds: Array<string>): void;
+  /**
+   * Retry sending something on this item that failed, see [`SendTarget`].
+   *
+   * Only needed after an unrecoverable failure, which parks the request
+   * until it's retried or aborted; a recoverable one goes out again when
+   * the room's send queue is re-enabled.
+   *
+   * Returns `false` if there was nothing of that kind left to retry, e.g.
+   * because it went out in the meantime.
+   */
+  retrySend(
+    itemId: EventOrTransactionId,
+    target: SendTarget,
+    asyncOpts_?: { signal: AbortSignal }
+  ) /*throws*/ : Promise<boolean>;
   /**
    * Queues an event in the room's send queue so it's processed for
    * sending later.
@@ -70954,6 +71397,52 @@ export class Timeline extends UniffiAbstractObject implements TimelineLike {
     this[pointerLiteralSymbol] = pointer;
     this[destructorGuardSymbol] =
       uniffiTypeTimelineObjectFactory.bless(pointer);
+  }
+
+  /**
+   * Abort sending something on this item that hasn't gone out yet, see
+   * [`SendTarget`].
+   *
+   * Returns `false` if there was nothing of that kind left to abort, e.g.
+   * because it went out in the meantime.
+   */
+  async abortSend(
+    itemId: EventOrTransactionId,
+    target: SendTarget,
+    asyncOpts_?: { signal: AbortSignal }
+  ): Promise<boolean> /*throws*/ {
+    const __stack = uniffiIsDebug ? new Error().stack : undefined;
+    try {
+      return await uniffiRustCallAsync(
+        /*rustCaller:*/ uniffiCaller,
+        /*rustFutureFunc:*/ () => {
+          return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_timeline_abort_send(
+            uniffiTypeTimelineObjectFactory.clonePointer(this),
+            FfiConverterTypeEventOrTransactionId.lower(itemId),
+            FfiConverterTypeSendTarget.lower(target)
+          );
+        },
+        /*pollFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_poll_i8,
+        /*cancelFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_cancel_i8,
+        /*completeFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_complete_i8,
+        /*freeFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_free_i8,
+        /*liftFunc:*/ FfiConverterBool.lift.bind(FfiConverterBool),
+        /*liftString:*/ FfiConverterString.lift,
+        /*asyncOpts:*/ asyncOpts_,
+        /*errorHandler:*/ FfiConverterTypeClientError.lift.bind(
+          FfiConverterTypeClientError
+        )
+      );
+    } catch (__error: any) {
+      if (uniffiIsDebug && __error instanceof Error) {
+        __error.stack = __stack;
+      }
+      throw __error;
+    }
   }
 
   async addListener(
@@ -71627,6 +72116,55 @@ export class Timeline extends UniffiAbstractObject implements TimelineLike {
       },
       /*liftString:*/ FfiConverterString.lift
     );
+  }
+
+  /**
+   * Retry sending something on this item that failed, see [`SendTarget`].
+   *
+   * Only needed after an unrecoverable failure, which parks the request
+   * until it's retried or aborted; a recoverable one goes out again when
+   * the room's send queue is re-enabled.
+   *
+   * Returns `false` if there was nothing of that kind left to retry, e.g.
+   * because it went out in the meantime.
+   */
+  async retrySend(
+    itemId: EventOrTransactionId,
+    target: SendTarget,
+    asyncOpts_?: { signal: AbortSignal }
+  ): Promise<boolean> /*throws*/ {
+    const __stack = uniffiIsDebug ? new Error().stack : undefined;
+    try {
+      return await uniffiRustCallAsync(
+        /*rustCaller:*/ uniffiCaller,
+        /*rustFutureFunc:*/ () => {
+          return nativeModule().ubrn_uniffi_matrix_sdk_ffi_fn_method_timeline_retry_send(
+            uniffiTypeTimelineObjectFactory.clonePointer(this),
+            FfiConverterTypeEventOrTransactionId.lower(itemId),
+            FfiConverterTypeSendTarget.lower(target)
+          );
+        },
+        /*pollFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_poll_i8,
+        /*cancelFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_cancel_i8,
+        /*completeFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_complete_i8,
+        /*freeFunc:*/ nativeModule()
+          .ubrn_ffi_matrix_sdk_ffi_rust_future_free_i8,
+        /*liftFunc:*/ FfiConverterBool.lift.bind(FfiConverterBool),
+        /*liftString:*/ FfiConverterString.lift,
+        /*asyncOpts:*/ asyncOpts_,
+        /*errorHandler:*/ FfiConverterTypeClientError.lift.bind(
+          FfiConverterTypeClientError
+        )
+      );
+    } catch (__error: any) {
+      if (uniffiIsDebug && __error instanceof Error) {
+        __error.stack = __stack;
+      }
+      throw __error;
+    }
   }
 
   /**
@@ -73729,6 +74267,11 @@ const FfiConverterOptionalTypeUserCall = new FfiConverterOptional(
   FfiConverterTypeUserCall
 );
 
+// FfiConverter for UserDevice | undefined
+const FfiConverterOptionalTypeUserDevice = new FfiConverterOptional(
+  FfiConverterTypeUserDevice
+);
+
 // FfiConverter for UserReceipt | undefined
 const FfiConverterOptionalTypeUserReceipt = new FfiConverterOptional(
   FfiConverterTypeUserReceipt
@@ -75649,7 +76192,7 @@ function uniffiEnsureInitialized() {
   }
   if (
     nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_decryption_settings() !==
-    36533
+    54663
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_decryption_settings'
@@ -75933,6 +76476,14 @@ function uniffiEnsureInitialized() {
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_matrix_sdk_ffi_checksum_method_encryption_enable_recovery'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_encryption_get_device() !==
+    26628
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_matrix_sdk_ffi_checksum_method_encryption_get_device'
     );
   }
   if (
@@ -78392,6 +78943,14 @@ function uniffiEnsureInitialized() {
     );
   }
   if (
+    nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_timeline_abort_send() !==
+    13938
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_matrix_sdk_ffi_checksum_method_timeline_abort_send'
+    );
+  }
+  if (
     nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_timeline_add_listener() !==
     38550
   ) {
@@ -78525,6 +79084,14 @@ function uniffiEnsureInitialized() {
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       'uniffi_matrix_sdk_ffi_checksum_method_timeline_retry_decryption'
+    );
+  }
+  if (
+    nativeModule().ubrn_uniffi_matrix_sdk_ffi_checksum_method_timeline_retry_send() !==
+    51667
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      'uniffi_matrix_sdk_ffi_checksum_method_timeline_retry_send'
     );
   }
   if (
@@ -79683,6 +80250,7 @@ export default Object.freeze({
     FfiConverterTypeSendAttachmentJoinHandle,
     FfiConverterTypeSendGalleryJoinHandle,
     FfiConverterTypeSendHandle,
+    FfiConverterTypeSendTarget,
     FfiConverterTypeSession,
     FfiConverterTypeSessionVerificationController,
     FfiConverterTypeSessionVerificationData,
@@ -79747,6 +80315,7 @@ export default Object.freeze({
     FfiConverterTypeUploadParameters,
     FfiConverterTypeUploadSource,
     FfiConverterTypeUserCall,
+    FfiConverterTypeUserDevice,
     FfiConverterTypeUserIdentity,
     FfiConverterTypeUserPowerLevelUpdate,
     FfiConverterTypeUserProfile,

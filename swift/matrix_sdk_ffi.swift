@@ -4175,6 +4175,12 @@ public protocol ClientBuilderProtocol: AnyObject, Sendable {
     
     /**
      * Set the trust requirement to be used when decrypting events.
+     *
+     * With `TrustRequirement::CrossSignedOrLegacy`, also set
+     * `refuse_legacy_from_unsigned_known_devices` to refuse a legacy session
+     * (for instance one restored from key backup) whose sender device we know
+     * and that is not cross-signed by its owner. See
+     * [`DecryptionSettings::refuse_legacy_from_unsigned_known_devices`].
      */
     func decryptionSettings(decryptionSettings: DecryptionSettings)  -> ClientBuilder
     
@@ -4500,6 +4506,12 @@ open func crossProcessLockConfig(crossProcessLockConfig: CrossProcessLockConfig)
     
     /**
      * Set the trust requirement to be used when decrypting events.
+     *
+     * With `TrustRequirement::CrossSignedOrLegacy`, also set
+     * `refuse_legacy_from_unsigned_known_devices` to refuse a legacy session
+     * (for instance one restored from key backup) whose sender device we know
+     * and that is not cross-signed by its owner. See
+     * [`DecryptionSettings::refuse_legacy_from_unsigned_known_devices`].
      */
 open func decryptionSettings(decryptionSettings: DecryptionSettings) -> ClientBuilder  {
     return try!  FfiConverterTypeClientBuilder_lift(try! rustCall() {
@@ -5278,6 +5290,14 @@ public protocol EncryptionProtocol: AnyObject, Sendable {
     func enableRecovery(waitForBackupsToUpload: Bool, passphrase: String?, progressListener: EnableRecoveryProgressListener) async throws  -> String
     
     /**
+     * Look a device up in the local crypto store.
+     *
+     * Returns `None` when the device is unknown to us, which includes the
+     * case where the keys of its owner have not been downloaded yet.
+     */
+    func getDevice(userId: String, deviceId: String) async throws  -> UserDevice?
+    
+    /**
      * Does the user have other devices that the current device can verify
      * against?
      *
@@ -5654,6 +5674,29 @@ open func enableRecovery(waitForBackupsToUpload: Bool, passphrase: String?, prog
             freeFunc: ffi_matrix_sdk_ffi_rust_future_free_rust_buffer,
             liftFunc: FfiConverterString.lift,
             errorHandler: FfiConverterTypeRecoveryError_lift
+        )
+}
+    
+    /**
+     * Look a device up in the local crypto store.
+     *
+     * Returns `None` when the device is unknown to us, which includes the
+     * case where the keys of its owner have not been downloaded yet.
+     */
+open func getDevice(userId: String, deviceId: String)async throws  -> UserDevice?  {
+    return
+        try  await uniffiRustCallAsync(
+            rustFutureFunc: {
+                uniffi_matrix_sdk_ffi_fn_method_encryption_get_device(
+                    self.uniffiCloneHandle(),
+                    FfiConverterString.lower(userId),FfiConverterString.lower(deviceId)
+                )
+            },
+            pollFunc: ffi_matrix_sdk_ffi_rust_future_poll_rust_buffer,
+            completeFunc: ffi_matrix_sdk_ffi_rust_future_complete_rust_buffer,
+            freeFunc: ffi_matrix_sdk_ffi_rust_future_free_rust_buffer,
+            liftFunc: FfiConverterOptionTypeUserDevice.lift,
+            errorHandler: FfiConverterTypeClientError_lift
         )
 }
     
@@ -18189,6 +18232,15 @@ public func FfiConverterTypeThreadSummary_lower(_ value: ThreadSummary) -> UInt6
 
 public protocol TimelineProtocol: AnyObject, Sendable {
     
+    /**
+     * Abort sending something on this item that hasn't gone out yet, see
+     * [`SendTarget`].
+     *
+     * Returns `false` if there was nothing of that kind left to abort, e.g.
+     * because it went out in the meantime.
+     */
+    func abortSend(itemId: EventOrTransactionId, target: SendTarget) async throws  -> Bool
+    
     func addListener(listener: TimelineListener) async  -> TaskHandle
     
     func createMessageContent(msgType: MessageType)  -> RoomMessageEventContentWithoutRelation?
@@ -18303,6 +18355,18 @@ public protocol TimelineProtocol: AnyObject, Sendable {
     func redactEvent(eventOrTransactionId: EventOrTransactionId, reason: String?) async throws 
     
     func retryDecryption(sessionIds: [String]) 
+    
+    /**
+     * Retry sending something on this item that failed, see [`SendTarget`].
+     *
+     * Only needed after an unrecoverable failure, which parks the request
+     * until it's retried or aborted; a recoverable one goes out again when
+     * the room's send queue is re-enabled.
+     *
+     * Returns `false` if there was nothing of that kind left to retry, e.g.
+     * because it went out in the meantime.
+     */
+    func retrySend(itemId: EventOrTransactionId, target: SendTarget) async throws  -> Bool
     
     /**
      * Queues an event in the room's send queue so it's processed for
@@ -18446,6 +18510,30 @@ open class Timeline: TimelineProtocol, @unchecked Sendable {
 
     
 
+    
+    /**
+     * Abort sending something on this item that hasn't gone out yet, see
+     * [`SendTarget`].
+     *
+     * Returns `false` if there was nothing of that kind left to abort, e.g.
+     * because it went out in the meantime.
+     */
+open func abortSend(itemId: EventOrTransactionId, target: SendTarget)async throws  -> Bool  {
+    return
+        try  await uniffiRustCallAsync(
+            rustFutureFunc: {
+                uniffi_matrix_sdk_ffi_fn_method_timeline_abort_send(
+                    self.uniffiCloneHandle(),
+                    FfiConverterTypeEventOrTransactionId_lower(itemId),FfiConverterTypeSendTarget_lower(target)
+                )
+            },
+            pollFunc: ffi_matrix_sdk_ffi_rust_future_poll_i8,
+            completeFunc: ffi_matrix_sdk_ffi_rust_future_complete_i8,
+            freeFunc: ffi_matrix_sdk_ffi_rust_future_free_i8,
+            liftFunc: FfiConverterBool.lift,
+            errorHandler: FfiConverterTypeClientError_lift
+        )
+}
     
 open func addListener(listener: TimelineListener)async  -> TaskHandle  {
     return
@@ -18801,6 +18889,33 @@ open func retryDecryption(sessionIds: [String])  {try! rustCall() {
         FfiConverterSequenceString.lower(sessionIds),$0
     )
 }
+}
+    
+    /**
+     * Retry sending something on this item that failed, see [`SendTarget`].
+     *
+     * Only needed after an unrecoverable failure, which parks the request
+     * until it's retried or aborted; a recoverable one goes out again when
+     * the room's send queue is re-enabled.
+     *
+     * Returns `false` if there was nothing of that kind left to retry, e.g.
+     * because it went out in the meantime.
+     */
+open func retrySend(itemId: EventOrTransactionId, target: SendTarget)async throws  -> Bool  {
+    return
+        try  await uniffiRustCallAsync(
+            rustFutureFunc: {
+                uniffi_matrix_sdk_ffi_fn_method_timeline_retry_send(
+                    self.uniffiCloneHandle(),
+                    FfiConverterTypeEventOrTransactionId_lower(itemId),FfiConverterTypeSendTarget_lower(target)
+                )
+            },
+            pollFunc: ffi_matrix_sdk_ffi_rust_future_poll_i8,
+            completeFunc: ffi_matrix_sdk_ffi_rust_future_complete_i8,
+            freeFunc: ffi_matrix_sdk_ffi_rust_future_free_i8,
+            liftFunc: FfiConverterBool.lift,
+            errorHandler: FfiConverterTypeClientError_lift
+        )
 }
     
     /**
@@ -21194,6 +21309,14 @@ public struct EventTimelineItem {
     public var eventTypeRaw: String?
     public var timestamp: Timestamp
     public var localSendState: EventSendState?
+    /**
+     * Send state of our pending edit of this event, if any.
+     */
+    public var editSendState: EventSendState?
+    /**
+     * Send state of our pending redaction of this event, if any.
+     */
+    public var redactionSendState: EventSendState?
     public var localCreatedAt: UInt64?
     public var readReceipts: [String: Receipt]
     public var origin: EventItemOrigin?
@@ -21209,7 +21332,13 @@ public struct EventTimelineItem {
         /**
          * The raw Matrix event type string (e.g. `"m.room.message"`), or `None`
          * when the original type is not available (e.g. redacted events).
-         */eventTypeRaw: String?, timestamp: Timestamp, localSendState: EventSendState?, localCreatedAt: UInt64?, readReceipts: [String: Receipt], origin: EventItemOrigin?, canBeRepliedTo: Bool, lazyProvider: LazyTimelineItemProvider) {
+         */eventTypeRaw: String?, timestamp: Timestamp, localSendState: EventSendState?, 
+        /**
+         * Send state of our pending edit of this event, if any.
+         */editSendState: EventSendState?, 
+        /**
+         * Send state of our pending redaction of this event, if any.
+         */redactionSendState: EventSendState?, localCreatedAt: UInt64?, readReceipts: [String: Receipt], origin: EventItemOrigin?, canBeRepliedTo: Bool, lazyProvider: LazyTimelineItemProvider) {
         self.isRemote = isRemote
         self.eventOrTransactionId = eventOrTransactionId
         self.sender = sender
@@ -21222,6 +21351,8 @@ public struct EventTimelineItem {
         self.eventTypeRaw = eventTypeRaw
         self.timestamp = timestamp
         self.localSendState = localSendState
+        self.editSendState = editSendState
+        self.redactionSendState = redactionSendState
         self.localCreatedAt = localCreatedAt
         self.readReceipts = readReceipts
         self.origin = origin
@@ -21257,6 +21388,8 @@ public struct FfiConverterTypeEventTimelineItem: FfiConverterRustBuffer {
                 eventTypeRaw: FfiConverterOptionString.read(from: &buf), 
                 timestamp: FfiConverterTypeTimestamp.read(from: &buf), 
                 localSendState: FfiConverterOptionTypeEventSendState.read(from: &buf), 
+                editSendState: FfiConverterOptionTypeEventSendState.read(from: &buf), 
+                redactionSendState: FfiConverterOptionTypeEventSendState.read(from: &buf), 
                 localCreatedAt: FfiConverterOptionUInt64.read(from: &buf), 
                 readReceipts: FfiConverterDictionaryStringTypeReceipt.read(from: &buf), 
                 origin: FfiConverterOptionTypeEventItemOrigin.read(from: &buf), 
@@ -21278,6 +21411,8 @@ public struct FfiConverterTypeEventTimelineItem: FfiConverterRustBuffer {
         FfiConverterOptionString.write(value.eventTypeRaw, into: &buf)
         FfiConverterTypeTimestamp.write(value.timestamp, into: &buf)
         FfiConverterOptionTypeEventSendState.write(value.localSendState, into: &buf)
+        FfiConverterOptionTypeEventSendState.write(value.editSendState, into: &buf)
+        FfiConverterOptionTypeEventSendState.write(value.redactionSendState, into: &buf)
         FfiConverterOptionUInt64.write(value.localCreatedAt, into: &buf)
         FfiConverterDictionaryStringTypeReceipt.write(value.readReceipts, into: &buf)
         FfiConverterOptionTypeEventItemOrigin.write(value.origin, into: &buf)
@@ -25024,12 +25159,20 @@ public func FfiConverterTypeReaction_lower(_ value: Reaction) -> RustBuffer {
 public struct ReactionSenderData: Equatable, Hashable {
     public var senderId: String
     public var timestamp: Timestamp
+    /**
+     * Send state of the reaction when it's ours and pending, `None` otherwise.
+     */
+    public var sendState: EventSendState?
 
     // Default memberwise initializers are never public by default, so we
     // declare one manually.
-    public init(senderId: String, timestamp: Timestamp) {
+    public init(senderId: String, timestamp: Timestamp, 
+        /**
+         * Send state of the reaction when it's ours and pending, `None` otherwise.
+         */sendState: EventSendState?) {
         self.senderId = senderId
         self.timestamp = timestamp
+        self.sendState = sendState
     }
 
     
@@ -25049,13 +25192,15 @@ public struct FfiConverterTypeReactionSenderData: FfiConverterRustBuffer {
         return
             try ReactionSenderData(
                 senderId: FfiConverterString.read(from: &buf), 
-                timestamp: FfiConverterTypeTimestamp.read(from: &buf)
+                timestamp: FfiConverterTypeTimestamp.read(from: &buf), 
+                sendState: FfiConverterOptionTypeEventSendState.read(from: &buf)
         )
     }
 
     public static func write(_ value: ReactionSenderData, into buf: inout [UInt8]) {
         FfiConverterString.write(value.senderId, into: &buf)
         FfiConverterTypeTimestamp.write(value.timestamp, into: &buf)
+        FfiConverterOptionTypeEventSendState.write(value.sendState, into: &buf)
     }
 }
 
@@ -29149,6 +29294,157 @@ public func FfiConverterTypeUserCall_lift(_ buf: RustBuffer) throws -> UserCall 
 #endif
 public func FfiConverterTypeUserCall_lower(_ value: UserCall) -> RustBuffer {
     return FfiConverterTypeUserCall.lower(value)
+}
+
+
+/**
+ * What we know, locally, about one device of a user.
+ */
+public struct UserDevice: Equatable, Hashable {
+    /**
+     * The ID of the user the device belongs to.
+     */
+    public var userId: String
+    /**
+     * The ID of the device.
+     */
+    public var deviceId: String
+    /**
+     * The display name the user gave the device, if any.
+     */
+    public var displayName: String?
+    /**
+     * Is the device signed by the cross-signing identity of its owner?
+     *
+     * This is the crypto layer's own check of the signature chain, not the
+     * server's say-so: it is `true` only when the owner's self-signing key,
+     * as we currently know it, has a valid signature over the device keys.
+     * It says nothing about whether *we* trust that owner.
+     *
+     * For a device of another user, this is the field to use: it is what the
+     * trust requirements (`TrustRequirement::CrossSigned` and
+     * `CrossSignedOrLegacy`) enforce when decrypting events from that device,
+     * and what a live session from it is held to. For one of our own devices,
+     * prefer `is_verified_with_cross_signing`.
+     */
+    public var isCrossSignedByOwner: Bool
+    /**
+     * Do we trust the device through cross-signing?
+     *
+     * For one of our own devices this is the field to use: it is `true` only
+     * when the device is signed by our own cross-signing identity *and* that
+     * identity is itself verified by us (this device holds its private keys,
+     * or it was verified some other way). It is the equivalent of
+     * `crossSigningVerified` in matrix-js-sdk. For a device of another user it
+     * additionally requires that we verified that user's identity; it is not
+     * what the trust requirements check there (see
+     * `is_cross_signed_by_owner`).
+     *
+     * Unlike a plain "is this device verified" check, this never includes
+     * *local* trust, i.e. the device being marked as trusted by hand. A device
+     * can be locally trusted and still report `false` here, and a device can
+     * be `is_cross_signed_by_owner` while this is `false`, for instance a
+     * new device that has not verified our own identity yet.
+     */
+    public var isVerifiedWithCrossSigning: Bool
+
+    // Default memberwise initializers are never public by default, so we
+    // declare one manually.
+    public init(
+        /**
+         * The ID of the user the device belongs to.
+         */userId: String, 
+        /**
+         * The ID of the device.
+         */deviceId: String, 
+        /**
+         * The display name the user gave the device, if any.
+         */displayName: String?, 
+        /**
+         * Is the device signed by the cross-signing identity of its owner?
+         *
+         * This is the crypto layer's own check of the signature chain, not the
+         * server's say-so: it is `true` only when the owner's self-signing key,
+         * as we currently know it, has a valid signature over the device keys.
+         * It says nothing about whether *we* trust that owner.
+         *
+         * For a device of another user, this is the field to use: it is what the
+         * trust requirements (`TrustRequirement::CrossSigned` and
+         * `CrossSignedOrLegacy`) enforce when decrypting events from that device,
+         * and what a live session from it is held to. For one of our own devices,
+         * prefer `is_verified_with_cross_signing`.
+         */isCrossSignedByOwner: Bool, 
+        /**
+         * Do we trust the device through cross-signing?
+         *
+         * For one of our own devices this is the field to use: it is `true` only
+         * when the device is signed by our own cross-signing identity *and* that
+         * identity is itself verified by us (this device holds its private keys,
+         * or it was verified some other way). It is the equivalent of
+         * `crossSigningVerified` in matrix-js-sdk. For a device of another user it
+         * additionally requires that we verified that user's identity; it is not
+         * what the trust requirements check there (see
+         * `is_cross_signed_by_owner`).
+         *
+         * Unlike a plain "is this device verified" check, this never includes
+         * *local* trust, i.e. the device being marked as trusted by hand. A device
+         * can be locally trusted and still report `false` here, and a device can
+         * be `is_cross_signed_by_owner` while this is `false`, for instance a
+         * new device that has not verified our own identity yet.
+         */isVerifiedWithCrossSigning: Bool) {
+        self.userId = userId
+        self.deviceId = deviceId
+        self.displayName = displayName
+        self.isCrossSignedByOwner = isCrossSignedByOwner
+        self.isVerifiedWithCrossSigning = isVerifiedWithCrossSigning
+    }
+
+    
+
+    
+}
+
+#if compiler(>=6)
+extension UserDevice: Sendable {}
+#endif
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+public struct FfiConverterTypeUserDevice: FfiConverterRustBuffer {
+    public static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> UserDevice {
+        return
+            try UserDevice(
+                userId: FfiConverterString.read(from: &buf), 
+                deviceId: FfiConverterString.read(from: &buf), 
+                displayName: FfiConverterOptionString.read(from: &buf), 
+                isCrossSignedByOwner: FfiConverterBool.read(from: &buf), 
+                isVerifiedWithCrossSigning: FfiConverterBool.read(from: &buf)
+        )
+    }
+
+    public static func write(_ value: UserDevice, into buf: inout [UInt8]) {
+        FfiConverterString.write(value.userId, into: &buf)
+        FfiConverterString.write(value.deviceId, into: &buf)
+        FfiConverterOptionString.write(value.displayName, into: &buf)
+        FfiConverterBool.write(value.isCrossSignedByOwner, into: &buf)
+        FfiConverterBool.write(value.isVerifiedWithCrossSigning, into: &buf)
+    }
+}
+
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+public func FfiConverterTypeUserDevice_lift(_ buf: RustBuffer) throws -> UserDevice {
+    return try FfiConverterTypeUserDevice.lift(buf)
+}
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+public func FfiConverterTypeUserDevice_lower(_ value: UserDevice) -> RustBuffer {
+    return FfiConverterTypeUserDevice.lower(value)
 }
 
 
@@ -33416,8 +33712,8 @@ public enum EventSendState: Equatable, Hashable {
          * Whether the error is considered recoverable or not.
          *
          * An error that's recoverable will disable the room's send queue,
-         * while an unrecoverable error will be parked, until the user
-         * decides to cancel sending it.
+         * while an unrecoverable error will be parked, until it's retried or
+         * aborted.
          */isRecoverable: Bool
     )
     /**
@@ -42505,6 +42801,109 @@ public func FfiConverterTypeSecretStorageEncryptionAlgorithm_lower(_ value: Secr
 
 // Note that we don't yet support `indirect` for enums.
 // See https://github.com/mozilla/uniffi-rs/issues/396 for further discussion.
+/**
+ * Which pending send on an item [`Timeline::retry_send`] and
+ * [`Timeline::abort_send`] act on.
+ */
+
+public enum SendTarget: Equatable, Hashable {
+    
+    /**
+     * The item itself, while it's a local echo.
+     *
+     * Note that aborting one that's already in flight queues a redaction for
+     * it, without a reason; use `SendHandle::abort` if one is needed.
+     */
+    case event
+    /**
+     * Our pending edit of the item.
+     */
+    case edit
+    /**
+     * Our pending redaction of the item.
+     */
+    case redaction
+    /**
+     * Our pending reaction to the item with this key.
+     */
+    case reaction(key: String
+    )
+
+
+
+
+
+}
+
+#if compiler(>=6)
+extension SendTarget: Sendable {}
+#endif
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+public struct FfiConverterTypeSendTarget: FfiConverterRustBuffer {
+    typealias SwiftType = SendTarget
+
+    public static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> SendTarget {
+        let variant: Int32 = try readInt(&buf)
+        switch variant {
+        
+        case 1: return .event
+        
+        case 2: return .edit
+        
+        case 3: return .redaction
+        
+        case 4: return .reaction(key: try FfiConverterString.read(from: &buf)
+        )
+        
+        default: throw UniffiInternalError.unexpectedEnumCase
+        }
+    }
+
+    public static func write(_ value: SendTarget, into buf: inout [UInt8]) {
+        switch value {
+        
+        
+        case .event:
+            writeInt(&buf, Int32(1))
+        
+        
+        case .edit:
+            writeInt(&buf, Int32(2))
+        
+        
+        case .redaction:
+            writeInt(&buf, Int32(3))
+        
+        
+        case let .reaction(key):
+            writeInt(&buf, Int32(4))
+            FfiConverterString.write(key, into: &buf)
+            
+        }
+    }
+}
+
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+public func FfiConverterTypeSendTarget_lift(_ buf: RustBuffer) throws -> SendTarget {
+    return try FfiConverterTypeSendTarget.lift(buf)
+}
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+public func FfiConverterTypeSendTarget_lower(_ value: SendTarget) -> RustBuffer {
+    return FfiConverterTypeSendTarget.lower(value)
+}
+
+
+// Note that we don't yet support `indirect` for enums.
+// See https://github.com/mozilla/uniffi-rs/issues/396 for further discussion.
 
 public enum SessionVerificationData {
     
@@ -49721,7 +50120,7 @@ public protocol SessionVerificationControllerDelegate: AnyObject, Sendable {
     
     func didFail() 
     
-    func didCancel(code: String)
+    func didCancel(code: String) 
     
     func didFinish() 
     
@@ -53149,6 +53548,30 @@ fileprivate struct FfiConverterOptionTypeUserCall: FfiConverterRustBuffer {
         switch try readInt(&buf) as Int8 {
         case 0: return nil
         case 1: return try FfiConverterTypeUserCall.read(from: &buf)
+        default: throw UniffiInternalError.unexpectedOptionalTag
+        }
+    }
+}
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+fileprivate struct FfiConverterOptionTypeUserDevice: FfiConverterRustBuffer {
+    typealias SwiftType = UserDevice?
+
+    public static func write(_ value: SwiftType, into buf: inout [UInt8]) {
+        guard let value = value else {
+            writeInt(&buf, Int8(0))
+            return
+        }
+        writeInt(&buf, Int8(1))
+        FfiConverterTypeUserDevice.write(value, into: &buf)
+    }
+
+    public static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> SwiftType {
+        switch try readInt(&buf) as Int8 {
+        case 0: return nil
+        case 1: return try FfiConverterTypeUserDevice.read(from: &buf)
         default: throw UniffiInternalError.unexpectedOptionalTag
         }
     }
@@ -56666,7 +57089,7 @@ private let initializationResult: InitializationResult = {
     if (uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_cross_process_lock_config() != 48946) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_decryption_settings() != 36533) {
+    if (uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_decryption_settings() != 54663) {
         return InitializationResult.apiChecksumMismatch
     }
     if (uniffi_matrix_sdk_ffi_checksum_method_clientbuilder_disable_automatic_token_refresh() != 60164) {
@@ -56772,6 +57195,9 @@ private let initializationResult: InitializationResult = {
         return InitializationResult.apiChecksumMismatch
     }
     if (uniffi_matrix_sdk_ffi_checksum_method_encryption_enable_recovery() != 2033) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_matrix_sdk_ffi_checksum_method_encryption_get_device() != 26628) {
         return InitializationResult.apiChecksumMismatch
     }
     if (uniffi_matrix_sdk_ffi_checksum_method_encryption_has_devices_to_verify_against() != 50754) {
@@ -57695,6 +58121,9 @@ private let initializationResult: InitializationResult = {
     if (uniffi_matrix_sdk_ffi_checksum_method_sendhandle_try_resend() != 50142) {
         return InitializationResult.apiChecksumMismatch
     }
+    if (uniffi_matrix_sdk_ffi_checksum_method_timeline_abort_send() != 13938) {
+        return InitializationResult.apiChecksumMismatch
+    }
     if (uniffi_matrix_sdk_ffi_checksum_method_timeline_add_listener() != 38550) {
         return InitializationResult.apiChecksumMismatch
     }
@@ -57744,6 +58173,9 @@ private let initializationResult: InitializationResult = {
         return InitializationResult.apiChecksumMismatch
     }
     if (uniffi_matrix_sdk_ffi_checksum_method_timeline_retry_decryption() != 39219) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_matrix_sdk_ffi_checksum_method_timeline_retry_send() != 51667) {
         return InitializationResult.apiChecksumMismatch
     }
     if (uniffi_matrix_sdk_ffi_checksum_method_timeline_send() != 24846) {

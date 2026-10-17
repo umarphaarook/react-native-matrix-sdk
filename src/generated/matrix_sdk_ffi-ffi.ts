@@ -870,6 +870,11 @@ interface NativeModuleInterface {
     passphrase: Uint8Array,
     progressListener: bigint
   ): bigint;
+  ubrn_uniffi_matrix_sdk_ffi_fn_method_encryption_get_device(
+    ptr: bigint,
+    userId: Uint8Array,
+    deviceId: Uint8Array
+  ): bigint;
   ubrn_uniffi_matrix_sdk_ffi_fn_method_encryption_has_devices_to_verify_against(
     ptr: bigint
   ): bigint;
@@ -2457,6 +2462,11 @@ interface NativeModuleInterface {
     handle: bigint,
     uniffi_out_err: UniffiRustCallStatus
   ): void;
+  ubrn_uniffi_matrix_sdk_ffi_fn_method_timeline_abort_send(
+    ptr: bigint,
+    itemId: Uint8Array,
+    target: Uint8Array
+  ): bigint;
   ubrn_uniffi_matrix_sdk_ffi_fn_method_timeline_add_listener(
     ptr: bigint,
     listener: bigint
@@ -2531,6 +2541,11 @@ interface NativeModuleInterface {
     sessionIds: Uint8Array,
     uniffi_out_err: UniffiRustCallStatus
   ): void;
+  ubrn_uniffi_matrix_sdk_ffi_fn_method_timeline_retry_send(
+    ptr: bigint,
+    itemId: Uint8Array,
+    target: Uint8Array
+  ): bigint;
   ubrn_uniffi_matrix_sdk_ffi_fn_method_timeline_send(
     ptr: bigint,
     msg: bigint
@@ -3396,6 +3411,7 @@ interface NativeModuleInterface {
   ubrn_uniffi_matrix_sdk_ffi_checksum_method_encryption_ed25519_key(): number;
   ubrn_uniffi_matrix_sdk_ffi_checksum_method_encryption_enable_backups(): number;
   ubrn_uniffi_matrix_sdk_ffi_checksum_method_encryption_enable_recovery(): number;
+  ubrn_uniffi_matrix_sdk_ffi_checksum_method_encryption_get_device(): number;
   ubrn_uniffi_matrix_sdk_ffi_checksum_method_encryption_has_devices_to_verify_against(): number;
   ubrn_uniffi_matrix_sdk_ffi_checksum_method_encryption_import_secrets_bundle(): number;
   ubrn_uniffi_matrix_sdk_ffi_checksum_method_encryption_is_dehydrated_device_supported(): number;
@@ -3703,6 +3719,7 @@ interface NativeModuleInterface {
   ubrn_uniffi_matrix_sdk_ffi_checksum_method_sendattachmentjoinhandle_join(): number;
   ubrn_uniffi_matrix_sdk_ffi_checksum_method_sendhandle_abort(): number;
   ubrn_uniffi_matrix_sdk_ffi_checksum_method_sendhandle_try_resend(): number;
+  ubrn_uniffi_matrix_sdk_ffi_checksum_method_timeline_abort_send(): number;
   ubrn_uniffi_matrix_sdk_ffi_checksum_method_timeline_add_listener(): number;
   ubrn_uniffi_matrix_sdk_ffi_checksum_method_timeline_create_message_content(): number;
   ubrn_uniffi_matrix_sdk_ffi_checksum_method_timeline_create_poll(): number;
@@ -3720,6 +3737,7 @@ interface NativeModuleInterface {
   ubrn_uniffi_matrix_sdk_ffi_checksum_method_timeline_pin_event(): number;
   ubrn_uniffi_matrix_sdk_ffi_checksum_method_timeline_redact_event(): number;
   ubrn_uniffi_matrix_sdk_ffi_checksum_method_timeline_retry_decryption(): number;
+  ubrn_uniffi_matrix_sdk_ffi_checksum_method_timeline_retry_send(): number;
   ubrn_uniffi_matrix_sdk_ffi_checksum_method_timeline_send(): number;
   ubrn_uniffi_matrix_sdk_ffi_checksum_method_timeline_send_audio(): number;
   ubrn_uniffi_matrix_sdk_ffi_checksum_method_timeline_send_file(): number;
