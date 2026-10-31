@@ -6659,6 +6659,15 @@ export type NotificationItem = {
    * The push actions for this notification (notify, sound, highlight, etc.).
    */
   actions?: Array<Action>;
+  /**
+   * Whether the underlying event was decrypted, could not be decrypted, or
+   * was not encrypted in the first place.
+   *
+   * Always set for the items of a `NotificationClient`. It is `None` for
+   * the items handed to a `SyncNotificationListener`, which doesn't know
+   * how the event reached the client.
+   */
+  eventEncryption?: NotificationEventEncryption;
 };
 
 /**
@@ -6691,6 +6700,8 @@ const FfiConverterTypeNotificationItem = (() => {
         hasMention: FfiConverterOptionalBool.read(from),
         threadId: FfiConverterOptionalString.read(from),
         actions: FfiConverterOptionalArrayTypeAction.read(from),
+        eventEncryption:
+          FfiConverterOptionalTypeNotificationEventEncryption.read(from),
       };
     }
     write(value: TypeName, into: RustBuffer): void {
@@ -6702,6 +6713,10 @@ const FfiConverterTypeNotificationItem = (() => {
       FfiConverterOptionalBool.write(value.hasMention, into);
       FfiConverterOptionalString.write(value.threadId, into);
       FfiConverterOptionalArrayTypeAction.write(value.actions, into);
+      FfiConverterOptionalTypeNotificationEventEncryption.write(
+        value.eventEncryption,
+        into
+      );
     }
     allocationSize(value: TypeName): number {
       return (
@@ -6714,7 +6729,10 @@ const FfiConverterTypeNotificationItem = (() => {
         FfiConverterOptionalBool.allocationSize(value.isNoisy) +
         FfiConverterOptionalBool.allocationSize(value.hasMention) +
         FfiConverterOptionalString.allocationSize(value.threadId) +
-        FfiConverterOptionalArrayTypeAction.allocationSize(value.actions)
+        FfiConverterOptionalArrayTypeAction.allocationSize(value.actions) +
+        FfiConverterOptionalTypeNotificationEventEncryption.allocationSize(
+          value.eventEncryption
+        )
       );
     }
   }
@@ -14572,7 +14590,9 @@ export const ClientError = (() => {
       return MatrixApi_.instanceOf(obj);
     }
 
-    static getInner(obj: MatrixApi_): Readonly<{
+    static getInner(
+      obj: MatrixApi_
+    ): Readonly<{
       kind: ErrorKind;
       code: string;
       msg: string;
@@ -28333,6 +28353,59 @@ const FfiConverterTypeNotificationEvent = (() => {
         default:
           throw new UniffiInternalError.UnexpectedEnumCase();
       }
+    }
+  }
+  return new FFIConverter();
+})();
+
+/**
+ * How the event of a notification reached us, with regard to end-to-end
+ * encryption.
+ */
+export enum NotificationEventEncryption {
+  /**
+   * The event was encrypted, and has been decrypted.
+   */
+  Decrypted,
+  /**
+   * The event was encrypted, and could not be decrypted.
+   */
+  UnableToDecrypt,
+  /**
+   * The event was not encrypted: it reached us in the clear. This is also
+   * the case of invites.
+   */
+  NotEncrypted,
+}
+
+const FfiConverterTypeNotificationEventEncryption = (() => {
+  const ordinalConverter = FfiConverterInt32;
+  type TypeName = NotificationEventEncryption;
+  class FFIConverter extends AbstractFfiConverterByteArray<TypeName> {
+    read(from: RustBuffer): TypeName {
+      switch (ordinalConverter.read(from)) {
+        case 1:
+          return NotificationEventEncryption.Decrypted;
+        case 2:
+          return NotificationEventEncryption.UnableToDecrypt;
+        case 3:
+          return NotificationEventEncryption.NotEncrypted;
+        default:
+          throw new UniffiInternalError.UnexpectedEnumCase();
+      }
+    }
+    write(value: TypeName, into: RustBuffer): void {
+      switch (value) {
+        case NotificationEventEncryption.Decrypted:
+          return ordinalConverter.write(1, into);
+        case NotificationEventEncryption.UnableToDecrypt:
+          return ordinalConverter.write(2, into);
+        case NotificationEventEncryption.NotEncrypted:
+          return ordinalConverter.write(3, into);
+      }
+    }
+    allocationSize(value: TypeName): number {
+      return ordinalConverter.allocationSize(0);
     }
   }
   return new FFIConverter();
@@ -74499,6 +74572,10 @@ const FfiConverterOptionalTypeMembershipChange = new FfiConverterOptional(
   FfiConverterTypeMembershipChange
 );
 
+// FfiConverter for NotificationEventEncryption | undefined
+const FfiConverterOptionalTypeNotificationEventEncryption =
+  new FfiConverterOptional(FfiConverterTypeNotificationEventEncryption);
+
 // FfiConverter for OAuthPrompt | undefined
 const FfiConverterOptionalTypeOAuthPrompt = new FfiConverterOptional(
   FfiConverterTypeOAuthPrompt
@@ -80145,6 +80222,7 @@ export default Object.freeze({
     FfiConverterTypeNotificationClient,
     FfiConverterTypeNotificationClientTimeouts,
     FfiConverterTypeNotificationEvent,
+    FfiConverterTypeNotificationEventEncryption,
     FfiConverterTypeNotificationItem,
     FfiConverterTypeNotificationItemsRequest,
     FfiConverterTypeNotificationPowerLevels,

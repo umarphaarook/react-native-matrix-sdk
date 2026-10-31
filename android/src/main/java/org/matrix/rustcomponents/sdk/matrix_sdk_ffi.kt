@@ -37486,6 +37486,16 @@ data class NotificationItem (
      * The push actions for this notification (notify, sound, highlight, etc.).
      */
     var `actions`: List<Action>?
+    , 
+    /**
+     * Whether the underlying event was decrypted, could not be decrypted, or
+     * was not encrypted in the first place.
+     *
+     * Always set for the items of a `NotificationClient`. It is `None` for
+     * the items handed to a `SyncNotificationListener`, which doesn't know
+     * how the event reached the client.
+     */
+    var `eventEncryption`: NotificationEventEncryption?
     
 ): Disposable{
     
@@ -37504,7 +37514,8 @@ data class NotificationItem (
         this.`isNoisy`,
         this.`hasMention`,
         this.`threadId`,
-        this.`actions`
+        this.`actions`,
+        this.`eventEncryption`
     )
     }
     
@@ -37525,6 +37536,7 @@ public object FfiConverterTypeNotificationItem: FfiConverterRustBuffer<Notificat
             FfiConverterOptionalBoolean.read(buf),
             FfiConverterOptionalString.read(buf),
             FfiConverterOptionalSequenceTypeAction.read(buf),
+            FfiConverterOptionalTypeNotificationEventEncryption.read(buf),
         )
     }
 
@@ -37536,7 +37548,8 @@ public object FfiConverterTypeNotificationItem: FfiConverterRustBuffer<Notificat
             FfiConverterOptionalBoolean.allocationSize(value.`isNoisy`) +
             FfiConverterOptionalBoolean.allocationSize(value.`hasMention`) +
             FfiConverterOptionalString.allocationSize(value.`threadId`) +
-            FfiConverterOptionalSequenceTypeAction.allocationSize(value.`actions`)
+            FfiConverterOptionalSequenceTypeAction.allocationSize(value.`actions`) +
+            FfiConverterOptionalTypeNotificationEventEncryption.allocationSize(value.`eventEncryption`)
     )
 
     override fun write(value: NotificationItem, buf: ByteBuffer) {
@@ -37548,6 +37561,7 @@ public object FfiConverterTypeNotificationItem: FfiConverterRustBuffer<Notificat
             FfiConverterOptionalBoolean.write(value.`hasMention`, buf)
             FfiConverterOptionalString.write(value.`threadId`, buf)
             FfiConverterOptionalSequenceTypeAction.write(value.`actions`, buf)
+            FfiConverterOptionalTypeNotificationEventEncryption.write(value.`eventEncryption`, buf)
     }
 }
 
@@ -51508,6 +51522,55 @@ public object FfiConverterTypeNotificationEvent : FfiConverterRustBuffer<Notific
                 Unit
             }
         }.let { /* this makes the `when` an expression, which ensures it is exhaustive */ }
+    }
+}
+
+
+
+
+
+/**
+ * How the event of a notification reached us, with regard to end-to-end
+ * encryption.
+ */
+
+enum class NotificationEventEncryption {
+    
+    /**
+     * The event was encrypted, and has been decrypted.
+     */
+    DECRYPTED,
+    /**
+     * The event was encrypted, and could not be decrypted.
+     */
+    UNABLE_TO_DECRYPT,
+    /**
+     * The event was not encrypted: it reached us in the clear. This is also
+     * the case of invites.
+     */
+    NOT_ENCRYPTED;
+
+    
+
+
+    companion object
+}
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeNotificationEventEncryption: FfiConverterRustBuffer<NotificationEventEncryption> {
+    override fun read(buf: ByteBuffer) = try {
+        NotificationEventEncryption.values()[buf.getInt() - 1]
+    } catch (e: IndexOutOfBoundsException) {
+        throw RuntimeException("invalid enum value, something is very wrong!!", e)
+    }
+
+    override fun allocationSize(value: NotificationEventEncryption) = 4UL
+
+    override fun write(value: NotificationEventEncryption, buf: ByteBuffer) {
+        buf.putInt(value.ordinal + 1)
     }
 }
 
@@ -66680,6 +66743,38 @@ public object FfiConverterOptionalTypeMembershipChange: FfiConverterRustBuffer<M
         } else {
             buf.put(1)
             FfiConverterTypeMembershipChange.write(value, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterOptionalTypeNotificationEventEncryption: FfiConverterRustBuffer<NotificationEventEncryption?> {
+    override fun read(buf: ByteBuffer): NotificationEventEncryption? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterTypeNotificationEventEncryption.read(buf)
+    }
+
+    override fun allocationSize(value: NotificationEventEncryption?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterTypeNotificationEventEncryption.allocationSize(value)
+        }
+    }
+
+    override fun write(value: NotificationEventEncryption?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterTypeNotificationEventEncryption.write(value, buf)
         }
     }
 }

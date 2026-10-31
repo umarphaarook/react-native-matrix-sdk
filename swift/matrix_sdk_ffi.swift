@@ -23649,6 +23649,15 @@ public struct NotificationItem {
      * The push actions for this notification (notify, sound, highlight, etc.).
      */
     public var actions: [Action]?
+    /**
+     * Whether the underlying event was decrypted, could not be decrypted, or
+     * was not encrypted in the first place.
+     *
+     * Always set for the items of a `NotificationClient`. It is `None` for
+     * the items handed to a `SyncNotificationListener`, which doesn't know
+     * how the event reached the client.
+     */
+    public var eventEncryption: NotificationEventEncryption?
 
     // Default memberwise initializers are never public by default, so we
     // declare one manually.
@@ -23663,7 +23672,15 @@ public struct NotificationItem {
          */isNoisy: Bool?, hasMention: Bool?, threadId: String?, 
         /**
          * The push actions for this notification (notify, sound, highlight, etc.).
-         */actions: [Action]?) {
+         */actions: [Action]?, 
+        /**
+         * Whether the underlying event was decrypted, could not be decrypted, or
+         * was not encrypted in the first place.
+         *
+         * Always set for the items of a `NotificationClient`. It is `None` for
+         * the items handed to a `SyncNotificationListener`, which doesn't know
+         * how the event reached the client.
+         */eventEncryption: NotificationEventEncryption?) {
         self.event = event
         self.rawEvent = rawEvent
         self.senderInfo = senderInfo
@@ -23672,6 +23689,7 @@ public struct NotificationItem {
         self.hasMention = hasMention
         self.threadId = threadId
         self.actions = actions
+        self.eventEncryption = eventEncryption
     }
 
     
@@ -23697,7 +23715,8 @@ public struct FfiConverterTypeNotificationItem: FfiConverterRustBuffer {
                 isNoisy: FfiConverterOptionBool.read(from: &buf), 
                 hasMention: FfiConverterOptionBool.read(from: &buf), 
                 threadId: FfiConverterOptionString.read(from: &buf), 
-                actions: FfiConverterOptionSequenceTypeAction.read(from: &buf)
+                actions: FfiConverterOptionSequenceTypeAction.read(from: &buf), 
+                eventEncryption: FfiConverterOptionTypeNotificationEventEncryption.read(from: &buf)
         )
     }
 
@@ -23710,6 +23729,7 @@ public struct FfiConverterTypeNotificationItem: FfiConverterRustBuffer {
         FfiConverterOptionBool.write(value.hasMention, into: &buf)
         FfiConverterOptionString.write(value.threadId, into: &buf)
         FfiConverterOptionSequenceTypeAction.write(value.actions, into: &buf)
+        FfiConverterOptionTypeNotificationEventEncryption.write(value.eventEncryption, into: &buf)
     }
 }
 
@@ -37356,6 +37376,94 @@ public func FfiConverterTypeNotificationEvent_lift(_ buf: RustBuffer) throws -> 
 #endif
 public func FfiConverterTypeNotificationEvent_lower(_ value: NotificationEvent) -> RustBuffer {
     return FfiConverterTypeNotificationEvent.lower(value)
+}
+
+
+// Note that we don't yet support `indirect` for enums.
+// See https://github.com/mozilla/uniffi-rs/issues/396 for further discussion.
+/**
+ * How the event of a notification reached us, with regard to end-to-end
+ * encryption.
+ */
+
+public enum NotificationEventEncryption: Equatable, Hashable {
+    
+    /**
+     * The event was encrypted, and has been decrypted.
+     */
+    case decrypted
+    /**
+     * The event was encrypted, and could not be decrypted.
+     */
+    case unableToDecrypt
+    /**
+     * The event was not encrypted: it reached us in the clear. This is also
+     * the case of invites.
+     */
+    case notEncrypted
+
+
+
+
+
+}
+
+#if compiler(>=6)
+extension NotificationEventEncryption: Sendable {}
+#endif
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+public struct FfiConverterTypeNotificationEventEncryption: FfiConverterRustBuffer {
+    typealias SwiftType = NotificationEventEncryption
+
+    public static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> NotificationEventEncryption {
+        let variant: Int32 = try readInt(&buf)
+        switch variant {
+        
+        case 1: return .decrypted
+        
+        case 2: return .unableToDecrypt
+        
+        case 3: return .notEncrypted
+        
+        default: throw UniffiInternalError.unexpectedEnumCase
+        }
+    }
+
+    public static func write(_ value: NotificationEventEncryption, into buf: inout [UInt8]) {
+        switch value {
+        
+        
+        case .decrypted:
+            writeInt(&buf, Int32(1))
+        
+        
+        case .unableToDecrypt:
+            writeInt(&buf, Int32(2))
+        
+        
+        case .notEncrypted:
+            writeInt(&buf, Int32(3))
+        
+        }
+    }
+}
+
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+public func FfiConverterTypeNotificationEventEncryption_lift(_ buf: RustBuffer) throws -> NotificationEventEncryption {
+    return try FfiConverterTypeNotificationEventEncryption.lift(buf)
+}
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+public func FfiConverterTypeNotificationEventEncryption_lower(_ value: NotificationEventEncryption) -> RustBuffer {
+    return FfiConverterTypeNotificationEventEncryption.lower(value)
 }
 
 
@@ -53860,6 +53968,30 @@ fileprivate struct FfiConverterOptionTypeMembershipChange: FfiConverterRustBuffe
         switch try readInt(&buf) as Int8 {
         case 0: return nil
         case 1: return try FfiConverterTypeMembershipChange.read(from: &buf)
+        default: throw UniffiInternalError.unexpectedOptionalTag
+        }
+    }
+}
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+fileprivate struct FfiConverterOptionTypeNotificationEventEncryption: FfiConverterRustBuffer {
+    typealias SwiftType = NotificationEventEncryption?
+
+    public static func write(_ value: SwiftType, into buf: inout [UInt8]) {
+        guard let value = value else {
+            writeInt(&buf, Int8(0))
+            return
+        }
+        writeInt(&buf, Int8(1))
+        FfiConverterTypeNotificationEventEncryption.write(value, into: &buf)
+    }
+
+    public static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> SwiftType {
+        switch try readInt(&buf) as Int8 {
+        case 0: return nil
+        case 1: return try FfiConverterTypeNotificationEventEncryption.read(from: &buf)
         default: throw UniffiInternalError.unexpectedOptionalTag
         }
     }
