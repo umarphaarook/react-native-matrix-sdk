@@ -49141,7 +49141,15 @@ sealed class LatestEventValue: Disposable  {
         val `sender`: kotlin.String, 
         val `isOwn`: kotlin.Boolean, 
         val `profile`: org.matrix.rustcomponents.sdk.ProfileDetails, 
-        val `content`: org.matrix.rustcomponents.sdk.TimelineItemContent) : LatestEventValue()
+        val `content`: org.matrix.rustcomponents.sdk.TimelineItemContent, 
+        /**
+         * How the event reached us, with regard to end-to-end encryption.
+         * A decrypted event and one sent in the clear have the same
+         * `content`, so this is the only way to tell them apart.
+         *
+         * `None` when unknown; a client must not read that as a clear event.
+         */
+        val `eventEncryption`: org.matrix.rustcomponents.sdk.NotificationEventEncryption?) : LatestEventValue()
         
     {
         
@@ -49193,7 +49201,8 @@ sealed class LatestEventValue: Disposable  {
         this.`sender`,
         this.`isOwn`,
         this.`profile`,
-        this.`content`
+        this.`content`,
+        this.`eventEncryption`
     )
                 
             }
@@ -49243,6 +49252,7 @@ public object FfiConverterTypeLatestEventValue : FfiConverterRustBuffer<LatestEv
                 FfiConverterBoolean.read(buf),
                 FfiConverterTypeProfileDetails.read(buf),
                 FfiConverterTypeTimelineItemContent.read(buf),
+                FfiConverterOptionalTypeNotificationEventEncryption.read(buf),
                 )
             3 -> LatestEventValue.RemoteInvite(
                 FfiConverterTypeTimestamp.read(buf),
@@ -49278,6 +49288,7 @@ public object FfiConverterTypeLatestEventValue : FfiConverterRustBuffer<LatestEv
                 + FfiConverterBoolean.allocationSize(value.`isOwn`)
                 + FfiConverterTypeProfileDetails.allocationSize(value.`profile`)
                 + FfiConverterTypeTimelineItemContent.allocationSize(value.`content`)
+                + FfiConverterOptionalTypeNotificationEventEncryption.allocationSize(value.`eventEncryption`)
             )
         }
         is LatestEventValue.RemoteInvite -> {
@@ -49317,6 +49328,7 @@ public object FfiConverterTypeLatestEventValue : FfiConverterRustBuffer<LatestEv
                 FfiConverterBoolean.write(value.`isOwn`, buf)
                 FfiConverterTypeProfileDetails.write(value.`profile`, buf)
                 FfiConverterTypeTimelineItemContent.write(value.`content`, buf)
+                FfiConverterOptionalTypeNotificationEventEncryption.write(value.`eventEncryption`, buf)
                 Unit
             }
             is LatestEventValue.RemoteInvite -> {
@@ -51530,8 +51542,8 @@ public object FfiConverterTypeNotificationEvent : FfiConverterRustBuffer<Notific
 
 
 /**
- * How the event of a notification reached us, with regard to end-to-end
- * encryption.
+ * How an event reached us, with regard to end-to-end encryption. Used by
+ * notification items and by the latest event of a room.
  */
 
 enum class NotificationEventEncryption {

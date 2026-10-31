@@ -35594,7 +35594,14 @@ public enum LatestEventValue {
          * The ID of the event, absent only for a malformed event that carries
          * none. Lets a client correlate this value with per-event data it holds
          * elsewhere (read receipts, for instance) without opening a timeline.
-         */eventId: String?, timestamp: Timestamp, sender: String, isOwn: Bool, profile: ProfileDetails, content: TimelineItemContent
+         */eventId: String?, timestamp: Timestamp, sender: String, isOwn: Bool, profile: ProfileDetails, content: TimelineItemContent, 
+        /**
+         * How the event reached us, with regard to end-to-end encryption.
+         * A decrypted event and one sent in the clear have the same
+         * `content`, so this is the only way to tell them apart.
+         *
+         * `None` when unknown; a client must not read that as a clear event.
+         */eventEncryption: NotificationEventEncryption?
     )
     case remoteInvite(timestamp: Timestamp, inviter: String?, inviterProfile: ProfileDetails
     )
@@ -35627,7 +35634,7 @@ public struct FfiConverterTypeLatestEventValue: FfiConverterRustBuffer {
         
         case 1: return .none
         
-        case 2: return .remote(eventId: try FfiConverterOptionString.read(from: &buf), timestamp: try FfiConverterTypeTimestamp.read(from: &buf), sender: try FfiConverterString.read(from: &buf), isOwn: try FfiConverterBool.read(from: &buf), profile: try FfiConverterTypeProfileDetails.read(from: &buf), content: try FfiConverterTypeTimelineItemContent.read(from: &buf)
+        case 2: return .remote(eventId: try FfiConverterOptionString.read(from: &buf), timestamp: try FfiConverterTypeTimestamp.read(from: &buf), sender: try FfiConverterString.read(from: &buf), isOwn: try FfiConverterBool.read(from: &buf), profile: try FfiConverterTypeProfileDetails.read(from: &buf), content: try FfiConverterTypeTimelineItemContent.read(from: &buf), eventEncryption: try FfiConverterOptionTypeNotificationEventEncryption.read(from: &buf)
         )
         
         case 3: return .remoteInvite(timestamp: try FfiConverterTypeTimestamp.read(from: &buf), inviter: try FfiConverterOptionString.read(from: &buf), inviterProfile: try FfiConverterTypeProfileDetails.read(from: &buf)
@@ -35648,7 +35655,7 @@ public struct FfiConverterTypeLatestEventValue: FfiConverterRustBuffer {
             writeInt(&buf, Int32(1))
         
         
-        case let .remote(eventId,timestamp,sender,isOwn,profile,content):
+        case let .remote(eventId,timestamp,sender,isOwn,profile,content,eventEncryption):
             writeInt(&buf, Int32(2))
             FfiConverterOptionString.write(eventId, into: &buf)
             FfiConverterTypeTimestamp.write(timestamp, into: &buf)
@@ -35656,6 +35663,7 @@ public struct FfiConverterTypeLatestEventValue: FfiConverterRustBuffer {
             FfiConverterBool.write(isOwn, into: &buf)
             FfiConverterTypeProfileDetails.write(profile, into: &buf)
             FfiConverterTypeTimelineItemContent.write(content, into: &buf)
+            FfiConverterOptionTypeNotificationEventEncryption.write(eventEncryption, into: &buf)
             
         
         case let .remoteInvite(timestamp,inviter,inviterProfile):
@@ -37382,8 +37390,8 @@ public func FfiConverterTypeNotificationEvent_lower(_ value: NotificationEvent) 
 // Note that we don't yet support `indirect` for enums.
 // See https://github.com/mozilla/uniffi-rs/issues/396 for further discussion.
 /**
- * How the event of a notification reached us, with regard to end-to-end
- * encryption.
+ * How an event reached us, with regard to end-to-end encryption. Used by
+ * notification items and by the latest event of a room.
  */
 
 public enum NotificationEventEncryption: Equatable, Hashable {

@@ -24259,6 +24259,7 @@ export const LatestEventValue = (() => {
       isOwn: boolean;
       profile: ProfileDetails;
       content: TimelineItemContent;
+      eventEncryption: NotificationEventEncryption | undefined;
     }>;
   };
 
@@ -24276,6 +24277,7 @@ export const LatestEventValue = (() => {
       isOwn: boolean;
       profile: ProfileDetails;
       content: TimelineItemContent;
+      eventEncryption: NotificationEventEncryption | undefined;
     }>;
     constructor(inner: {
       /**
@@ -24288,6 +24290,13 @@ export const LatestEventValue = (() => {
       isOwn: boolean;
       profile: ProfileDetails;
       content: TimelineItemContent;
+      /**
+       * How the event reached us, with regard to end-to-end encryption.
+       * A decrypted event and one sent in the clear have the same
+       * `content`, so this is the only way to tell them apart.
+       *
+       * `None` when unknown; a client must not read that as a clear event.
+       */ eventEncryption: NotificationEventEncryption | undefined;
     }) {
       super('LatestEventValue', 'Remote');
       this.inner = Object.freeze(inner);
@@ -24304,6 +24313,13 @@ export const LatestEventValue = (() => {
       isOwn: boolean;
       profile: ProfileDetails;
       content: TimelineItemContent;
+      /**
+       * How the event reached us, with regard to end-to-end encryption.
+       * A decrypted event and one sent in the clear have the same
+       * `content`, so this is the only way to tell them apart.
+       *
+       * `None` when unknown; a client must not read that as a clear event.
+       */ eventEncryption: NotificationEventEncryption | undefined;
     }): Remote_ {
       return new Remote_(inner);
     }
@@ -24455,6 +24471,8 @@ const FfiConverterTypeLatestEventValue = (() => {
             isOwn: FfiConverterBool.read(from),
             profile: FfiConverterTypeProfileDetails.read(from),
             content: FfiConverterTypeTimelineItemContent.read(from),
+            eventEncryption:
+              FfiConverterOptionalTypeNotificationEventEncryption.read(from),
           });
         case 3:
           return new LatestEventValue.RemoteInvite({
@@ -24490,6 +24508,10 @@ const FfiConverterTypeLatestEventValue = (() => {
           FfiConverterBool.write(inner.isOwn, into);
           FfiConverterTypeProfileDetails.write(inner.profile, into);
           FfiConverterTypeTimelineItemContent.write(inner.content, into);
+          FfiConverterOptionalTypeNotificationEventEncryption.write(
+            inner.eventEncryption,
+            into
+          );
           return;
         }
         case LatestEventValue_Tags.RemoteInvite: {
@@ -24532,6 +24554,10 @@ const FfiConverterTypeLatestEventValue = (() => {
           size += FfiConverterTypeTimelineItemContent.allocationSize(
             inner.content
           );
+          size +=
+            FfiConverterOptionalTypeNotificationEventEncryption.allocationSize(
+              inner.eventEncryption
+            );
           return size;
         }
         case LatestEventValue_Tags.RemoteInvite: {
@@ -28359,8 +28385,8 @@ const FfiConverterTypeNotificationEvent = (() => {
 })();
 
 /**
- * How the event of a notification reached us, with regard to end-to-end
- * encryption.
+ * How an event reached us, with regard to end-to-end encryption. Used by
+ * notification items and by the latest event of a room.
  */
 export enum NotificationEventEncryption {
   /**
