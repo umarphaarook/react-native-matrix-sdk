@@ -1,7 +1,7 @@
 ---
 crate:
   repo: https://github.com/umarphaarook/matrix-rust-sdk
-  rev: 57fabed5be77d186ab25aa1bad51107c389aea86 # zaure-patches-7039-v2: unrecoverable-send wedge fix (#7039 cherry-pick), device trust lookups, legacy-session refusal from unsigned known devices; based on d298064
+  rev: 64b295d2b9d3b119d017297ab46ed7a324312bb9 # zaure-notification-encryption: NotificationItem.eventEncryption (#495), on 57fabed5b (zaure-patches-7039-v2: unrecoverable-send wedge fix (#7039 cherry-pick), device trust lookups, legacy-session refusal from unsigned known devices; based on d298064)
   manifestPath: bindings/matrix-sdk-ffi/Cargo.toml
 android:
   cargoExtras: []
