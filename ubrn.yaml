@@ -1,7 +1,7 @@
 ---
 crate:
   repo: https://github.com/umarphaarook/matrix-rust-sdk
-  rev: becb768a5721eed820bd6bf22a429b9d6c77405e # zaure-latest-event-encryption: LatestEventValue.Remote.eventEncryption (#511) and the latest-event edit-encryption check, on 64b295d2b (zaure-notification-encryption: NotificationItem.eventEncryption (#495), on 57fabed5b)
+  rev: 6e00753245b01a046fefd6ac660e3b3df95aee58 # zaure-latest-event-edits: latest valid edit for the chat list and the timeline (#516), notification invite room check (#510), on becb768a5 (zaure-latest-event-encryption)
   manifestPath: bindings/matrix-sdk-ffi/Cargo.toml
 android:
   cargoExtras: []
